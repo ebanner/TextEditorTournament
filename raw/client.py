@@ -1,8 +1,10 @@
+import random
 import socket
 import sys
 
 CACHED_PACKET = ''
-MAGIC = 'XXX'
+MAGIC = '{:x}'.format(random.getrandbits(128))
+
 
 def last_packet(new_packet):
     """Returns true if the character sequence to end communication has been
@@ -42,13 +44,16 @@ def send_file(socket, filename):
 
 def receive_diff(socket):
     """Get the diff back from the server"""
+    diff = ''
     while True:
         received = str(socket.recv(1024), 'utf-8')
 
         if last_packet(received):
             break
         else:
-            print(received, end='')
+            diff = ''.join([diff, received])
+
+    return diff
 
 if __name__ == '__main__':
     host, port = 'localhost', 9999
@@ -63,9 +68,7 @@ if __name__ == '__main__':
         send_file(sock, filename)
         # Get the diff back from the submission server
         diff = receive_diff(sock)
+        print(diff)
 
     finally:
         sock.close()
-
-    print(diff)
-    print('All done')
