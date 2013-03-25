@@ -2,24 +2,22 @@ import random
 import socket
 import sys
 
-CACHED_PACKET = ''
-MAGIC = '{:x}'.format(random.getrandbits(128))
-
 def send_file(socket, filename):
     """Sends a file to socket"""
-    # Send the magic character sequence that signifies the end of
-    # communication.
-    socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
-    # Send the name of the file being submitted
-    socket.sendall(bytes(filename + "\n", 'utf-8'))
-
-    # Send the entire file to the submission server
-    with open(filename, 'rb') as f:
+    with open(filename, 'rb') as f, open('info.txt', 'r') as g:
+        # Information about the participant
+        name, editor = g.readlines()
+        # Send name and editor to the submission server
+        socket.sendall(bytes(name, 'utf-8'))
+        socket.sendall(bytes(editor, 'utf-8'))
+        # Send the name of the file being submitted
+        socket.sendall(bytes(filename + "\n", 'utf-8'))
+        # Get the participant's file
         data = f.read()
+        # Send the size of the submission file to the submission server
+        socket.sendall(bytes(str(f.tell()) + "\n", 'utf-8'))
+        # Send the file itself
         socket.sendall(data)
-
-    # Send the magic char sequence indicating we are done sending the file
-    socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
 
 def receive_diff(socket):
     """Get the diff back from the server"""
@@ -53,7 +51,6 @@ if __name__ == '__main__':
             print(diff, end='')
         else:
             print('You got it right!')
-            print(diff)
 
     finally:
         sock.close()
