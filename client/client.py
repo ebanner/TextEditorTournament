@@ -6,26 +6,7 @@ import random
 import socket
 
 def send_file(socket, filename):
-    """Sends a file to the submission server to be judged.
-    
-    Submissions are transferred as follows:
-
-      The name of the participant followed by a newline.
-      The name of the participant's editor followed by a newline.
-      The name of the file being submitted by the participant followed by a newline.
-      The size of the submission file in bytes.
-      The file itself.
-
-    A typical example:
-
-      Richard Stallman\n
-      GNU Emacs\n
-      .emacs
-      109
-      My claim to fame is having written the slowest, and the most egregiously
-      bloated text editor of all time.
-
-    """
+    """Sends a file to the submission server to be judged"""
     try:
         # Send the metadata stored in `info.txt' along with the submission file
         # to the submission server for judging.
