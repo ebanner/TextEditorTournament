@@ -68,7 +68,13 @@ if __name__ == '__main__':
         send_file(sock, filename)
         # Get the diff back from the submission server
         diff = receive_diff(sock)
-        print(diff)
+
+        # Print out the diff if the user submitted an incorrect answer
+        if diff:
+            print("Incorrect repsonse. Here's the diff:\n")
+            print(diff, end='')
+        else:
+            print('You got it right!')
 
     finally:
         sock.close()

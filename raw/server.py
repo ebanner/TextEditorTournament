@@ -36,7 +36,7 @@ class MyTCPHandler(socketserver.StreamRequestHandler):
                 submission_lines.append(self.data)
 
         # Open up the correct file and diff it with the submission
-        with open('foo.txt', 'r') as f:
+        with open('biz.txt', 'r') as f:
             correct_lines = f.readlines()
 
             for line in difflib.unified_diff(submission_lines, correct_lines,
