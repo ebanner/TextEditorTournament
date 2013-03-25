@@ -3,27 +3,47 @@ import socket
 import sys
 
 def send_file(socket, filename):
-    """Sends a file to socket"""
-    with open(filename, 'rb') as f, open('info.txt', 'r') as g:
-        # Information about the participant
-        name, editor = g.readlines()
-        # Send name and editor to the submission server
-        socket.sendall(bytes(name, 'utf-8'))
-        socket.sendall(bytes(editor, 'utf-8'))
-        # Send the name of the file being submitted
-        socket.sendall(bytes(filename + "\n", 'utf-8'))
-        # Get the participant's file
-        data = f.read()
-        # Send the size of the submission file to the submission server
-        socket.sendall(bytes(str(f.tell()) + "\n", 'utf-8'))
-        # Send the file itself
-        socket.sendall(data)
+    """Sends a file to the submission server to be judged.
+    
+    Submissions are transferred as follows:
+
+      The name of the participant followed by a newline.
+      The name of the participant's editor followed by a newline.
+      The name of the file being submitted by the participant followed by a newline.
+      The size of the submission file in bytes.
+      The file itself.
+
+    A typical example:
+
+      Richard Stallman\n
+      GNU Emacs\n
+      .emacs
+      109
+      My claim to fame is having written the slowest, and the most egregiously
+      bloated text editor of all time.
+
+    """
+    try:
+        # Send the metadata stored in `info.txt' along with the submission file
+        # to the submission server for judging.
+        with open(filename, 'rb') as sub, open('info.txt', 'r') as info:
+            data = sub.read()
+            name, editor = info.readlines()
+            socket.sendall(bytes(name, 'utf-8'))
+            socket.sendall(bytes(editor, 'utf-8'))
+            socket.sendall(bytes(filename + "\n", 'utf-8'))
+            socket.sendall(bytes(str(sub.tell()) + "\n", 'utf-8'))
+            socket.sendall(data)
+
+    except FileNotFoundError as e:
+        print(e)
+        exit(1)
 
 def receive_diff(socket):
-    """Get the diff back from the server"""
+    """Get the diff back from the submission server"""
     diff = ''
 
-    # Receive the diff from the server
+    # Build the diff from the submission server line by line
     for line in socket.makefile():
         diff = ''.join([diff, line])
 
@@ -36,13 +56,9 @@ if __name__ == '__main__':
         filename = 'foo.txt'
 
     # Create a socket (SOCK_STREAM means a TCP socket)
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    try:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect(('localhost', 9999))
-        # Submit the file to the server for grading
         send_file(sock, filename)
-        # Get the diff back from the submission server
         diff = receive_diff(sock)
 
         # Print out the diff if the user submitted an incorrect answer
@@ -51,6 +67,3 @@ if __name__ == '__main__':
             print(diff, end='')
         else:
             print('You got it right!')
-
-    finally:
-        sock.close()
