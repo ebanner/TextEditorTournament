@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import sys
 import time
 import signal
 import difflib
@@ -74,10 +75,13 @@ class ThreadedSubmissionServer(socketserver.ThreadingMixIn, socketserver.TCPServ
     pass
 
 if __name__ == '__main__':
-    host, port = 'localhost', 9999
+    if len(sys.argv) == 3:
+        script, host, port = sys.argv
+    else:
+        host, port = 'localhost', 9999
 
     # Create the server, binding to localhost on port 9999
-    server = ThreadedSubmissionServer((host, port), ThreadedSubmissionRequestHandler)
+    server = ThreadedSubmissionServer((host, int(port)), ThreadedSubmissionRequestHandler)
     # Start a thread with the server -- that thread will then start one more
     # thread for each request
     server_thread = threading.Thread(target=server.serve_forever)

@@ -53,14 +53,18 @@ def receive_diff(socket):
     return diff
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        filename = sys.argv[1]
+    if len(sys.argv) == 4:
+        script, filename, host, port = sys.argv
+    elif len(sys.argv) == 2:
+        script, filename = sys.argv
+        host, port = 'localhost', 9999
     else:
-        filename = 'foo.txt'
+        print('usage: client.py submission_file [host, port]')
+        sys.exit(1)
 
     # Create a socket (SOCK_STREAM means a TCP socket)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.connect(('localhost', 9999))
+        sock.connect((host, int(port)))
         send_file(sock, filename)
         diff = receive_diff(sock)
 
