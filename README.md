@@ -10,29 +10,30 @@ The first step is to start up the server like so:
     cd server/
     ./submission_server.py
 
-Once the client is ready to submit a file `foo`, issue the following command:
+Once the client is ready to submit a file `foo`, issue the following commands:
 
+    cd client/
     ./client foo
 
-The server will then check in its current directory for a file `foo.sol` and
-diff it with the submitted `foo` file. The server will then print some basic
+The server will then check its current directory for a file `foo.sol` and diff
+it with the submitted `foo` file. The server will then print some basic
 information to stdout like participant name, editor, filename, and time. This
 information is logged along with a diff of the user's submission against the
-solution-file in the file `foo.log` in this example.
+solution file in the file `foo.log`.
 
 # Protocol for sending files
 
-In order for a client to send a file `foo` for submission `./client.py foo`,
-there needs to be a file named `info.txt` in the client's current directory.
-The only pieces of information that need to be in this file is the client's
-name and editor separated by a newline. Here is an example `info.txt` file:
+In order for a client to send a file `foo` for submission, there needs to be a
+file named `info.txt` in the client's current directory.  The only pieces of
+information that need to be in this file are the client's name and editor
+separated by a newline. Here is an example `info.txt` file:
 
     $ cat info.txt
     Edward Banner
     Vim
 
-As long as both the files `foo` and `info.txt` exist in the client's current
-directory, the following information gets sent to the server:
+Assuming both `foo` and `info.txt` exist in the client's current directory, the
+following information gets sent to the server in this order:
 
 * The name of the participant followed by a newline.
 * The name of the participant's editor followed by a newline.
@@ -45,7 +46,7 @@ Example usage:
     cd server/
     ./submission_server.py
 
-    cd client
+    cd client/
     ./client.py move_lines
     ./client.py move_lines
     ./client.py move_lines
