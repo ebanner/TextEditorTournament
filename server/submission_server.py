@@ -85,7 +85,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     while True:
         try: 
-            time.sleep(60*60*24)
+            time.sleep(1)
             continue
         except:
             pass
