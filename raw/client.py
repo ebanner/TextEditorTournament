@@ -26,33 +26,29 @@ def last_packet(new_packet):
     else:
         return False
 
-def send_file(submission_socket, filename):
-    """Submits a file to submission server for grading"""
+def send_file(socket, filename):
+    """Sends a file to socket"""
     # Send the magic character sequence that signifies the end of
     # communication.
-    submission_socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
+    socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
 
     # Send the entire file to the submission server
     with open('foo.txt', 'rb') as f:
         data = f.read()
-        submission_socket.sendall(data)
+        socket.sendall(data)
 
-    # Send the magic char sequence indicating we have sent the entire file and
-    # we will send no more.
-    submission_socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
+    # Send the magic char sequence indicating we are done sending the file
+    socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
 
-def receive_diff(submission_socket):
-    """Get the diff back from the submission server"""
+def receive_diff(socket):
+    """Get the diff back from the server"""
     while True:
-        received = str(submission_socket.recv(1024), 'utf-8')
-        diff = ''
+        received = str(socket.recv(1024), 'utf-8')
 
         if last_packet(received):
             break
         else:
-            diff = ''.join([diff, received])
-
-        return diff
+            print(received, end='')
 
 if __name__ == '__main__':
     host, port = 'localhost', 9999
@@ -67,7 +63,9 @@ if __name__ == '__main__':
         send_file(sock, filename)
         # Get the diff back from the submission server
         diff = receive_diff(sock)
-        print(diff)
 
     finally:
         sock.close()
+
+    print(diff)
+    print('All done')
