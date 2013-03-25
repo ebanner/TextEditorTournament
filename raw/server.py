@@ -1,3 +1,4 @@
+import difflib
 import socketserver
 
 class MyTCPHandler(socketserver.StreamRequestHandler):
@@ -10,27 +11,37 @@ class MyTCPHandler(socketserver.StreamRequestHandler):
     """
 
     def handle(self):
-      # self.rfile is a file-like object created by the handler;
-      # we can now use e.g. readline() instead of raw recv() calls
-      self.data = self.rfile.readline()
-      print('Name: {}'.format(self.data))
+        # Get the magic character sequence to end communication
+        magic = str(self.rfile.readline().strip(), 'utf-8')
+        print('Magic chars:', magic)
+        self.data = str(self.rfile.readline().strip(), 'utf-8')
+        print('Participant: {}'.format(self.data))
+        self.data = str(self.rfile.readline().strip(), 'utf-8')
+        print('Name of file: {}'.format(self.data))
 
-      # Read in the blank line
-      self.data = self.rfile.readline()
+        # Read in the blank line
+        self.data = self.rfile.readline()
+        submission_lines = []
 
-      with open('bar.txt', 'wb') as f:
         while True:
-          self.data = self.rfile.readline()
+            self.data = str(self.rfile.readline(), 'utf-8')
 
-          # End of the user's submission
-          if str(self.data.strip(), 'utf-8') == 'XXX':
-            break
-          else:
-            f.write(self.data)
-            self.wfile.write(self.data)
+            if self.data.strip() == magic:
+                # End of the user's submission
+                break
+            else:
+                submission_lines.append(self.data)
 
-      # Send the terminating character sequence to the client
-      self.wfile.write(bytes('XXX', 'utf-8'))
+        # Open up the correct file and diff it with the submission
+        with open('foo.txt', 'r') as f:
+            correct_lines = f.readlines()
+
+            for line in difflib.unified_diff(submission_lines, correct_lines,
+                    fromfile='foo.txt', tofile='bar.txt'):
+                self.wfile.write(bytes(line, 'utf-8'))
+
+        # Send the terminating character sequence to the client
+        self.wfile.write(bytes(magic, 'utf-8'))
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 9999
