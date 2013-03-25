@@ -43,15 +43,15 @@ following information gets sent to the server in this order:
 
 Example usage:
 
-    cd server/
-    ./submission_server.py
+    $ cd server/
+    $ ./submission_server.py
 
-    cd client/
-    ./client.py move_lines
-    ./client.py move_lines
-    ./client.py move_lines
-    ./client.py move_lines
-    ./client.py move_lines
+    $ cd client/
+    $ ./client.py move_lines
+    $ ./client.py move_lines
+    $ ./client.py move_lines
+    $ ./client.py move_lines
+    $ ./client.py move_lines
 
 Example server output:
     
