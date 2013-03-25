@@ -37,7 +37,7 @@ def send_file(socket, filename):
 
     except FileNotFoundError as e:
         print(e)
-        exit(1)
+        sys.exit(1)
 
 def receive_diff(socket):
     """Get the diff back from the submission server"""

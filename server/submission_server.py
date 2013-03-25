@@ -56,6 +56,7 @@ class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
         # Print time elapsed
         end = time.time()
         print(end - START)
+        print()
 
 class ThreadedSubmissionServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
