@@ -1,0 +1,61 @@
+Edward Banner
+1.3212449550628662
+
+Edward Banner
+5.33587646484375
+
+Edward Banner
+6.117457389831543
+
+Edward Banner
+--- move_lines
++++ move_lines.sol
+@@ -1,5 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-Nah, he's not that cool.
+17.682393312454224
+
+Edward Banner
+28.022770643234253
+
+Edward Banner
+Vim
+3.630222797393799
+
+Edward Banner
+Vim
+8.686883926391602
+
+Edward Banner
+Vim
+9.464112281799316
+
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,6 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-
+-
+14.645426273345947
+
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,6 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-
+-
+15.182754039764404
+
