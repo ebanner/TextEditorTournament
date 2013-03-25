@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import time
 import signal
@@ -6,7 +8,7 @@ import threading
 import socketserver
 
 # Keep track of how much time has elapsed
-START = -1
+START = 42
 
 class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
     """
@@ -18,45 +20,55 @@ class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
     """
 
     def handle(self):
-        # Name of the participant
-        self.participant = str(self.rfile.readline().strip(), 'utf-8')
-        print('Participant: {}'.format(self.participant))
-        # Participant's editor
-        self.editor = str(self.rfile.readline().strip(), 'utf-8')
-        print('Editor: {}'.format(self.editor))
-        # Name of the submission file
-        self.file = str(self.rfile.readline().strip(), 'utf-8')
-        print('Name of file: {}'.format(self.file))
-        # Number of bytes in the entire file
-        self.length = int(self.rfile.readline().strip())
-        print('Number of bytes: {}'.format(self.length))
+        try:
+            # Name of the participant
+            self.participant = str(self.rfile.readline().strip(), 'utf-8')
+            if not self.participant:
+                # The client is probably horked. Die.
+                raise ValueError
 
-        # Read in the entire body and convert it to a string
-        self.body = self.rfile.read(self.length).decode('utf-8').split("\n")
-        self.submission_lines = [ ''.join([line, "\n"]) for line in self.body ]
-        self.submission_lines.pop()
+            print('Participant: {}'.format(self.participant))
+            # Participant's editor
+            self.editor = str(self.rfile.readline().strip(), 'utf-8')
+            print('Editor: {}'.format(self.editor))
+            # Name of the submission file
+            self.file = str(self.rfile.readline().strip(), 'utf-8')
+            print('Name of file: {}'.format(self.file))
+            # Number of bytes in the entire file
+            self.length = int(self.rfile.readline().strip())
+            print('Number of bytes: {}'.format(self.length))
 
-        # Open up the correct file and diff it with the submission
-        with open(self.file+'.sol', 'r') as sol, open(self.file+'.log', 'a') as log: 
-            correct_lines = sol.readlines()
+            # Read in the entire body and convert it to a string
+            self.body = self.rfile.read(self.length).decode('utf-8').split("\n")
+            self.submission_lines = [ ''.join([line, "\n"]) for line in self.body ]
+            self.submission_lines.pop()
 
-            # Log the participant and his or her editor
-            log.write(self.participant + "\n")
-            log.write(self.editor + "\n")
+            # Open up the correct file and diff it with the submission
+            with open(self.file+'.sol', 'r') as sol, open(self.file+'.log', 'a') as log: 
+                correct_lines = sol.readlines()
 
-            for line in difflib.unified_diff(self.submission_lines, correct_lines,
-                    fromfile=self.file, tofile=self.file+'.sol'):
-                self.wfile.write(bytes(line, 'utf-8'))
-                # Log the participant's diff
-                log.write(line)
+                # Log the participant and his or her editor
+                log.write(self.participant + "\n")
+                log.write(self.editor + "\n")
 
-            # Log the participant's time
-            log.write(str(time.time() - START) + "\n\n")
+                for line in difflib.unified_diff(self.submission_lines, correct_lines,
+                        fromfile=self.file, tofile=self.file+'.sol'):
+                    self.wfile.write(bytes(line, 'utf-8'))
+                    # Log the participant's diff
+                    log.write(line)
 
-        # Print time elapsed
-        end = time.time()
-        print(end - START)
-        print()
+                # Log the participant's time
+                log.write(str(time.time() - START) + "\n\n")
+
+            # Print time elapsed
+            end = time.time()
+            print(end - START)
+            print()
+
+        # If an exception occurs at any point, just let the thread fade out
+        # into non-existance.
+        except ValueError:
+            pass
 
 class ThreadedSubmissionServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass

@@ -424,3 +424,105 @@ Vim
 -Yeah!
 11.457393646240234
 
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,6 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-
+-Yeah!
+21.931727647781372
+
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,6 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-
+-Yeah!
+23.94889736175537
+
+Edward Banner
+Vim
+33.0316424369812
+
+Edward Banner
+Vim
+10.094915866851807
+
+Edward Banner
+Vim
+11.6654691696167
+
+Edward Banner
+Vim
+12.809798240661621
+
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,5 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-Not enough this time!
+34.0951874256134
+
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,5 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-Not enough this time!
+36.862412214279175
+
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,5 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-Not enough this time!
+2.385756492614746
+
+Edward Banner
+Vim
+--- move_lines
++++ move_lines.sol
+@@ -1,5 +1,3 @@
+ Lorem ipsum is a cool guy.
+ 
+ Cool guy is a lorem ipsum.
+-
+-Not enough this time!
+5.937141180038452
+
+Edward Banner
+Vim
+11.3297758102417
+
+Edward Banner
+Vim
+20.56754755973816
+
+Edward Banner
+Vim
+21.39852523803711
+

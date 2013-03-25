@@ -1,6 +1,9 @@
+#!/usr/bin/python3
+
+import os
+import sys
 import random
 import socket
-import sys
 
 def send_file(socket, filename):
     """Sends a file to the submission server to be judged.
@@ -37,7 +40,7 @@ def send_file(socket, filename):
 
     except FileNotFoundError as e:
         print(e)
-        sys.exit(1)
+        os._exit(1)
 
 def receive_diff(socket):
     """Get the diff back from the submission server"""
