@@ -2,8 +2,9 @@ import socket
 import sys
 
 CACHED_PACKET = ''
+MAGIC = 'XXX'
 
-def last_packet(new_packet, magic):
+def last_packet(new_packet):
     """Returns true if the character sequence to end communication has been
     sent.
 
@@ -20,39 +21,51 @@ def last_packet(new_packet, magic):
     packet = ''.join([CACHED_PACKET, new_packet])
     CACHED_PACKET = new_packet
 
-    if magic in packet:
+    if MAGIC in packet:
         return True
     else:
         return False
 
+def send_file(socket, filename):
+    """Sends a file to socket"""
+    # Send the magic character sequence that signifies the end of
+    # communication.
+    socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
+
+    # Send the entire file to the submission server
+    with open('foo.txt', 'rb') as f:
+        data = f.read()
+        socket.sendall(data)
+
+    # Send the magic char sequence indicating we are done sending the file
+    socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
+
+def receive_diff(socket):
+    """Get the diff back from the server"""
+    while True:
+        received = str(socket.recv(1024), 'utf-8')
+
+        if last_packet(received):
+            break
+        else:
+            print(received, end='')
+
 if __name__ == '__main__':
-    HOST, PORT = "localhost", 9999
+    host, port = 'localhost', 9999
+    filename = 'foo.txt'
 
     # Create a socket (SOCK_STREAM means a TCP socket)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        # Connect to server and send data
-        sock.connect((HOST, PORT))
-        # Send a magic character sequence that signifies the end of
-        # communication.
-        magic = 'XXX'
-        sock.sendall(bytes(magic + "\n", 'utf-8'))
+        sock.connect((host, port))
+        # Submit the file to the server for grading
+        send_file(sock, filename)
+        # Get the diff back from the submission server
+        diff = receive_diff(sock)
 
-        with open('foo.txt', 'rb') as f:
-            data = f.read()
-            sock.sendall(data)
-
-        # Signal that we are done sending the file
-        sock.sendall(bytes(magic + "\n", 'utf-8'))
-
-        while True:
-            received = str(sock.recv(1024), 'utf-8')
-            if last_packet(received, magic):
-                break
-            else:
-                print(received, end='')
     finally:
         sock.close()
 
+    print(diff)
     print('All done')
