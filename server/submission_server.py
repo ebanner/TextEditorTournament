@@ -6,7 +6,7 @@ import threading
 import socketserver
 
 # Keep track of how much time has elapsed
-START = 0
+START = -1
 
 class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
     """
@@ -60,8 +60,8 @@ class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
 class ThreadedSubmissionServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
-if __name__ == "__main__":
-    host, port = "localhost", 9999
+if __name__ == '__main__':
+    host, port = 'localhost', 9999
 
     # Create the server, binding to localhost on port 9999
     server = ThreadedSubmissionServer((host, port), ThreadedSubmissionRequestHandler)
@@ -70,19 +70,20 @@ if __name__ == "__main__":
     server_thread = threading.Thread(target=server.serve_forever)
 
     def signal_handler(signal, frame):
-        print(" Tearing down the server...")
+        print(' Tearing down the server...')
         server.shutdown()
         os._exit(0)
 
+    # Register the signal handler
+    signal.signal(signal.SIGINT, signal_handler)
+
     # Exit the server thread when the main thread terminates
     server_thread.daemon = True
-    # Start the timer!
+    # Start the global timer
     START = time.time()
-
     # Serve it up
     server_thread.start()
 
-    signal.signal(signal.SIGINT, signal_handler)
     while True:
         try: 
             time.sleep(1)
