@@ -33,11 +33,14 @@ def send_file(socket, filename):
     # Send the magic character sequence that signifies the end of
     # communication.
     socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
+    # Send the name of the file being submitted
+    socket.sendall(bytes(filename + "\n", 'utf-8'))
 
     # Send the entire file to the submission server
-    with open('foo.txt', 'rb') as f:
+    with open(filename, 'rb') as f:
         data = f.read()
         socket.sendall(data)
+        print('Sending {}'.format(data))
 
     # Send the magic char sequence indicating we are done sending the file
     socket.sendall(bytes(MAGIC + "\n", 'utf-8'))
@@ -45,6 +48,7 @@ def send_file(socket, filename):
 def receive_diff(socket):
     """Get the diff back from the server"""
     diff = ''
+
     while True:
         received = str(socket.recv(1024), 'utf-8')
 
@@ -56,14 +60,16 @@ def receive_diff(socket):
     return diff
 
 if __name__ == '__main__':
-    host, port = 'localhost', 9999
-    filename = 'foo.txt'
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+    else:
+        filename = 'foo.txt'
 
     # Create a socket (SOCK_STREAM means a TCP socket)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        sock.connect((host, port))
+        sock.connect(('localhost', 9999))
         # Submit the file to the server for grading
         send_file(sock, filename)
         # Get the diff back from the submission server

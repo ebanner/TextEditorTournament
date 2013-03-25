@@ -2,9 +2,10 @@ import time
 import difflib
 import socketserver
 
+# Keep track of how much time has elapsed
 START = 0
 
-class MyTCPHandler(socketserver.StreamRequestHandler):
+class SubmissionServer(socketserver.StreamRequestHandler):
     """
     The RequestHandler class for our server.
 
@@ -17,10 +18,10 @@ class MyTCPHandler(socketserver.StreamRequestHandler):
         # Get the magic character sequence to end communication
         self.magic = str(self.rfile.readline().strip(), 'utf-8')
         print('Magic chars:', self.magic)
-        self.data = str(self.rfile.readline().strip(), 'utf-8')
-        print('Participant: {}'.format(self.data))
-        self.data = str(self.rfile.readline().strip(), 'utf-8')
-        print('Name of file: {}'.format(self.data))
+        self.file = str(self.rfile.readline().strip(), 'utf-8')
+        print('Name of file: {}'.format(self.file))
+        self.participant = str(self.rfile.readline().strip(), 'utf-8')
+        print('Participant: {}'.format(self.participant))
 
         # Read in the blank line
         self.data = self.rfile.readline()
@@ -30,17 +31,17 @@ class MyTCPHandler(socketserver.StreamRequestHandler):
             self.data = str(self.rfile.readline(), 'utf-8')
 
             if self.data.strip() == self.magic:
-                # End of the user's submission
+                # End of the user's submission file
                 break
             else:
                 submission_lines.append(self.data)
 
         # Open up the correct file and diff it with the submission
-        with open('biz.txt', 'r') as f:
+        with open(self.file, 'r') as f:
             correct_lines = f.readlines()
 
             for line in difflib.unified_diff(submission_lines, correct_lines,
-                    fromfile='foo.txt', tofile='bar.txt'):
+                    fromfile=self.file, tofile='solution-'+self.file):
                 self.wfile.write(bytes(line, 'utf-8'))
 
         # Send the terminating character sequence to the client
@@ -51,10 +52,10 @@ class MyTCPHandler(socketserver.StreamRequestHandler):
         print(end - START)
 
 if __name__ == "__main__":
-    HOST, PORT = "localhost", 9999
+    host, port = "localhost", 9999
 
     # Create the server, binding to localhost on port 9999
-    server = socketserver.TCPServer((HOST, PORT), MyTCPHandler)
+    server = socketserver.TCPServer((host, port), SubmissionServer)
 
     # Start the timer!
     START = time.time()

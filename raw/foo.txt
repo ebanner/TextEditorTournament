@@ -1,5 +1,4 @@
 Edward Banner
-Lorem Ipsum challenge
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae elit molestie risus ultricies dapibus. Sed in lorem ante. Nam facilisis malesuada purus quis sodales. Proin nibh enim, auctor ac adipiscing eu, lobortis id justo. Duis nec quam lorem. In hac habitasse platea dictumst. Praesent tincidunt gravida vehicula. Nunc congue molestie venenatis. Pellentesque ullamcorper est vel tortor consequat dictum. Curabitur vel malesuada ligula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc condimentum vestibulum lorem imperdiet luctus.
 
