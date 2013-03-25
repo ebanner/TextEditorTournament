@@ -7,13 +7,13 @@ their own separate directories.
 
 The first step is to start up the server like so:
 
-    cd server/
-    ./submission_server.py
+    $ cd server/
+    $ ./submission_server.py
 
 Once the client is ready to submit a file `foo`, issue the following commands:
 
-    cd client/
-    ./client foo
+    $ cd client/
+    $ ./client foo
 
 The server will then check its current directory for a file `foo.sol` and diff
 it with the submitted `foo` file. The server will then print some basic
