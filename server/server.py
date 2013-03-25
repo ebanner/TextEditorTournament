@@ -37,15 +37,21 @@ class SubmissionServer(socketserver.StreamRequestHandler):
                 submission_lines.append(self.data)
 
         # Open up the correct file and diff it with the submission
-        with open(self.file, 'r') as f:
+        with open(self.file+'.sol', 'r') as f:
             correct_lines = f.readlines()
 
-            for line in difflib.unified_diff(submission_lines, correct_lines,
-                    fromfile=self.file, tofile='solution-'+self.file):
-                self.wfile.write(bytes(line, 'utf-8'))
+            with open(self.file+'.log', 'a') as g:
+                # Log the participant
+                g.write(self.participant + "\n")
 
-        # Send the terminating character sequence to the client
-        self.wfile.write(bytes(self.magic, 'utf-8'))
+                for line in difflib.unified_diff(submission_lines, correct_lines,
+                        fromfile=self.file, tofile=self.file+'.sol'):
+                    self.wfile.write(bytes(line, 'utf-8'))
+                    # Log the participant's diff
+                    g.write(line)
+
+                # Log the participant's time
+                g.write(str(time.time() - START) + "\n")
 
         # Print time elapsed
         end = time.time()
