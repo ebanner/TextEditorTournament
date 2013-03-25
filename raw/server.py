@@ -1,6 +1,8 @@
-import timeit
+import time
 import difflib
 import socketserver
+
+START = 0
 
 class MyTCPHandler(socketserver.StreamRequestHandler):
     """
@@ -45,7 +47,7 @@ class MyTCPHandler(socketserver.StreamRequestHandler):
         self.wfile.write(bytes(self.magic, 'utf-8'))
 
         # Print time elapsed
-        end = timeit.timeit()
+        end = time.time()
         print(end - START)
 
 if __name__ == "__main__":
@@ -55,8 +57,7 @@ if __name__ == "__main__":
     server = socketserver.TCPServer((HOST, PORT), MyTCPHandler)
 
     # Start the timer!
-    global START
-    START = timeit.timeit()
+    START = time.time()
 
     # Activate the server; this will keep running until you
     # interrupt the program with Ctrl-C
