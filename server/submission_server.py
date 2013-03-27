@@ -22,24 +22,22 @@ class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
         try:
-            # Name of the participant
+            # Retrieve all of the metadata from submission
             self.participant = str(self.rfile.readline().strip(), 'utf-8')
+            # Check to see if the client is horked. If so, then die.
             if not self.participant:
-                # The client is probably horked. Die.
                 raise ValueError
 
+            # Retrieve the rest of the metadata
             print('Participant: {}'.format(self.participant))
-            # Participant's editor
             self.editor = str(self.rfile.readline().strip(), 'utf-8')
             print('Editor: {}'.format(self.editor))
-            # Name of the submission file
             self.file = str(self.rfile.readline().strip(), 'utf-8')
             print('Name of file: {}'.format(self.file))
-            # Number of bytes in the entire file
             self.length = int(self.rfile.readline().strip())
             print('Number of bytes: {}'.format(self.length))
 
-            # Read in the entire body and convert it to a string
+            # Read in the entire submission file and split it into lines
             self.body = self.rfile.read(self.length).decode('utf-8').split("\n")
             self.submission_lines = [ ''.join([line, "\n"]) for line in self.body ]
             self.submission_lines.pop()
@@ -48,7 +46,7 @@ class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
             with open(self.file+'.sol', 'r') as sol, open(self.file+'.log', 'a') as log: 
                 correct_lines = sol.readlines()
 
-                # Log the participant and his or her editor
+                # Log the participant along with his or her editor
                 log.write(self.participant + "\n")
                 log.write(self.editor + "\n")
 
@@ -59,10 +57,10 @@ class ThreadedSubmissionRequestHandler(socketserver.StreamRequestHandler):
                     log.write(line)
 
                 # Log the participant's time
-                log.write(str(time.time() - START) + "\n\n")
+                end = time.time()
+                log.write(str(end - START) + "\n\n")
 
             # Print time elapsed
-            end = time.time()
             print(end - START)
             print()
 
@@ -96,9 +94,7 @@ if __name__ == '__main__':
 
     # Exit the server thread when the main thread terminates
     server_thread.daemon = True
-    # Start the global timer
     START = time.time()
-    # Serve it up
     server_thread.start()
 
     while True:

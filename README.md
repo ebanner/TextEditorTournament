@@ -8,7 +8,10 @@ their own separate directories.
 The first step is to start up the server like so:
 
     $ cd server/
-    $ ./submission_server.py
+    $ ./submission_server.py localhost 9999
+
+If no arguments are provided, then the server starts on localhost on port 9999
+by default.
 
 Once the client is ready to submit a file `foo`, issue the following commands:
 
