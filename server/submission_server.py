@@ -30,6 +30,6 @@ if __name__ == "__main__":
         connection_type = client.makefile().readline().strip()
         print(connection_type)
         if connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT":
-            boss.add_client(client)
+            boss.add_participant(client)
         else:
             client.close()

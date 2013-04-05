@@ -1,12 +1,16 @@
 # 
 
+import participant
+
 class Boss():
     """ hello
     
     """
     def __init__(self):
-        self.clients = []
+        self.participants = []
         
-    def add_client(self, new_client):
-        self.clients.append(new_client)
+    def add_participant(self, client_sock):
+        p = participant.Participant(client_sock)
+        p.run()
+        self.participants.append(p)
         print('Client added')
