@@ -1,5 +1,6 @@
 # server library
-import socketserver
+import socket
+import sys
 
 # application imports
 import boss
@@ -10,29 +11,25 @@ HOST, PORT = "localhost", 9999
 boss = boss.Boss()
 
 
-class MyTCPHandler(socketserver.StreamRequestHandler):
-    """
-    The RequestHandler class for our server.
-
-    It is instantiated once per connection to the server, and must
-    override the handle() method to implement communication to the
-    client.
-    
-    """
-    def handle(self):
-        # differentiate type of client and accept/reject
-        self.connection_type = str(self.rfile.readline().strip(), 'utf-8')
-        print(self.connection_type)
-        if self.connection_type == 'TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT':
-            boss.add_client(self)
-        else:
-            print('Rejected')
-
-
 if __name__ == "__main__":
-    # Create the server, binding to localhost on port 9999
-    server = socketserver.TCPServer((HOST, PORT), MyTCPHandler)
+    if len(sys.argv) > 1:
+        ignored_filename, PORT = sys.argv
 
-    # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
-    server.serve_forever()
+    listener = socket.socket()
+    listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    
+    print('Server started!')
+
+    listener.bind((HOST, PORT))
+    listener.listen(5)
+    
+    print('Waiting for clients...')
+    
+    while True:
+        client, client_addr = listener.accept()
+        connection_type = client.makefile().readline().strip()
+        print(connection_type)
+        if connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT":
+            boss.add_client(client)
+        else:
+            client.close()

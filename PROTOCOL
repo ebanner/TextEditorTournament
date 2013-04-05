@@ -1,0 +1,5 @@
+Send on request:
+    Client:
+        TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT
+    Manager:
+        TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER
