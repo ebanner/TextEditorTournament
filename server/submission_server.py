@@ -31,5 +31,7 @@ if __name__ == "__main__":
         print(connection_type)
         if connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT":
             boss.add_participant(client)
+        elif connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER":
+            boss.set_manager(client)
         else:
             client.close()
