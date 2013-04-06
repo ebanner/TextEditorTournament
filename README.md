@@ -4,14 +4,14 @@
 * if rejected: reply "CONNECTION_REJECTED"; end session
 * create appropriate object of connection type
 
-PROTOCOL (participant perspective):
-    - Create a TCP connection to server
-    - send "TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT"
-    - await feedback:
-        if not "CONNECTION_ACCEPTED", end session
-    - send <user name>
-    - send <user editor>
-    - main "loop":
+# PROTOCOL (participant perspective):
+* Create a TCP connection to server
+* send "TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT"
+* await feedback:
+  * if not "CONNECTION_ACCEPTED", end session
+    * send <user name>
+    * send <user editor>
+    * main "loop":
         -----
          top
         -----
@@ -74,7 +74,7 @@ PROTOCOL (participant perspective):
            return to top
           -----
 
-PROTOCOL (manager perspective):
+# PROTOCOL (manager perspective):
     - Create a TCP connection to server
     - send "TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER"
     - await feedback:
