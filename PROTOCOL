@@ -74,6 +74,39 @@ PROTOCOL (participant perspective):
            return to top
           -----
 
+PROTOCOL (manager perspective):
+    - Create a TCP connection to server
+    - send "TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER"
+    - await feedback:
+        if not "CONNECTION_ACCEPTED", end session
+      -----
+(1) -> from user input wait for challenge selection
+       > send 1 challenge.txt
+      -----
+    - send "CHALLENGE_SEND_BEGIN"
+    - if receive "CHALLENGE_REJECTED":
+        print("Server rejected challenge (another challenge is in progress)")
+        GOTO (1)
+    - else receive "CHALLENGE_OKAY" and do:
+        - send challenge number (id)
+        - send challenge title
+        - send "START_TEXT_TRANSMISSION"
+        - send challanege description (long text)
+        - send "END_TEXT_TRANSMISSION"
+        - send "FILE_TRANSFER_START"
+        - while has file to send:
+            - send file name w/ extension and directory
+            - send "START_TEXT_TRANSMISSION"
+            - send file contents
+            - send "END_TEXT_TRANSMISSION"
+        - send "FILE_TRANSFER_END"
+    - send "CHALLENGE_SEND_END"
+      -----
+       from user input wait for start challenge command
+       > start
+      -----
+    - send "CHALLENGE_START"
+    - receive "CHALLENGE_FINISH"
 
 
 Data sending:

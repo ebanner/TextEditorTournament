@@ -6,11 +6,12 @@ class Connection(threading.Thread):
     clients to the Server.
     
     """
-    def __init__(self, socket):
+    def __init__(self, socket, boss):
         """Keeps track of the socket and the file posing as the socket"""
         threading.Thread.__init__(self)
         self.socket = socket
         self.stream = socket.makefile()
+        self.boss = boss
         self.active = True
     
     def read_line(self):
