@@ -19,11 +19,11 @@ class Client(threading.Thread):
     
     def write_line(self, message):
         """Writes a message (line) to the socket"""
-        self.socket.send(bytes(message + "\n", 'utf-8'))
+        self.socket.sendall(bytes(message + "\n", 'utf-8'))
     
     def check_message(self, message):
         """ """
-        if message == "x":
+        if not message or message == "CONNECTION_CLOSED":
             self.active = False
     
     def run(self):
@@ -34,6 +34,6 @@ class Client(threading.Thread):
     
     def close(self):
         """Closes the socket and the file"""
-        self.write_line("CLOSE_CONNECTION")
+        self.write_line("CONNECTION_CLOSED")
         self.stream.close()
         self.socket.close()

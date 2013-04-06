@@ -13,7 +13,9 @@ class Participant(client.Client):
     
     def run(self):
         """ """
+        self.write_line("CONNECTION_ACCEPTED")
         self.user = self.read_line()
         self.editor = self.read_line()
-        
+        print(self.user)
+        print(self.editor)
         super(Participant, self).run()

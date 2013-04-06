@@ -23,5 +23,6 @@ class Boss():
             self.manager = mngr
             print('Manager added')
         else:
+            mngr.write_line("ERROR: Manager already exists. Rejected.");
             mngr.close()
             print('Manager rejected (one already exists)')

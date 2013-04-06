@@ -1,4 +1,4 @@
-# server library
+# server
 import socket
 import sys
 
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     
     print('Server started!')
 
-    listener.bind((HOST, PORT))
+    listener.bind((HOST, int(PORT)))
     listener.listen(5)
     
     print('Waiting for clients...')
@@ -36,4 +36,6 @@ if __name__ == "__main__":
         elif connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_DISPLAY":
             pass#boss.set_display(client)
         else:
+            # send a reject message and close
+            client.sendall(bytes("CONNECTION_REJECTED\n", 'utf-8'))
             client.close()
