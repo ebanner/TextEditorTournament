@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # server
 import socket
 import sys

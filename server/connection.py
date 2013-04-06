@@ -17,6 +17,9 @@ class Connection(threading.Thread):
     def read_line(self):
         """Returns a line read from the socket."""
         return self.stream.readline().strip()
+        
+    def read(self, num_bytes):
+        return bytes(self.stream.read(num_bytes), 'utf-8')
     
     def write_line(self, message):
         """Writes a message (line) to the socket"""

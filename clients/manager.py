@@ -33,6 +33,7 @@ class Manager():
             'exit' : self.quit,
             'quit' : self.quit
         }
+        self.challege_loaded = False
     
     def read_line(self):
         """Returns a line read from the socket."""
@@ -41,6 +42,10 @@ class Manager():
     def write_line(self, message):
         """Writes a message (line) to the socket"""
         self.socket.sendall(bytes(message + "\n", 'utf-8'))
+        
+    def write(self, data):
+        """Writes data to the socket"""
+        self.socket.sendall(data)
     
     def check_message(self, message):
         """ """
@@ -83,61 +88,86 @@ class Manager():
         parameters = parameters.split(' ')
         if len(parameters) != 2:
             print('Expecting challenge_id challenge_name')
+            return
         elif not os.path.isdir(parameters[1]):
             print('{} directory does not exist'.format(parameters[1]))
-        else:
-            challenge = parameters[1]
-            os.chdir(challenge)
-            try:
-                tar = tarfile.open(challenge+'.tar', "w")
-                for file_name in glob.glob("*"):
-                    if file_name == 'description.info' or file_name.endswith('.tar'):
-                        continue
-                    tar.add(file_name)
-                    print('{} added to the tar.'.format(file_name))
-            except IOError:
-                print("Couldn't create the tar {}".format(challenge))
-            finally:
-                tar.close()
-                
-            # read description file
-            try:
-                with open('description.info', 'r') as f:
-                    challenge_name = f.readline().strip()
-                    # ignore empty line
-                    f.readline() 
-                    description = [ line.strip() for line in f.readlines() ]
-            except IOError as e:
-                print('Unable to open description file {}'.format(e))
-                return
-                
-            if not challenge_name or not description:
-                # empty challenge name or description
-                print('Empty challenge name or description')
-                print('Challenge name: {}'.format(challenge_name))
-                print('Description: {}'.format(description))
-                return
+            return
+
+        challenge = parameters[1]
+        os.chdir(challenge)
+        try:
+            tar = tarfile.open(challenge+'.tar', "w")
+            for file_name in glob.glob("*"):
+                if file_name == 'description.info' or file_name.endswith('.tar'):
+                    continue
+                tar.add(file_name)
+                print('{} added to the tar.'.format(file_name))
+        except IOError:
+            print("Couldn't create the tar {}".format(challenge))
+            return
+        finally:
+            tar.close()
             
-            print("Starting send...")
-            # successfully created the tar and read in desciption file. Now send 
-            # challenge information to server.
-            self.write_line('CHALLENGE_SEND_BEGIN')
-            response = self.read_line()
-            print(response)
-            if response != 'CHALLENGE_ACCEPTED':
-                print('Challenge rejected by server')
-                return
+        # read description file
+        try:
+            with open('description.info', 'r') as f:
+                challenge_name = f.readline().strip()
+                # ignore empty line
+                f.readline() 
+                description = [ line.strip() for line in f.readlines() ]
+        except IOError as e:
+            print('Unable to open description file {}'.format(e))
+            return
             
-            # send challenge id, challenge title, and other things
-            challenge_id = parameters[0]
-            self.write_line(challenge_id)
-            self.write_line(challenge_name)
-            self.write_line(str(len(description)))
-            for line in description:
-                self.write_line(line)
+        if not challenge_name or not description:
+            # empty challenge name or description
+            print('Empty challenge name or description')
+            print('Challenge name: {}'.format(challenge_name))
+            print('Description: {}'.format(description))
+            return
             
-            print('waiting to send the tar now')
+        print('waiting to send the tar now')
+        # ensure we can read in the challenge.tar file
+        try:
+            with open(challenge+'.tar', 'rb') as f:
+                data = f.read()
+                data_length = f.tell()
+        except IOError:
+            print('Unable to read in {}.tar'.format(challenge))
+            return
         
+        print("Starting send...")
+        # successfully created the tar and read in desciption file. Now send 
+        # challenge information to server.
+        self.write_line('CHALLENGE_SEND_BEGIN')
+        response = self.read_line()
+        print(response)
+        if response != 'CHALLENGE_ACCEPTED':
+            print('Challenge rejected by server')
+            return
+        
+        # send challenge id, challenge name, length of the description, and
+        # the description itself
+        challenge_id = parameters[0]
+        self.write_line(challenge_id)
+        self.write_line(challenge_name)
+        self.write_line(str(len(description)))
+        for line in description:
+            self.write_line(line)
+            
+        # send the number of bytes in the tarred file and the tarred file
+        self.write_line(str(data_length))
+        self.write(data)
+        
+        response = self.read_line()
+        if response != 'CHALLENGE_OKAY':
+            print('Challenge not accepted by Boss')
+            return
+            
+        self.challenge_loaded = True
+        
+        self.write_line('See this?')
+            
     def start_challenge(self, ignored):
         """ """
         print("start command")

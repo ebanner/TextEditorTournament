@@ -91,7 +91,6 @@ PROTOCOL (manager perspective):
         - send challenge description (n lines)
         - send number of bytes of compressed file data
         - send compressed binary file data
-    - send "CHALLENGE_SEND_END"
     - if not receive "CHALLENGE_OKAY":
         GOTO (1)
       -----
