@@ -5,6 +5,11 @@ Send on request:
         TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER
 
 
+Upon closing a connection:
+    
+    CLOSE_CONNECTION
+
+
 CLIENT:
 
     participant
