@@ -4,6 +4,7 @@ PROTOCOL (server prespective):
     - if rejected: reply "CONNECTION_REJECTED"; end session
     - create appropriate object of connection type
 
+
 PROTOCOL (participant perspective):
     - Create a TCP connection to server
     - send "TEXT_EDITOR_TOURNAMENT_TYPE_PARTICIPANT"
@@ -25,36 +26,31 @@ PROTOCOL (participant perspective):
               -----
                standby (wait for server to start the challenge)
               -----
-            - receive "FILE_TRANSFER_START", do:
-                - receive file name w/ extension and directory
-                - receive "START_TEXT_TRANSMISSION"
-                - receive file contents
-                - receive "END_TEXT_TRANSMISSION"
-                    (make said file in said directory)
-            - while not receive "FILE_TRANSFER_END"
+            - receive number of bytes of compressed file data:
+            - receive compressed binary file data (based on # of bytes)
               -----
                standby (wait for server to start the challenge)
               -----
             - receive "CHALLENGE_START"
               -----
-       (1) ->  standby (wait for user to complete challenge)
-               receive user submit message (from standard input)
+       (1) ->  standby (wait for user to complete challenge or forfiet)
+               receive user message (from standard input)
               -----
-            - send "CHALLENGE_SUBMISSION"
-            - send challenge number (id)
-            - send "FILE_TRANSFER_START", do:
-                - send file name w/ extension and directory
-                - send "START_TEXT_TRANSMISSION"
-                - send file contents
-                - send "END_TEXT_TRANSMISSION"
-            - while there are files to send
-            - send "FILE_TRANSFER_END"
-            - if receive "CHALLENGE_RESULTS_INCORRECT":
-                - receive "START_TEXT_TRANSMISSION"
-                - receive diff report
-                - receive "END_TEXT_TRANSMISSION"
-                *GOTO (1)
-            - else receive "CHALLENGE_RESULTS_CORRECT"
+            - if user forfeit:
+                - send "CHALLENGE_FORFEIT"
+            /// TODO - elif user reset:
+            /// TODO    - send "CHALLENGE_RESET"
+            - else:
+                - send "CHALLENGE_SUBMISSION"
+                - send challenge number (id)
+                - send number of bytes of compressed file data
+                - send compressed binary file data
+                - if receive "CHALLENGE_RESULTS_INCORRECT":
+                    - receive "START_TEXT_TRANSMISSION"
+                    - receive diff report
+                    - receive "END_TEXT_TRANSMISSION"
+                    *GOTO (1)
+                - else receive "CHALLENGE_RESULTS_CORRECT"
               -----
                standby (wait for challenge to finish)
               -----
@@ -74,6 +70,7 @@ PROTOCOL (participant perspective):
            return to top
           -----
 
+
 PROTOCOL (manager perspective):
     - Create a TCP connection to server
     - send "TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER"
@@ -81,26 +78,22 @@ PROTOCOL (manager perspective):
         if not "CONNECTION_ACCEPTED", end session
       -----
 (1) -> from user input wait for challenge selection
-       > send 1 challenge.txt
+       > send 1 challenge1
       -----
     - send "CHALLENGE_SEND_BEGIN"
     - if receive "CHALLENGE_REJECTED":
         print("Server rejected challenge (another challenge is in progress)")
         GOTO (1)
-    - else receive "CHALLENGE_OKAY" and do:
+    - else receive "CHALLENGE_ACCEPTED":
         - send challenge number (id)
-        - send challenge title
-        - send "START_TEXT_TRANSMISSION"
-        - send challanege description (long text)
-        - send "END_TEXT_TRANSMISSION"
-        - send "FILE_TRANSFER_START"
-        - while has file to send:
-            - send file name w/ extension and directory
-            - send "START_TEXT_TRANSMISSION"
-            - send file contents
-            - send "END_TEXT_TRANSMISSION"
-        - send "FILE_TRANSFER_END"
+        - send challenge name
+        - send number of lines in description (n)
+        - send challenge description (n lines)
+        - send number of bytes of compressed file data
+        - send compressed binary file data
     - send "CHALLENGE_SEND_END"
+    - if not receive "CHALLENGE_OKAY":
+        GOTO (1)
       -----
        from user input wait for start challenge command
        > start

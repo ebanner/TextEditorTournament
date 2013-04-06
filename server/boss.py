@@ -10,6 +10,7 @@ class Boss():
     """
     def __init__(self):
         self.participants = []
+        self.active_challenge = False
         
     def add_participant(self, client_sock):
         p = ParticipantConnection(client_sock, self)
