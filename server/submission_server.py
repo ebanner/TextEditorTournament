@@ -33,5 +33,7 @@ if __name__ == "__main__":
             boss.add_participant(client)
         elif connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER":
             boss.set_manager(client)
+        elif connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_DISPLAY":
+            pass#boss.set_display(client)
         else:
             client.close()
