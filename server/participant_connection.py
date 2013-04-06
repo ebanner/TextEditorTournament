@@ -1,15 +1,15 @@
 # participant.py
-import client
+import connection
 
-class Participant(client.Client):
+class ParticipantConnection(connection.Connection):
     """
     tbd
     
     """
     def check_message(self, message):
         """ """
-        super(Participant, self).check_message(message)
         print(message)
+        super(ParticipantConnection, self).check_message(message)
     
     def run(self):
         """ """
@@ -18,4 +18,4 @@ class Participant(client.Client):
         self.editor = self.read_line()
         print(self.user)
         print(self.editor)
-        super(Participant, self).run()
+        super(ParticipantConnection, self).run()

@@ -1,6 +1,6 @@
 import threading
 
-class Client(threading.Thread):
+class Connection(threading.Thread):
     """
     Abstract client class: used to impement all types of connecting
     clients to the Server.
