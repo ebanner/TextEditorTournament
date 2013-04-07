@@ -1,5 +1,6 @@
 # manager.py
 import connection
+import challenge
 
 class ManagerConnection(connection.Connection):
     """
@@ -11,11 +12,13 @@ class ManagerConnection(connection.Connection):
         print(message)
         if message == 'CHALLENGE_SEND_BEGIN':
             self.process_challenge_request()
+        elif message == 'CHALLENGE_START':
+            self.process_challenge_start_request()
         else:
             super(ManagerConnection, self).check_message(message)
             
     def process_challenge_request(self):
-        if self.boss.active_challenge:
+        if self.boss.challenge_active:
             print('Boss rejects challenge request')
             self.write_line('CHALLENGE_REJECTED')
             return
@@ -35,20 +38,34 @@ class ManagerConnection(connection.Connection):
             line = self.read_line()
             description = ''.join([description, line+"\n"])
             
-        # receive the number of bytes in the tarred file and the tarred file
-        tar_data_length = int(self.read_line())
-        tar_data = self.read(tar_data_length)
-        try:
-            with open('sample.tar', 'wb') as tar:
-                tar.write(tar_data)
-        except IOError:
-            print('Could not write the tar file to disk.')
-            self.write_line('SERVER_ERROR')
+        # begin file transmission
+        message = self.read_line()
+        if message != 'FILE_TRANSMISSION_BEGIN':
+            print('Expected file transmission begin message, '
+                + 'but got {} instead.'.format(message))
             return
         
+        # grab the lines
+        files = self.read_files()
+        
+        # create the challenge object with all of the information and data
+        new_challenge = challenge.Challenge(challenge_id, challenge_name,
+            description, files)
+        self.boss.challenge = new_challenge
+            
+        # everything went well, so send OK to manager
         self.write_line('CHALLENGE_OKAY')
-        print(self.read_line())
-        print(description)          
+    
+    def process_challenge_start_request():
+        """ """
+        if not self.boss.challenge:
+            self.write_line('CHALLENGE_NOT_FOUND')
+            return
+        
+        self.boss.challenge_active = True
+        # self.boss.run_challenge()
+        self.write_line('CHALLENGE_FINISH')
+        self.boss.challenge_active = False
         
     def run(self):
         """ """

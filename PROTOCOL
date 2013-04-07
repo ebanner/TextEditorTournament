@@ -89,16 +89,25 @@ PROTOCOL (manager perspective):
         - send challenge name
         - send number of lines in description (n)
         - send challenge description (n lines)
-        - send number of bytes of compressed file data
-        - send compressed binary file data
+        - send "FILE_TRANSMISSION_BEGIN"
+        - while has file, do:
+            - send "SEND_FILE_BEGIN"
+            - send file name
+            - send number of lines (n)
+            - for each line (i<n), send line
+        - send "FILE_TRANMISSION_END"
     - if not receive "CHALLENGE_OKAY":
         GOTO (1)
+        
       -----
        from user input wait for start challenge command
        > start
       -----
     - send "CHALLENGE_START"
-    - receive "CHALLENGE_FINISH"
+    - receive:
+        - "CHALLENGE_FINISH": done, goto command
+        - "CHALLENGE_NOT_FOUND": print error
+        - "CHALLENGE_ERROR"
 
 
 Data sending:

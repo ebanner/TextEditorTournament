@@ -9,6 +9,14 @@ import glob
 HOST = 'localhost'
 PORT = 9999
 
+class File:
+    """
+    
+    """
+    def __init__(self, name, lines):
+        self.name = name
+        self.lines = lines
+
 class Manager():
     """
     The Manager is a client that listens for user commands through standard
@@ -28,7 +36,9 @@ class Manager():
         self.active = True
         self.commands = {
             'start' : self.start_challenge,
+            'go' : self.start_challenge,
             'send' : self.send_challenge,
+            'submit' : self.send_challenge,
             'ls' : self.list_challenges,
             'exit' : self.quit,
             'quit' : self.quit
@@ -93,21 +103,24 @@ class Manager():
             print('{} directory does not exist'.format(parameters[1]))
             return
 
-        challenge = parameters[1]
-        os.chdir(challenge)
-        try:
-            tar = tarfile.open(challenge+'.tar', "w")
-            for file_name in glob.glob("*"):
-                if file_name == 'description.info' or file_name.endswith('.tar'):
-                    continue
-                tar.add(file_name)
-                print('{} added to the tar.'.format(file_name))
-        except IOError:
-            print("Couldn't create the tar {}".format(challenge))
-            return
-        finally:
-            tar.close()
+        # read files into a list
+        challenge_dir = parameters[1]
+        os.chdir(challenge_dir)
+        files = []
+        for file_name in glob.glob("*"):
+            if file_name == 'description.info':
+                continue
+            try:
+                with open(file_name, 'r') as f:
+                    next_file = File(file_name,
+                        [ line.strip() for line in f.readlines() ])
+            except IOError:
+                print("Couldn't create the list of files {}".format(challenge_dir))
+                return
             
+            files.append(next_file)
+            print('{} added to the list.'.format(file_name))
+        
         # read description file
         try:
             with open('description.info', 'r') as f:
@@ -124,16 +137,6 @@ class Manager():
             print('Empty challenge name or description')
             print('Challenge name: {}'.format(challenge_name))
             print('Description: {}'.format(description))
-            return
-            
-        print('waiting to send the tar now')
-        # ensure we can read in the challenge.tar file
-        try:
-            with open(challenge+'.tar', 'rb') as f:
-                data = f.read()
-                data_length = f.tell()
-        except IOError:
-            print('Unable to read in {}.tar'.format(challenge))
             return
         
         print("Starting send...")
@@ -154,10 +157,15 @@ class Manager():
         self.write_line(str(len(description)))
         for line in description:
             self.write_line(line)
-            
-        # send the number of bytes in the tarred file and the tarred file
-        self.write_line(str(data_length))
-        self.write(data)
+        
+        # send the files one by one
+        self.write_line('FILE_TRANSMISSION_BEGIN')
+        for f in files:
+            self.write_line('SEND_FILE_BEGIN')
+            self.write_line(f.name)
+            self.write_line(str(len(f.lines)))
+            for line in f.lines:
+                self.write_line(line)
         
         response = self.read_line()
         if response != 'CHALLENGE_OKAY':
@@ -165,12 +173,13 @@ class Manager():
             return
             
         self.challenge_loaded = True
-        
-        self.write_line('See this?')
             
     def start_challenge(self, ignored):
         """ """
-        print("start command")
+        if not self.challenge_load:
+            print('You must first send a challenge to the server.')
+        else:
+            self.write('CHALLENGE_START')
     
     def list_challenges(self, ignored):
         """ """
