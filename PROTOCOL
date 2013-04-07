@@ -17,21 +17,21 @@ PROTOCOL (participant perspective):
          top
         -----
         receive "CHALLENGE_INITIATE"
+        -----
+         wipe working directory
+        -----
         send "CHALLENGE_ACCEPTED"
-            - challenge number (id)
-            - challenge title
-            - "START_TEXT_TRANSMISSION"
-            - challanege description (long text)
-            - "END_TEXT_TRANSMISSION"
-              -----
-               standby (wait for server to start the challenge)
-              -----
-            - receive number of bytes of compressed file data:
-            - receive compressed binary file data (based on # of bytes)
-              -----
-               standby (wait for server to start the challenge)
-              -----
-            - receive "CHALLENGE_START"
+            - receive challenge number (id)
+            - receive challenge name
+            - receive number of lines in description (n)
+            - receive challenge description (n lines)
+            - receive "FILE_TRANSMISSION_BEGIN"
+            - while "SEND_FILE_BEGIN", do:
+                - receive file name
+                - receive number of lines (n)
+                - for each line (i<n), receive line
+                    - write file into working directory
+            - receive "FILE_TRANMISSION_END"
               -----
        (1) ->  standby (wait for user to complete challenge or forfiet)
                receive user message (from standard input)
@@ -43,12 +43,16 @@ PROTOCOL (participant perspective):
             - else:
                 - send "CHALLENGE_SUBMISSION"
                 - send challenge number (id)
-                - send number of bytes of compressed file data
-                - send compressed binary file data
+                - send "FILE_TRANSMISSION_BEGIN"
+                - while has file, do:
+                    - send "SEND_FILE_BEGIN"
+                    - send file name
+                    - send number of lines (n)
+                    - for each line (i<n), send line
+                - send "FILE_TRANMISSION_END"
                 - if receive "CHALLENGE_RESULTS_INCORRECT":
-                    - receive "START_TEXT_TRANSMISSION"
-                    - receive diff report
-                    - receive "END_TEXT_TRANSMISSION"
+                    - receive number of lines in diff (n lines)
+                    - receive diff report (n lines)
                     *GOTO (1)
                 - else receive "CHALLENGE_RESULTS_CORRECT"
               -----
@@ -65,7 +69,6 @@ PROTOCOL (participant perspective):
                 - receive best time value
                 - receive best time user
             - while not receive "BEST_EDITOR_TIME_END"
-            GOTO (top)
           -----
            return to top
           -----

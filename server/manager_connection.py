@@ -65,10 +65,11 @@ class ManagerConnection(connection.Connection):
             self.write_line('CHALLENGE_NOT_FOUND')
             return
         
+        elif not self.boss.run_challenge():
+            self.write_line('CHALLENGE_START_ERROR')
+            return
+        
         self.boss.challenge_active = True
-        # self.boss.run_challenge()
-        self.write_line('CHALLENGE_FINISH')
-        self.boss.challenge_active = False
         
     def run(self):
         """ """

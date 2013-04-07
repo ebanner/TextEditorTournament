@@ -1,16 +1,5 @@
 import threading
-
-
-class File:
-    """
-    
-    """
-    def __init__(self, name, lines):
-        self.name = name
-        self.lines = lines
-        # test print lines
-        for line in lines:
-            print(line)
+import file_obj
 
 
 class Connection(threading.Thread):
@@ -48,8 +37,9 @@ class Connection(threading.Thread):
             file_lines = []
             for i in range(num_lines):
                 file_lines.append(self.read_line())
-            new_file = File(file_name, file_lines)
+            new_file = file_obj.File(file_name, file_lines)
             files.append(new_file)
+            
         return files
     
     def write_line(self, message):
