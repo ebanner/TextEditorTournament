@@ -48,15 +48,18 @@ class ManagerConnection(connection.Connection):
         # grab the lines
         files = self.read_files()
         
+        print('files received')
         # create the challenge object with all of the information and data
         new_challenge = challenge.Challenge(challenge_id, challenge_name,
             description, files)
         self.boss.challenge = new_challenge
+        print('boss equipped with challenge')
             
         # everything went well, so send OK to manager
         self.write_line('CHALLENGE_OKAY')
+        print('left this place')
     
-    def process_challenge_start_request():
+    def process_challenge_start_request(self):
         """ """
         if not self.boss.challenge:
             self.write_line('CHALLENGE_NOT_FOUND')

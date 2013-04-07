@@ -43,7 +43,7 @@ class Manager():
             'exit' : self.quit,
             'quit' : self.quit
         }
-        self.challege_loaded = False
+        self.challenge_loaded = False
     
     def read_line(self):
         """Returns a line read from the socket."""
@@ -159,6 +159,7 @@ class Manager():
             self.write_line(line)
         
         # send the files one by one
+        print('writing files')
         self.write_line('FILE_TRANSMISSION_BEGIN')
         for f in files:
             self.write_line('SEND_FILE_BEGIN')
@@ -166,20 +167,25 @@ class Manager():
             self.write_line(str(len(f.lines)))
             for line in f.lines:
                 self.write_line(line)
+        self.write_line('FILE_TRANMISSION_END')
         
+        print('finished writing files')
         response = self.read_line()
         if response != 'CHALLENGE_OKAY':
             print('Challenge not accepted by Boss')
             return
-            
+        
+        print(response)
         self.challenge_loaded = True
             
     def start_challenge(self, ignored):
         """ """
-        if not self.challenge_load:
+        if not self.challenge_loaded:
             print('You must first send a challenge to the server.')
         else:
-            self.write('CHALLENGE_START')
+            self.write_line('CHALLENGE_START')
+            response = self.read_line()
+            print(response)
     
     def list_challenges(self, ignored):
         """ """
