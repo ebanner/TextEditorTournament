@@ -17,14 +17,25 @@ PROTOCOL (participant perspective):
          top
         -----
         receive "CHALLENGE_INITIATE"
+        receive challenge number (id)
+        receive challenge name
+        receive number of lines in description (n)
+        receive challenge description (n lines)
         -----
-         wipe working directory
+         print info
+         Ask user to accept or reject challenge
         -----
-        send "CHALLENGE_ACCEPTED"
-            - receive challenge number (id)
-            - receive challenge name
-            - receive number of lines in description (n)
-            - receive challenge description (n lines)
+        if user rejects:
+            send "CHALLENGE_REJECTED"
+            -----
+             return (back to main loop)
+            -----
+        else:
+            send "CHALLENGE_ACCEPTED"
+            -----
+             wipe working directory
+             standby (wait for files)
+            -----
             - receive "FILE_TRANSMISSION_BEGIN"
             - while "SEND_FILE_BEGIN", do:
                 - receive file name

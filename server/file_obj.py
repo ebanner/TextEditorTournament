@@ -1,4 +1,4 @@
-# file.py
+# file_obj.py
 
 class File:
     """

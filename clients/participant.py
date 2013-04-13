@@ -36,6 +36,10 @@ class Client():
         """Returns a line read from the socket."""
         return self.stream.readline().strip()
     
+    def write_line(self, message):
+        """Writes a message (line) to the socket"""
+        self.socket.sendall(bytes(message + "\n", 'utf-8'))
+    
     def read_files(self):
         """Reads files from input until FILE_TRANMISSION_END received"""
         files = []
@@ -55,17 +59,41 @@ class Client():
             
         return files
     
-    def write_line(self, message):
-        """Writes a message (line) to the socket"""
-        self.socket.sendall(bytes(message + "\n", 'utf-8'))
-    
     def check_message(self, message):
         """ """
         if message == "CHALLENGE_INITIATE":
-            accept_challenge()
+            init_challenge()
         if message == "CONNECTION_CLOSED":
             self.active = False
             
+    def init_challenge():
+        """
+        receive challenge number (id)
+        receive challenge name
+        receive number of lines in description (n)
+        receive challenge description (n lines)
+        """
+        # get challenge info
+        challenge_id = self.read_line()
+        print(challenge_id)
+        challenge_name = self.read_line()
+        print(challenge_name)
+        description_line_count = int(self.read_line())
+        
+        description = ''
+        for i in range(description_line_count):
+            description = ''.join([description, self.read_line()])
+        print(description)
+        
+        #prompt user to accept or reject
+        print('Would you like to accept this challenge? [Y/n]')
+        answer = input(' > ')
+        if answer.lower() == 'y':
+            write_line('CHALLENGE_ACCEPTED')
+            accept_challenge()
+        else:
+            write_line('CHALLENGE_REJECTED')
+        
     def accept_challenge():
         """Retrieve the challenge files from the Boss.
         
@@ -77,19 +105,7 @@ class Client():
         GOTO (1)
         
         """
-        self.write_line('CHALLENGE_ACCEPTED')
-        challenge_id = self.read_line()
-        print(challenge_id)
-        challenge_name = self.read_line()
-        print(challenge_name)
-        description_line_count = int(self.read_line())
-        
-        description = ''
-        for i in range(description_line_count):
-            description = ''.join([description, self.read_line()])
-            
-        print(description)
-        
+        print('IN accept_challege()')
         message = self.read_line()
         if message != "FILE_TRANSMISSION_BEGIN":
             print("Didn't get the go-ahead for file transmission.")
@@ -115,6 +131,7 @@ class Client():
             if key == forfeit_string:
                 self.write_line('CHALLENGE_FORFEIT')
                 finished = True
+            # TODO: elif key == "challenge reset"
             else:
                 if not self.submit_for_review(challenge_id):
                     print('Failed to send all files for review')

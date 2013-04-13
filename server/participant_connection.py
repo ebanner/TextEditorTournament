@@ -6,6 +6,9 @@ class ParticipantConnection(connection.Connection):
     tbd
     
     """
+    def send_challenge(self, challenge):
+        pass
+    
     def check_message(self, message):
         """ """
         print(message)
