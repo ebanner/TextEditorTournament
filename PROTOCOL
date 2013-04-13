@@ -24,6 +24,7 @@ PROTOCOL (participant perspective):
         -----
          print info
          Ask user to accept or reject challenge
+         NOTE: this can be taken out
         -----
         if user rejects:
             send "CHALLENGE_REJECTED"
@@ -92,7 +93,7 @@ PROTOCOL (manager perspective):
         if not "CONNECTION_ACCEPTED", end session
       -----
 (1) -> from user input wait for challenge selection
-       > send 1 challenge1
+       > load 1 challenge1
       -----
     - send "CHALLENGE_SEND_BEGIN"
     - if receive "CHALLENGE_REJECTED":
@@ -112,16 +113,41 @@ PROTOCOL (manager perspective):
         - send "FILE_TRANMISSION_END"
     - if not receive "CHALLENGE_OKAY":
         GOTO (1)
-        
+      
       -----
-       from user input wait for start challenge command
-       > start
+       from user input wait for initialize challenge command
+       > init
       -----
-    - send "CHALLENGE_START"
-    - receive:
-        - "CHALLENGE_FINISH": done, goto command
-        - "CHALLENGE_NOT_FOUND": print error
-        - "CHALLENGE_ERROR"
+        send "CHALLENGE_INIT"
+        receive:
+            - "CHALLENGE_NOT_FOUND": print error, return
+            - "CHALLENGE_ALREADY_ACTIVE": print error, return
+            - "NO_PARTICIPANTS_CONNECTED": print error, return
+            - "CHALLENGE_ERROR"
+            - while not receive "PARTICIPANT_LIST_FINISHED":
+                - "PARTICIPANT_ACCEPTED"
+                - name of participant
+                - participant text editor
+                -----
+                 print ("Participant x ready (editor y)")
+                -----
+            - receive number of participants accepting
+            - receive number of participants total
+            -----
+             print("n participants of m accepted challenge. Type start to begin")
+            -----
+            -----
+             from user input wait for start or cancel challenge command
+             > start / cancel
+            -----
+            if user cancel
+                - send "CHALLENGE_CANCEL"
+                return
+            if user start:
+                - send "CHALLENGE_START"
+                - receive: // this blocks until everyone is done
+                    - "CHALLENGE_FINISH": done, print message, return
+                    - "CHALLENGE_ERROR"
 
 
 Data sending:

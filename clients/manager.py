@@ -35,10 +35,10 @@ class Manager():
         self.stream = socket.makefile()
         self.active = True
         self.commands = {
-            'start' : self.start_challenge,
-            'go' : self.start_challenge,
-            'send' : self.send_challenge,
+            'load' : self.send_challenge,
+            'send' : self.send_challenge, # deprecated
             'submit' : self.send_challenge,
+            'init' : self.init_challenge,
             'ls' : self.list_challenges,
             'exit' : self.quit,
             'quit' : self.quit
@@ -64,7 +64,7 @@ class Manager():
     
     def close(self):
         """Closes the socket and the file"""
-        # self.write_line("CONNECTION_CLOSED")
+        #self.write_line("CONNECTION_CLOSED")
         self.stream.close()
         self.socket.close()
     
@@ -105,6 +105,7 @@ class Manager():
 
         # read files into a list
         challenge_dir = parameters[1]
+        # cd into the challenge directory
         os.chdir(challenge_dir)
         files = []
         for file_name in glob.glob("*"):
@@ -116,6 +117,8 @@ class Manager():
                         [ line.strip() for line in f.readlines() ])
             except IOError:
                 print("Couldn't create the list of files {}".format(challenge_dir))
+                # cd back to previous directory
+                os.chdir(os.pardir)
                 return
             
             files.append(next_file)
@@ -131,6 +134,9 @@ class Manager():
         except IOError as e:
             print('Unable to open description file {}'.format(e))
             return
+        finally:
+            # go back to original directory
+            os.chdir(os.pardir)
             
         if not challenge_name or not description:
             # empty challenge name or description
@@ -177,21 +183,65 @@ class Manager():
         
         print(response)
         self.challenge_loaded = True
-            
-    def start_challenge(self, ignored):
+    
+    def init_challenge(self, ignored):
         """ """
         if not self.challenge_loaded:
             print('You must first send a challenge to the server.')
-        else:
-            self.write_line('CHALLENGE_START')
+            return
+
+        self.write_line('CHALLENGE_INIT')
+        response = self.read_line()
+        if response != 'PARTICIPANT_ACCEPTED':
+            print('Challenge rejected by server:')
+            if response == 'CHALLENGE_NOT_FOUND':
+                print('   No challenge has been sent to the server yet.')
+            elif response == 'CHALLENGE_ALREADY_ACTIVE':
+                print('   Another challenge is already active.')
+            elif response == 'NO_PARTICIPANTS_CONNECTED':
+                print('   There are no participants connected to the server.')
+            else:
+                print('   Unknown error.')
+            return
+        
+        while response != 'PARTICIPANT_LIST_FINISHED':
+            participant_name = self.read_line()
+            participant_editor = self.read_line()
+            print ('Participant {} ready (editor {})'.format(participant_name,
+                participant_editor))
             response = self.read_line()
-            print(response)
+        
+        num_participants_accepting = self.read_line()
+        num_participants_total = self.read_line()
+        print('{} participants of {} accepted challenge. '
+        'Type start to begin'.format(num_participants_accepting,
+            num_participants_total))
+        
+        print('Would you like to start the challenge? [Y/n]')
+        answer = input(' > ')
+        if answer.lower() != 'y':
+            self.write_line('CHALLENGE_CANCEL')
+            return
+        
+        self.write_line('CHALLENGE_START')
+        response = self.read_line()
+        if response == 'CHALLENGE_FINISH':
+            print('Challenge successfully completed.')
+        else:
+            print('There was a problem with the challenge.')
+        
+    def start_challenge(self, ignored):
+        """ """
+        pass
     
     def list_challenges(self, ignored):
         """ """
+        file_list = []
         for root, dirs, files in os.walk(".", topdown=False):
             if dirs:
-                print(dirs[0])
+                file_list = dirs
+                break
+        print(', '.join(map(str, file_list)))
     
     def quit(self, ignored):
         """Quit the program."""

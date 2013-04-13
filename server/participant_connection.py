@@ -6,9 +6,15 @@ class ParticipantConnection(connection.Connection):
     tbd
     
     """
-    def send_challenge(self, challenge):
+    def init_challenge(self, challenge):
+        """Send challenge information to each client."""
+        #self.write_line('')
         pass
-    
+        
+    def send_challenge(self, challenge):
+        """ """
+        pass
+        
     def check_message(self, message):
         """ """
         print(message)

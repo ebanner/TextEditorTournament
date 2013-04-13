@@ -47,17 +47,28 @@ class Boss():
             mngr.close()
             print('Manager rejected (one already exists)')
             
-    def run_challenge(self):
-        """Send the current challenge files to all participants"""
-        if not self.challenge or self.challenge_active:
-            print('Either no challenge submitted or challenge is already going ' 
-            'on')
-            return False
-        for participant in participants:
-            # send start files to each participant
-            participant.send_challenge(self.challenge)
+    def init_challenge(self):
+        """
+        Send the current challenge files to all participants
+        RETURNS 0 if challenge was initiallized sucessfully,
+                1 if there is no challenge available to init,
+                2 if another challenge is already going on,
+                3 if no participants are connected.
+        """
+        if not self.challenge:
+            print('No challenge available.')
+            return 1
+        elif self.challenge_active:
+            print('Another challenge is already going on.')
+            return 2
+        if len(self.participants) == 0:
+            print('No participants connected')
+            return 3
             
-        return True
+        for participant in self.participants:
+            # send start files to each participant
+            participant.init_challenge(self.challenge)
+        return 0
         
         
         

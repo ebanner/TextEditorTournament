@@ -12,8 +12,8 @@ class ManagerConnection(connection.Connection):
         print(message)
         if message == 'CHALLENGE_SEND_BEGIN':
             self.process_challenge_request()
-        elif message == 'CHALLENGE_START':
-            self.process_challenge_start_request()
+        elif message == 'CHALLENGE_INIT':
+            self.process_challenge_init_request()
         else:
             super(ManagerConnection, self).check_message(message)
             
@@ -59,17 +59,48 @@ class ManagerConnection(connection.Connection):
         self.write_line('CHALLENGE_OKAY')
         print('left this place')
     
-    def process_challenge_start_request(self):
+    def process_challenge_init_request(self):
         """ """
         if not self.boss.challenge:
             self.write_line('CHALLENGE_NOT_FOUND')
             return
         
-        elif not self.boss.run_challenge():
-            self.write_line('CHALLENGE_START_ERROR')
-            return
+        # use retval to check for possible errors, and report back
+        retval = self.boss.init_challenge()
         
-        self.boss.challenge_active = True
+        if retval == 0: # all is well
+            self.boss.challenge_active = True
+            
+        elif retval == 1: # no challenge was loaded/sent yet
+            self.write_line('CHALLENGE_NOT_FOUND')
+            
+        elif retval == 2: # another challenge is already going on
+            self.write_line('CHALLENGE_ALREADY_ACTIVE')
+            
+        elif retval == 3: # no participants currently conneted
+            self.write_line('NO_PARTICIPANTS_CONNECTED')
+            
+        else: # some other error
+            self.write_line('CHALLENGE_ERROR')
+    
+    def send_participant_accept_message(self, name, editor):
+        """ """
+        self.write_line('PARTICIPANT_ACCEPTED')
+        self.write_line(name)
+        self.write_line(editor)
+    
+    def send_challenge_ready(self, n_part_accepting, n_part_total):
+        """ """
+        self.write_line(str(n_part_accepting))
+        self.write_line(str(n_part_total))
+        response = self.read_line()
+        if response != 'CHALLENGE_START':
+            return False
+        else:
+            return True
+    
+    def send_challenge_finished(self):
+        self.write_line('CHALLENGE_FINISH')
         
     def run(self):
         """ """
