@@ -15,6 +15,7 @@ class Connection(threading.Thread):
         self.stream = socket.makefile()
         self.boss = boss
         self.active = True
+        self.closed = False
     
     def read_line(self):
         """Returns a line read from the socket."""
@@ -62,3 +63,4 @@ class Connection(threading.Thread):
         self.write_line("CONNECTION_CLOSED")
         self.stream.close()
         self.socket.close()
+        self.closed = True

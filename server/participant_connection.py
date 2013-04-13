@@ -9,7 +9,6 @@ class ParticipantConnection(connection.Connection):
     def __init__(self, socket, boss):
         """ """
         super(ParticipantConnection, self).__init__(socket, boss)
-        self.state = 0
         self.ready = False
         self.challenge_accepted = False
         
@@ -27,9 +26,7 @@ class ParticipantConnection(connection.Connection):
             self.write_line(line)
         print('sent description (line by line)')
         
-        self.state = 1
         self.ready = False
-        print('sent info, state changed to 1')
         
     def start_challenge(self, challenge):
         """ """

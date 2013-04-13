@@ -64,7 +64,7 @@ class Boss():
         all_ready = False
         num_accepting = 0
         for participant in self.participants:
-            all_ready = all_ready or participant.ready #TODO - or closed
+            all_ready = all_ready or participant.ready or participant.closed:
             if participant.challenge_accepted:
                 num_accepting = num_accepting + 1
         
@@ -78,8 +78,10 @@ class Boss():
                 self.phase = RUN_STATE_CHALLENGE_MODE
                 for participant in self.participants:
                     participant.start_challenge(self.challenge)
-            else:
+            else: # Otherwise, tell participants to abort! TODO
                 self.phase = RUN_STATE_NORMAL
+                #for participant in self.participants:
+                #    participant.cancel_challenge(self.challenge)
         
         self.thread_lock.release()
         ##### Thread synchronization done. #####
