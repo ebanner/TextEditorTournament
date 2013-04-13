@@ -12,7 +12,7 @@ class ManagerConnection(connection.Connection):
         print(message)
         if message == 'CHALLENGE_SEND_BEGIN':
             self.process_challenge_request()
-        elif message == 'CHALLENGE_INIT':
+        elif message == 'CHALLENGE_INITIATE':
             self.process_challenge_init_request()
         else:
             super(ManagerConnection, self).check_message(message)
@@ -60,7 +60,10 @@ class ManagerConnection(connection.Connection):
         print('left this place')
     
     def process_challenge_init_request(self):
-        """ """
+        """
+        Tells the Boss to initiate a challenge. Depending on the return value
+        from the Boss, send the appropriate response to the manager.
+        """
         if not self.boss.challenge:
             self.write_line('CHALLENGE_NOT_FOUND')
             return
@@ -84,13 +87,18 @@ class ManagerConnection(connection.Connection):
             self.write_line('CHALLENGE_ERROR')
     
     def send_participant_accept_message(self, name, editor):
-        """ """
+        """Sends a message saying that a participant accepted a challenge."""
         self.write_line('PARTICIPANT_ACCEPTED')
         self.write_line(name)
         self.write_line(editor)
     
     def send_challenge_ready(self, n_part_accepting, n_part_total):
-        """ """
+        """
+        Sends a message indicating that all participants have responded in
+        accepting or rejecting a challenge, and how many of a total number of
+        participants have chosen to accept the challenge.
+        """
+        self.write_line('PARTICIPANT_LIST_FINISHED')
         self.write_line(str(n_part_accepting))
         self.write_line(str(n_part_total))
         response = self.read_line()

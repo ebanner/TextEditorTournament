@@ -190,7 +190,7 @@ class Manager():
             print('You must first send a challenge to the server.')
             return
 
-        self.write_line('CHALLENGE_INIT')
+        self.write_line('CHALLENGE_INITIATE')
         response = self.read_line()
         if response != 'PARTICIPANT_ACCEPTED':
             print('Challenge rejected by server:')
@@ -207,13 +207,13 @@ class Manager():
         while response != 'PARTICIPANT_LIST_FINISHED':
             participant_name = self.read_line()
             participant_editor = self.read_line()
-            print ('Participant {} ready (editor {})'.format(participant_name,
-                participant_editor))
+            print ('Participant "{}" accepted the challenge (editor "{}").'
+                .format(participant_name, participant_editor))
             response = self.read_line()
         
         num_participants_accepting = self.read_line()
         num_participants_total = self.read_line()
-        print('{} participants of {} accepted challenge. '
+        print('{} of {} participants accepted challenge. '
         'Type start to begin'.format(num_participants_accepting,
             num_participants_total))
         

@@ -118,7 +118,7 @@ PROTOCOL (manager perspective):
        from user input wait for initialize challenge command
        > init
       -----
-        send "CHALLENGE_INIT"
+        send "CHALLENGE_INITIATE"
         receive:
             - "CHALLENGE_NOT_FOUND": print error, return
             - "CHALLENGE_ALREADY_ACTIVE": print error, return

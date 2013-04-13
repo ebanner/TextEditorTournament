@@ -62,11 +62,11 @@ class Client():
     def check_message(self, message):
         """ """
         if message == "CHALLENGE_INITIATE":
-            init_challenge()
+            self.init_challenge()
         if message == "CONNECTION_CLOSED":
             self.active = False
             
-    def init_challenge():
+    def init_challenge(self):
         """
         receive challenge number (id)
         receive challenge name
@@ -89,12 +89,12 @@ class Client():
         print('Would you like to accept this challenge? [Y/n]')
         answer = input(' > ')
         if answer.lower() == 'y':
-            write_line('CHALLENGE_ACCEPTED')
-            accept_challenge()
+            self.write_line('CHALLENGE_ACCEPTED')
+            self.accept_challenge()
         else:
-            write_line('CHALLENGE_REJECTED')
+            self.write_line('CHALLENGE_REJECTED')
         
-    def accept_challenge():
+    def accept_challenge(self):
         """Retrieve the challenge files from the Boss.
         
         Receive the files.
@@ -124,7 +124,7 @@ class Client():
         
         forfeit_string = "{} is the worst editor".format(self.editor)
         print('Press ENTER to submit your work or "{} to '
-        'forfeit.'.format(forfeit_string)
+            'forfeit.'.format(forfeit_string))
         finished = False
         while not finished:
             key = input(' > ')
