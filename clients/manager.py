@@ -10,9 +10,7 @@ HOST = 'localhost'
 PORT = 9999
 
 class File:
-    """
-    
-    """
+    """A struct that contains the name of a file and the lines in the file"""
     def __init__(self, name, lines):
         self.name = name
         self.lines = lines
@@ -57,11 +55,6 @@ class Manager():
         """Writes data to the socket"""
         self.socket.sendall(data)
     
-    def check_message(self, message):
-        """ """
-        if message == "CONNECTION_CLOSED":
-            self.active = False
-    
     def close(self):
         """Closes the socket and the file"""
         #self.write_line("CONNECTION_CLOSED")
@@ -69,7 +62,44 @@ class Manager():
         self.socket.close()
     
     def next_command(self):
-        """ """
+        """Reads a command from STDIN and processes it.
+        
+        Most of the life of a manager is spent reading from STDIN, waiting for
+        the user to issue a command. Valid commands are as follows:
+
+        <[load] [send] [submit]> <challenge_id> <challenge_name>
+            Load a challenge into memory. A brief description of the arguments
+            follow:
+            
+                challenge_id an identifier that serves to uniquely identify
+                a challenge (an integer will usually suffice).
+
+                challenge_name is the name of the challenge to be loaded.
+                This challenge name must exist as a directory in the
+                current directory and contains the following files:
+
+                    '*.sol' files that serve as the solution files for the
+                    current challenge
+
+                    A `description.info' file that contains the information
+                    for the current challenge (the challenge title followed
+                    by a newline followed by the description).
+
+                    Every other file is a file that is to be distributed to
+                    the participant.
+
+        <init>
+            Assuming a challenge has been loaded into memory, begin the
+            challenge. This results in the boss server sending out the challenge
+            files to each of the participants.
+        
+        <ls>
+            List the challenges in the current directory.
+
+        <[quit] [exit]>
+            Exit the manager program.
+
+        """
         cmd = input(" > ")
         verb, space, rest = cmd.partition(' ')
         if verb in self.commands:
@@ -78,8 +108,11 @@ class Manager():
             print("wat??? (unknown command)")
         
     def run(self):
-        """Main loop - body of the program"""
-        
+        """Identify yourself as a manager and read commands from STDIN.
+
+        Most of the life of a manager is spent in this function.
+
+        """
         self.write_line("TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER")
         
         response = self.read_line()
@@ -92,8 +125,14 @@ class Manager():
             self.next_command()
         
     def send_challenge(self, parameters):
-        """
-        parameters: "challenge_id challenge_name"
+        """Load a challenge into memory.
+
+        This function must be invoked prior to beginning a challenge. The
+        `parameters' argument is a whitespace-separated string of two words. The
+        first word is the challenge id. The second word is the challenge name.
+        The challenge name must be a directory that exists in the current
+        directory.
+        
         """
         parameters = parameters.split(' ')
         if len(parameters) != 2:
@@ -103,12 +142,12 @@ class Manager():
             print('{} directory does not exist'.format(parameters[1]))
             return
 
-        # read files into a list
+        # Read files into a list
         challenge_dir = parameters[1]
         # cd into the challenge directory
         os.chdir(challenge_dir)
         files = []
-        for file_name in glob.glob("*"):
+        for file_name in glob.glob('*'):
             if file_name == 'description.info':
                 continue
             try:
@@ -121,33 +160,31 @@ class Manager():
                 os.chdir(os.pardir)
                 return
             
+            # Add the file to the list of challenge files
             files.append(next_file)
             print('{} added to the list.'.format(file_name))
         
-        # read description file
+        # Read description file
         try:
             with open('description.info', 'r') as f:
                 challenge_name = f.readline().strip()
-                # ignore empty line
-                f.readline() 
+                f.readline() # ignore empty line
                 description = [ line.strip() for line in f.readlines() ]
         except IOError as e:
             print('Unable to open description file {}'.format(e))
             return
         finally:
-            # go back to original directory
+            # Go back to original directory
             os.chdir(os.pardir)
             
         if not challenge_name or not description:
-            # empty challenge name or description
+            # Empty challenge name or description
             print('Empty challenge name or description')
             print('Challenge name: {}'.format(challenge_name))
             print('Description: {}'.format(description))
             return
         
         print("Starting send...")
-        # successfully created the tar and read in desciption file. Now send 
-        # challenge information to server.
         self.write_line('CHALLENGE_SEND_BEGIN')
         response = self.read_line()
         print(response)
@@ -155,7 +192,7 @@ class Manager():
             print('Challenge rejected by server')
             return
         
-        # send challenge id, challenge name, length of the description, and
+        # Send challenge id, challenge name, length of the description, and
         # the description itself
         challenge_id = parameters[0]
         self.write_line(challenge_id)
@@ -164,7 +201,7 @@ class Manager():
         for line in description:
             self.write_line(line)
         
-        # send the files one by one
+        # Send the files one by one
         print('writing files')
         self.write_line('FILE_TRANSMISSION_BEGIN')
         for f in files:
@@ -185,7 +222,8 @@ class Manager():
         self.challenge_loaded = True
     
     def init_challenge(self, ignored):
-        """ """
+        """Inform the server to send challenge description to each participant
+        and wait for replies from participants."""
         if not self.challenge_loaded:
             print('You must first send a challenge to the server.')
             return
@@ -207,7 +245,7 @@ class Manager():
         while response != 'PARTICIPANT_LIST_FINISHED':
             participant_name = self.read_line()
             participant_editor = self.read_line()
-            print ('Participant "{}" accepted the challenge (editor "{}").'
+            print('Participant "{}" accepted the challenge (editor "{}").'
                 .format(participant_name, participant_editor))
             response = self.read_line()
         
@@ -229,12 +267,12 @@ class Manager():
         else:
             print('There was a problem with the challenge.')
         
-    def start_challenge(self, ignored):
-        """ """
-        pass
-    
     def list_challenges(self, ignored):
-        """ """
+        """List all of the challenges available.
+        
+        Every challenge must be a directory in the current directory.
+        
+        """
         file_list = []
         for root, dirs, files in os.walk(".", topdown=False):
             if dirs:
