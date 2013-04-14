@@ -21,8 +21,9 @@ class File:
             print(line)
 
 class Client():
-    """
-    
+    """A participant.
+
+    This class is connected to the server through a TCP socket. Hence
     """
     def __init__(self, socket):
         """Keeps track of the socket and the file posing as the socket"""
@@ -220,7 +221,7 @@ if __name__ == '__main__':
         print('Something went wrong with connecting to the server. I quit.')
         exit()
     
-    # create the working directory and cd into it
+    # Create the working directory and cd into it
     if not os.path.exists(WORKING_DIRECTORY):
         os.makedirs(WORKING_DIRECTORY)
     os.chdir(WORKING_DIRECTORY)

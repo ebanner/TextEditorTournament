@@ -64,7 +64,7 @@ class Boss():
         all_ready = False
         num_accepting = 0
         for participant in self.participants:
-            all_ready = all_ready or participant.ready or participant.closed:
+            all_ready = all_ready or participant.ready or participant.closed
             if participant.challenge_accepted:
                 num_accepting = num_accepting + 1
         
