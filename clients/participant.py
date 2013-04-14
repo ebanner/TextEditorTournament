@@ -21,9 +21,15 @@ class File:
             print(line)
 
 class Client():
-    """A participant.
+    """A client-side participant.
 
-    This class is connected to the server through a TCP socket. Hence
+    This class emboides a participant in the text-editor tournament. Most of the
+    time, this class is waiting for the server to send it a challenge to it can
+    either accept or reject. Once accepted, the participant waits for the
+    challenge to kick off. Once it does, the blocking behavior shifts from
+    waiting on a socket connected to the server to waiting for the user to type
+    `submit' at STDIN.
+
     """
     def __init__(self, socket):
         """Keeps track of the socket and the file posing as the socket"""
@@ -61,20 +67,22 @@ class Client():
         return files
     
     def check_message(self, message):
-        """ """
+        """Check to see what type of activity the server wants to engage the
+        participant in.
+
+        Currently, the only type of activity the server would want with the
+        participant is to send the participant an invitation for a challenge.
+        
+        """
         if message == "CHALLENGE_INITIATE":
             self.init_challenge()
         if message == "CONNECTION_CLOSED":
             self.active = False
             
     def init_challenge(self):
-        """
-        receive challenge number (id)
-        receive challenge name
-        receive number of lines in description (n)
-        receive challenge description (n lines)
-        """
-        # get challenge info
+        """Receive challenge information from the server and either accept or
+        reject the challenge."""
+        # Get challenge info
         challenge_id = self.read_line()
         print(challenge_id)
         challenge_name = self.read_line()
@@ -86,7 +94,7 @@ class Client():
             description = ''.join([description, self.read_line()])
         print(description)
         
-        #prompt user to accept or reject
+        # Prompt user to accept or reject
         print('Would you like to accept this challenge? [Y/n]')
         answer = input(' > ')
         if answer.lower() == 'y':
@@ -114,7 +122,7 @@ class Client():
         
         files = self.read_files()
         
-        # wipe all of the files in the working directory
+        # Wipe all of the files in the working directory
         for file_name in glob.glob("*"):
             os.remove(file_name)
             
@@ -148,7 +156,7 @@ class Client():
         
     def submit_for_review(self, challenge_id):
         """Read all of the submission files into memory and send them to the 
-        pariticpant connection server for grading."""
+        participant connection server for grading."""
         # read files into a list
         files = []
         for file_name in glob.glob("*"):
@@ -197,14 +205,14 @@ class Client():
             return
         print(response)
         
-        # get user name and editor and send this info
+        # Get user name and editor and send this info
         self.user = input("Name:   ")
         self.editor = input("Editor: ")
         self.write_line(self.user)
         self.write_line(self.editor)
         print("user and editor info sent, waiting in main loop")
         
-        # enter main loop
+        # Enter main loop
         while self.active:
             self.check_message(self.read_line())
 

@@ -8,7 +8,8 @@ class ManagerConnection(connection.Connection):
     
     """
     def check_message(self, message):
-        """ """
+        """Check the incoming message to see which activity the manager would
+        like to engage in"""
         print(message)
         if message == 'CHALLENGE_SEND_BEGIN':
             self.process_challenge_request()
@@ -24,7 +25,7 @@ class ManagerConnection(connection.Connection):
             return
         
         self.write_line('CHALLENGE_ACCEPTED')
-        # receive challenge id, challenge name, number of lines in descirption, 
+        # Receive challenge id, challenge name, number of lines in descirption, 
         # description, and tarred file
         challenge_id = self.read_line()
         print(challenge_id)
@@ -38,14 +39,14 @@ class ManagerConnection(connection.Connection):
             line = self.read_line()
             description = ''.join([description, line+"\n"])
             
-        # begin file transmission
+        # Begin file transmission
         message = self.read_line()
         if message != 'FILE_TRANSMISSION_BEGIN':
             print('Expected file transmission begin message, '
-                + 'but got {} instead.'.format(message))
+                'but got {} instead.'.format(message))
             return
         
-        # grab the lines
+        # Grab the lines
         files = self.read_files()
         
         print('files received')

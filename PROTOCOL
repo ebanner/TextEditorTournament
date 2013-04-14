@@ -17,7 +17,7 @@ PROTOCOL (participant perspective):
          top
         -----
         receive "CHALLENGE_INITIATE"
-        receive challenge number (id)
+        receive challenge id
         receive challenge name
         receive number of lines in description (n)
         receive challenge description (n lines)
