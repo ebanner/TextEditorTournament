@@ -43,6 +43,30 @@ class Connection(threading.Thread):
             
         return files
     
+    def write_files(self, file_list):
+        """
+        Writes the files out to the socket, line by line, file by file.
+        The list of files provided should be a list of file_obj.py File
+        objects (customized file object, not actual filesystem files).
+            - receive "FILE_TRANSMISSION_BEGIN"
+            - while "SEND_FILE_BEGIN", do:
+                - receive file name
+                - receive number of lines (n)
+                - for each line (i<n), receive line
+                    - write file into working directory
+            - receive "FILE_TRANMISSION_END"
+        """
+        self.write_line('FILE_TRANSMISSION_BEGIN')
+        
+        for f in file_list:
+            self.write_line('SEND_FILE_BEGIN')
+            self.write_line(f.name)
+            self.write_line(str(len(f.lines)))
+            for line in f.lines:
+                self.write_line(line)
+            
+        self.write_line('FILE_TRANMISSION_END')
+    
     def write_line(self, message):
         """Writes a message (line) to the socket"""
         self.socket.sendall(bytes(message + "\n", 'utf-8'))

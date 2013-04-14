@@ -30,7 +30,29 @@ class ParticipantConnection(connection.Connection):
         
     def start_challenge(self, challenge):
         """ """
+        self.write_line('CHALLENGE_START')
+        self.write_files(challenge.start_files)
+        
+        done = False
+        # Wait for the participant to respond.
+        while not done:
+            response = self.read_line()
+            if response == 'CHALLENGE_SUBMISSION':
+                pass
+            if response == 'CHALLENGE_FORFEIT':
+                pass
+            elif response == 'CHALLENGE_RESET':
+                pass
+            else:
+                print("Got {} as a response. Let's pretend this never happened."
+                    .format(response))
+        while
         print('Challenge START CALLED')
+        
+    def cancel_challenge(self):
+        """The challenge is cancelled, so break out of challenge mode."""
+        self.write_line('CHALLENGE_CANCEL')
+        print('Challenge CANCELLED')
     
     def accept_challenge(self, choice):
         """

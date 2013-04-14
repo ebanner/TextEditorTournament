@@ -104,7 +104,7 @@ class ManagerConnection(connection.Connection):
         response = self.read_line()
         if response != 'CHALLENGE_START':
             return False
-        else:
+        else: # response == 'CHALLENGE_CANCEL'
             return True
     
     def send_challenge_finished(self):

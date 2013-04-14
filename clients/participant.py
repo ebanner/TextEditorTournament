@@ -107,7 +107,10 @@ class Client():
         """
         print('IN accept_challege()')
         message = self.read_line()
-        if message != "FILE_TRANSMISSION_BEGIN":
+        if message == 'CHALLENGE_CANCELLED':
+            print('The challenge was CANCELLED by your administrator.')
+            return
+        elif message != 'FILE_TRANSMISSION_BEGIN':
             print("Didn't get the go-ahead for file transmission.")
             return
         

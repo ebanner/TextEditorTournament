@@ -78,10 +78,10 @@ class Boss():
                 self.phase = RUN_STATE_CHALLENGE_MODE
                 for participant in self.participants:
                     participant.start_challenge(self.challenge)
-            else: # Otherwise, tell participants to abort! TODO
+            else: # Otherwise, tell participants to abort challenge.
                 self.phase = RUN_STATE_NORMAL
-                #for participant in self.participants:
-                #    participant.cancel_challenge(self.challenge)
+                for participant in self.participants:
+                    participant.cancel_challenge()
         
         self.thread_lock.release()
         ##### Thread synchronization done. #####
