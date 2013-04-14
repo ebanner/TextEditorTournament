@@ -251,9 +251,8 @@ class Manager():
         
         num_participants_accepting = self.read_line()
         num_participants_total = self.read_line()
-        print('{} of {} participants accepted challenge. '
-        'Type start to begin'.format(num_participants_accepting,
-            num_participants_total))
+        print('{} of {} participants accepted to do the challenge.'
+            .format(num_participants_accepting,  num_participants_total))
         
         print('Would you like to start the challenge? [Y/n]')
         answer = input(' > ')

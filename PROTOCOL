@@ -37,6 +37,8 @@ PROTOCOL (participant perspective):
              wipe working directory
              standby (wait for files)
             -----
+            if not receive "FILE_TRANSMISSION_BEGIN": // CANCEL MSG RECEIVED HERE
+                go to top (break out)
             - receive "FILE_TRANSMISSION_BEGIN"
             - while "SEND_FILE_BEGIN", do:
                 - receive file name
