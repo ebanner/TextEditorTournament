@@ -34,10 +34,10 @@ class ManagerConnection(connection.Connection):
         description_line_count = int(self.read_line())
         print(description_line_count)
         
-        description = ''
+        description = []
         for i in range(description_line_count):
             line = self.read_line()
-            description = ''.join([description, line+"\n"])
+            description.append(line)
             
         # Begin file transmission
         message = self.read_line()
@@ -50,13 +50,13 @@ class ManagerConnection(connection.Connection):
         files = self.read_files()
         
         print('files received')
-        # create the challenge object with all of the information and data
+        # Create the challenge object with all of the information and data
         new_challenge = challenge.Challenge(challenge_id, challenge_name,
             description, files)
         self.boss.challenge = new_challenge
         print('boss equipped with challenge')
             
-        # everything went well, so send OK to manager
+        # Everything went well, so send OK to manager
         self.write_line('CHALLENGE_OKAY')
         print('left this place')
     
@@ -69,7 +69,7 @@ class ManagerConnection(connection.Connection):
             self.write_line('CHALLENGE_NOT_FOUND')
             return
         
-        # use retval to check for possible errors, and report back
+        # Use retval to check for possible errors, and report back
         retval = self.boss.init_challenge()
         
         if retval == 0: # all is well

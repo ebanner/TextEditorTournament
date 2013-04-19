@@ -91,7 +91,9 @@ class Client():
         
         description = ''
         for i in range(description_line_count):
-            description = ''.join([description, self.read_line()])
+            line = self.read_line()
+            print(line)
+            description = ''.join([description, line])
         print(description)
         
         # Prompt user to accept or reject

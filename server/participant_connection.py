@@ -23,6 +23,7 @@ class ParticipantConnection(connection.Connection):
         self.write_line(str(len(challenge.description)))
         print('sent # of lines = {}'.format(len(challenge.description)))
         for line in challenge.description:
+            print(line)
             self.write_line(line)
         print('sent description (line by line)')
         
@@ -46,7 +47,6 @@ class ParticipantConnection(connection.Connection):
             else:
                 print("Got {} as a response. Let's pretend this never happened."
                     .format(response))
-        while
         print('Challenge START CALLED')
         
     def cancel_challenge(self):

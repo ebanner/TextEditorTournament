@@ -21,7 +21,7 @@ class Boss():
         self.thread_lock = threading.Lock()
     
     def check_solution(self, files):
-        # check if challenge exists
+        # Check if challenge exists
         num_solved = 0
         diffs = []
         for f in files:
@@ -34,7 +34,7 @@ class Boss():
         else:
             pass #reply incorrect message
             
-        # if everyone is done
+        # If everyone is done
         #   self.manager.finish_challenge()
     
     def challenge_init_response(self, responder):
