@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>WebSocket Test</title>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="main.js"></script>
+
+<!--script type="text/javascript">
+    // send message over the socket (if socket is ready)
+    function sendMessage(){
+        // append the message to the text box
+        var msg = $("#inputBox").val();
+        if(msg.length == 0) // if message is empty, just do nothing
+            return;
+        $("#inputBox").val("")
+        if(!ws) // if not connected, just display error
+            appendMessage("SYS: WebSocket is not connected.");
+        else
+            appendMessage("YOU (sent): " + msg);
+        
+        // now, if connected, try to send the data
+        if(ws){
+            ws.send(msg);
+        }
+    }
+    
+    // append a message to the text field
+    function appendMessage(msg){
+        var box = $("#textBox");
+        box.val(box.val() + msg + "\n");
+        box.scrollTop(box[0].scrollHeight);
+    }
+</script-->
+
+</head>
+
+<body style="text-align:center;">
+
+<h1>WebSocket Test</h1>
+
+<p><a href="javascript:notify('greetings')">Run WebSocket</a></p>
+
+<p><textarea id="textBox" readonly
+    style="resize:none; width:500; height:120;">
+</textarea></p>
+
+<p><input id="inputBox" type="text" style="width:400;"></input></p>
+
+</body>
+</html>
