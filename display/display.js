@@ -1,10 +1,17 @@
-// Global values
+// Global Constants
 var PARTICIPANT_WORKING = 0;
 var PARTICIPANT_FINISHED = 1;
 var PARTICIPANT_FORFEIT = 2;
 
 var TEXT_BUBBLE_DURATION = 10; // seconds
 var TEXT_BUBBLE_FADE_TIME = 1; // seconds
+
+var DISPLAY_TEXT_COLOR = 0; // TODO - currently unused
+var DISPLAY_DIVIDER_COLOR = 0; // TODO - currently unused
+var DISPLAY_BACKGROUND_IMAGE = "images/bg.jpg";
+var DISPLAY_WORKING_ICON = "images/what.png";
+var DISPLAY_FINISHED_ICON = "images/victory.png";
+var DISPLAY_FORFEIT_ICON = "images/cry.png";
 
 
 // Display object that renders to the canvas, responsible for displaying the
@@ -21,7 +28,15 @@ function DisplayChallengeMode(){
     
     // background image
     this.backgroundImage = new Image();
-    this.backgroundImage.src = "bg.jpg";
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
+    
+    // challenge status icons
+    this.workingIcon = new Image();
+    this.workingIcon.src = DISPLAY_WORKING_ICON;
+    this.finishedIcon = new Image();
+    this.finishedIcon.src = DISPLAY_FINISHED_ICON;
+    this.forfeitIcon = new Image();
+    this.forfeitIcon.src = DISPLAY_FORFEIT_ICON;
     
     // list of message bubbles on the screen
     this.textBubbles = new Array();
@@ -52,8 +67,8 @@ function DisplayChallengeMode(){
     
     
     // Add a message bubble to appear on the screen (drawn individually from
-    //  the list until they expire).
-    // TODO - if list is too big, remove the first.
+    //  the list until they expire). If the list already contains 10 bubbles,
+    //  then that's too much to fit on the screen, so removes the oldest one.
     this.addMessage = function(text, colorStr){
         // if array already contains 10 bubbles, remove the oldest one (first)
         if(this.textBubbles.length >= 10)
@@ -83,6 +98,7 @@ function DisplayChallengeMode(){
         var rightWidth = this.canvas.width - midpointX;
         var lineWidth = Math.ceil(this.canvas.width / 270);
         
+        
         // Draw background texture for left side.
         this.ctx.drawImage(this.backgroundImage,
             0, 0, this.canvas.width, this.canvas.height);
@@ -95,7 +111,7 @@ function DisplayChallengeMode(){
 		    var boxHeight = Math.floor(this.canvas.height / (numCompetitors+1));
 		    boxHeight = Math.min(boxHeight, this.canvas.height/15);
 		    
-		    // Compute line positions.
+		    // Compute element positions.
 		    var curY = 0;
 		    var firstDivider = midpointX + Math.floor(rightWidth / 6.5);
 		    var secondDivider = midpointX + Math.floor(rightWidth / 1.75);
@@ -105,6 +121,10 @@ function DisplayChallengeMode(){
 		    var firstTextX = midpointX + textOffset;
 		    var secondTextX = firstDivider + textOffset;
 		    var thirdTextX = secondDivider + textOffset;
+		    var statusImageOffset = Math.floor(boxHeight / 8);
+		    var statusImageSize = Math.floor(3 * (boxHeight / 4));
+		    var statusImageX = 
+		        Math.floor(((midpointX + firstDivider) / 2) - (statusImageSize / 2));
 		    this.ctx.lineWidth = Math.ceil(lineWidth / 2);
 		    
 		    // First box is the title.
@@ -129,15 +149,18 @@ function DisplayChallengeMode(){
 		    
 		        // Draw rectangle to contain the color of the status.
 		        var bgColor = "#FFFFFF";
+		        var statusImage = this.workingIcon; // default working icon
 		        switch(this.competitors[i].status){
 		            case PARTICIPANT_WORKING:
 		                bgColor = "#CCCCCC";
 		                break;
 		            case PARTICIPANT_FINISHED:
 		                bgColor = "#AAFFAA";
+		                statusImage = this.finishedIcon; // swap to finished icon
 		                break;
 		            case PARTICIPANT_FORFEIT:
 		                bgColor = "#FF8888";
+		                statusImage = this.forfeitIcon; // swap to forfeit icon
 		                break;
 		            default:
 		                break;
@@ -153,7 +176,9 @@ function DisplayChallengeMode(){
 		        this.ctx.closePath();
 		        
 		        // Draw the status information.
-		        // TODO - draw status image here
+		        this.ctx.drawImage(statusImage,
+		            statusImageX, curY + statusImageOffset,
+		            statusImageSize, statusImageSize);
 		        this.ctx.fillStyle = "#000000";
 		        this.ctx.fillText(this.competitors[i].participant,
 		            secondTextX, relativeTextY + curY);
@@ -163,7 +188,7 @@ function DisplayChallengeMode(){
 		        // Incremement current y position for the next drawn box.
 		        curY += boxHeight;
 		    }
-		        
+		    
 		    // Draw first column divider (status|name).
 		    this.ctx.beginPath();
 		        this.ctx.moveTo(firstDivider, 0);
@@ -188,6 +213,7 @@ function DisplayChallengeMode(){
         this.ctx.font = "bold " + midTextSize + "pt Arial";
 		this.ctx.fillText(this.challengeName, edgeLeft, secondTop);
 		
+		
 		// Draw the text bubbles: first, calculate the position and size for
 		//  the bubbles.
 		var bubbleH = Math.ceil(this.canvas.height / 17);
@@ -202,11 +228,12 @@ function DisplayChallengeMode(){
 		        this.textBubbles.splice(i, 1);
 		        continue;
 		    }
-		    
+		    // draw the bubble if it isn't dead
 		    this.textBubbles[i].draw(this.ctx,
 		        edgeLeft, bubbleY, bubbleW, bubbleH, smallTextSize, textX);
 		    bubbleY -= (bubbleH + Math.ceil(bubbleH / 4));
 		}
+		
 		
 		// Draw the MAIN DIVIDER (line separator).
 		this.ctx.lineWidth = lineWidth;
@@ -223,7 +250,7 @@ function DisplayChallengeMode(){
 //  (i.e. if its text is done lingering), flags itself as dead, which means
 //  it should stop getting drawn (removed from list).
 function TextBubble(text, colorStr){
-    //
+    // The text that this bubble should display, and its color.
     this.text = text;
     this.color = colorStr;
     
@@ -273,6 +300,9 @@ function TextBubble(text, colorStr){
     }
 }
 
+
+// A small struct containing the information about a specific participant
+//  and their current challenge status.
 function ChallengeCompetitor(participant, editor){
     // Participant meta info
     this.participant = participant;
@@ -281,5 +311,6 @@ function ChallengeCompetitor(participant, editor){
     // Default status to working (challange in progress)
     this.status = PARTICIPANT_WORKING;
     
+    // Time that a participant finished.
     this.finishedTime = 0;
 }

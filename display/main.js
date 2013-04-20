@@ -84,13 +84,6 @@ $(document).ready(function(){
     var retval = initWebSocket("127.0.0.1", 9999);
     //alert(retval);
     
-    // Set up inputBox to call sendMessage function.
-    $("#inputBox").keyup(function(e){
-        if(e.keyCode == 13) // enter
-            //sendMessage(); TODO - change this back
-            playText($("#inputBox").val());
-    });
-    
     // Start the canvas animator
     display = new DisplayChallengeMode();
     setTimeout(updateFrame, dT);
