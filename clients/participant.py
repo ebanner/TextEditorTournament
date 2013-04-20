@@ -5,6 +5,7 @@ import socket
 import sys
 import os
 import glob
+import file_obj
 
 
 HOST = 'localhost'
@@ -76,9 +77,16 @@ class Client():
         """
         if message == "CHALLENGE_INITIATE":
             self.init_challenge()
-        if message == "CONNECTION_CLOSED":
+        elif message == "CONNECTION_CLOSED":
             self.active = False
+        elif message == 'CHALLENGE_START':
+            self.process_challenge_start()
+        elif message == 'CHALLENGE_CANCELLED':
+            self.process_challenge_cancelled()
             
+    def process_challenge_cancelled(self):
+        print('The challenge was CANCELLED by your administrator. That is all.')
+
     def init_challenge(self):
         """Receive challenge information from the server and either accept or
         reject the challenge."""
@@ -102,11 +110,10 @@ class Client():
         answer = input(' > ')
         if answer.lower() == 'y':
             self.write_line('CHALLENGE_ACCEPTED')
-            self.accept_challenge()
         else:
             self.write_line('CHALLENGE_REJECTED')
         
-    def accept_challenge(self):
+    def process_challenge_start(self):
         """Retrieve the challenge files from the Boss.
         
         Receive the files.
@@ -117,15 +124,10 @@ class Client():
         GOTO (1)
         
         """
-        print('IN accept_challege()')
+        print('IN process_challenge_start()')
+
         message = self.read_line()
-        if message == 'CHALLENGE_CANCELLED':
-            print('The challenge was CANCELLED by your administrator.')
-            return
-        elif message != 'FILE_TRANSMISSION_BEGIN':
-            print("Didn't get the go-ahead for file transmission.")
-            return
-        
+        assert message == 'FILE_TRANSMISSION_BEGIN'
         files = self.read_files()
         
         # Wipe all of the files in the working directory
