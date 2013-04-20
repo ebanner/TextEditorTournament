@@ -1,4 +1,3 @@
-# participant.py
 import connection
 
 class ParticipantConnection(connection.Connection):
@@ -11,6 +10,10 @@ class ParticipantConnection(connection.Connection):
         super(ParticipantConnection, self).__init__(socket, boss)
         self.ready = False
         self.challenge_accepted = False
+        # True when the participant is working on a problem
+        self.working = False
+        # Only True when the participant has forfeited
+        self.forfeited = False
         
     def init_challenge(self, challenge):
         """Send challenge information to each client."""
@@ -33,6 +36,7 @@ class ParticipantConnection(connection.Connection):
         """ """
         self.write_line('CHALLENGE_START')
         self.write_files(challenge.start_files)
+        self.working = True
         
     def process_challenge_submission(self):
         pass

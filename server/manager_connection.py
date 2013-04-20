@@ -1,4 +1,3 @@
-# manager.py
 import connection
 import challenge
 
@@ -110,6 +109,12 @@ class ManagerConnection(connection.Connection):
     def send_participant_accept_message(self, name, editor):
         """Sends a message saying that a participant accepted a challenge."""
         self.write_line('PARTICIPANT_ACCEPTED')
+        self.write_line(name)
+        self.write_line(editor)
+
+    def send_participant_forfeit_message(self, name, editor):
+        """Sends a message saying that a participant accepted a challenge."""
+        self.write_line('PARTICIPANT_FORFEITED')
         self.write_line(name)
         self.write_line(editor)
     

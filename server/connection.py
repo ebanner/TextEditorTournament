@@ -8,7 +8,7 @@ class Connection(threading.Thread):
     clients to the Server.
     
     """
-    def __init__(self, socket, boss):
+    def __init__(self, socket, boss=None):
         """Keeps track of the socket and the file posing as the socket"""
         threading.Thread.__init__(self)
         self.socket = socket

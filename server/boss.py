@@ -3,6 +3,7 @@
 import threading
 from participant_connection import ParticipantConnection
 from manager_connection import ManagerConnection
+from display_connection import DisplayConnection
 
 RUN_STATE_NORMAL = 0
 RUN_STATE_CHALLENGE_INIT = 1
@@ -37,6 +38,28 @@ class Boss():
         # If everyone is done
         #   self.manager.finish_challenge()
     
+    def challenge_start_response(self, forfeiting):
+        """
+        STATE 2 method: 
+            --- if not in correct state, does nothing
+        SYNCHRONIZED: Called by each participant thread individually.
+        Tells manager about the participant's result, and checks other
+        participants. If all are done, then the challenge is over, and the
+        manager is notified.
+
+        """
+        if self.state != RUN_STATE_CHALLENGE_MODE:
+            return
+
+        ##### Syncrhonize threads. #####
+        self.thread_lock.acquire()
+        
+        print("In thread lock...")
+        if reponder.forfeited:
+            print("Participant forfeited.")
+            self.manager.send_participant_forfeit_message(responder.user,
+                responder.editor)
+
     def challenge_init_response(self, responder):
         """
         STATE 1 method: RUN_STATE_CHALLENGE_INIT
@@ -94,20 +117,16 @@ class Boss():
             participant.cancel_challenge()
 
     def add_participant(self, client_sock):
-        """
-        Use the given socket to create a Participant connection object, and
-        adds that participant connection to the list of connected participants.
-        """
+        """Use the given socket to create a Participant connection object, and
+        adds that participant connection to the list of connected participants."""
         p = ParticipantConnection(client_sock, self)
         p.start()
         self.participants.append(p)
         print('Client added')
         
     def set_manager(self, client_sock):
-        """
-        If there is is not already a manager connected, set the
-        given socket to be a new Manager connection.
-        """
+        """If there is is not already a manager connected, set the
+        given socket to be a new Manager connection."""
         mngr = ManagerConnection(client_sock, self)
         if not hasattr(self, 'manager'):
             mngr.start()
@@ -118,6 +137,19 @@ class Boss():
             mngr.close()
             print('Manager rejected (one already exists)')
             
+    def set_display(self, client_sock):
+        """Use the given socket to create a Display connection object, and
+        adds that participant connection to the list of connected participants."""
+        display = DisplayConnection(client_sock, self)
+        if not hasattr(self, 'display'):
+            display.start()
+            self.display = display
+            print('Display added')
+        else:
+            display.write_line("ERROR: Display already exists. Rejected.");
+            display.close()
+            print('Display rejected (one already exists)')
+
     def init_challenge(self):
         """Send the current challenge files to all participants.
 
