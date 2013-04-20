@@ -26,8 +26,11 @@ function DisplayChallengeMode(){
     // list of competitors displayed
     this.competitors = new Array();
     
+    // TODO - temporary
     for(var i=0; i<15; i++){
-        this.competitors.push(new ChallengeCompetitor("name", "editor"));
+        var c = new ChallengeCompetitor("name", "editor");
+        c.status = i%3;
+        this.competitors.push(c);
     }
     
     
@@ -42,6 +45,12 @@ function DisplayChallengeMode(){
             this.canvas.webkitRequestFullScreen();
         else if(this.canvas.mozRequestFullScreen)
             this.canvas.mozRequestFullScreen();
+    }
+    
+    
+    // .
+    this.addMessage = function(bubble){
+        this.textBubbles.push(bubble);
     }
     
     
@@ -101,7 +110,7 @@ function DisplayChallengeMode(){
 		    this.ctx.fillText("Editor", thirdTextX, relativeTextY);
 		    
 		    // set for other sections
-		    this.ctx.font = "regular " + boxTextSize + "pt Arial";
+		    this.ctx.font = "" + boxTextSize + "pt Arial";
 		    curY += boxHeight;
 		    
 		    for(var i=0; i<numCompetitors; i++){
@@ -130,6 +139,14 @@ function DisplayChallengeMode(){
 		            this.ctx.lineTo(this.canvas.width, curY + boxHeight);
 		            this.ctx.stroke();
 		        this.ctx.closePath();
+		        
+		        // draw the status information
+		        //this.ctx.fillText("Status", firstTextX, relativeTextY);
+		        this.ctx.fillStyle = "#000000";
+		        this.ctx.fillText(this.competitors[i].participant,
+		            secondTextX, relativeTextY + curY);
+		        this.ctx.fillText(this.competitors[i].editor,
+		            thirdTextX, relativeTextY + curY);
 		        
 		        // incremement current y position for the next drawn box.
 		        curY += boxHeight;
@@ -170,8 +187,16 @@ function DisplayChallengeMode(){
 }
 
 
-function TextBubble(){
+function TextBubble(colorStr){
     //
+    
+    this.update = function(){
+    
+    }
+    
+    this.isDead = function(){
+        return false;
+    }
 }
 
 function ChallengeCompetitor(participant, editor){

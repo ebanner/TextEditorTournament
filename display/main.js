@@ -119,7 +119,22 @@ function parseServerMessage(data){
 //              type: depending on the given type, the color of the text/bubble
 //                  will varry.
 function notify(text, type){
-    //alert(text); // TODO - just alerts for now
+    var colorStr = "#FFFFFF";
+    switch(type){
+        case NOTIFICATION_TYPE_SYS:
+            colorStr = "#00FF00"; // green
+            break;
+        case NOTIFICATION_TYPE_ALERT:
+            colorStr = "#FFFF00"; // yellow
+            break;
+        case NOTIFICATION_TYPE_ERROR:
+            colorStr = "#FF0000"; // red
+            break;
+        case NOTIFICATION_TYPE_NORMAL:
+        default:
+            break; // white
+    }
+    display.addMessage(new TextBubble(colorStr));
 }
 
 
