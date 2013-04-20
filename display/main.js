@@ -4,17 +4,48 @@
  */
 
 
+// Participant object (struct):
+function Participant(participant, editor){
+    // Name and editor of choice.
+    this.participant = participant;
+    this.editor = editor;
+    
+    // Flagged TRUE if this participant accepts a challenge.
+    this.accepted = false;
+}
+
+
 // GLOBAL CONSTANTS
 var NOTIFICATION_TYPE_NORMAL = 0;
-var NOTIFICATION_TYPE_SYS = 1;
-var NOTIFICATION_TYPE_ALERT = 2;
-var NOTIFICATION_TYPE_ERROR = 3;
+var NOTIFICATION_TYPE_GOOD = 1;
+var NOTIFICATION_TYPE_BAD = 2;
+var NOTIFICATION_TYPE_SYS = 3;
+var NOTIFICATION_TYPE_ALERT = 4;
+var NOTIFICATION_TYPE_ERROR = 5;
 
+// PROTOCOL STATE CONSTANTS
+var PROTOCOL_STANDBY = 0; // waiting for instruction
+var PROTOCOL_ADD_PARTICIPANT_name = 1; // waiting for add name
+var PROTOCOL_ADD_PARTICIPANT_editor = 2; // waiting for add editor
+var PROTOCOL_SET_PARTICIPANT_STATUS_name = 3; // waiting for status name
+var PROTOCOL_SET_PARTICIPANT_STATUS_type = 4; // waiting for status type
+var PROTOCOL_INCORRECT_SUBMISSION = 5; // waiting for participant name
+
+// Protocol temporaries (used for multi-step protocol events):
+var PROTOCOL_TEMP_name;
+
+// Current protocol state:
+var protocolState = PROTOCOL_STANDBY;
 
 // GLOBAL APP VARIABLES:
 var ws = false; // websocket (initially FALSE to imply it is not connected)
 var display; // current Display object
-var dT = 1000/30; // delta time (between frames)
+var FPS = 30; // frames per second
+var dT = Math.floor(1000/FPS); // delta time (between frames)
+
+// PARTICIPANT LISTS
+var activeParticipants = new Array();
+// TODO - temporary
 
 
 // Initialize the websocket (try to connect to the WS server) using the given
@@ -41,7 +72,7 @@ function initWebSocket(ip, port){
     
     // When socket is open, send greetings message and notify connected.
     ws.onopen = function(){
-        ws.send("Hello, server!");
+        ws.send("TEXT_EDITOR_TOURNAMENT_TYPE_DISPLAY");
         notify("Connected to server.", NOTIFICATION_TYPE_SYS);
     };
     
@@ -83,14 +114,8 @@ $(document).ready(function(){
     var retval = initWebSocket("127.0.0.1", 9999);
     //alert(retval);
     
-    // Set up inputBox to call sendMessage function.
-    $("#inputBox").keyup(function(e){
-        if(e.keyCode == 13) // enter
-            //sendMessage(); TODO - change this back
-            playText($("#inputBox").val());
-    });
-    
     // Start the canvas animator
+    // TODO - start w/ different mode
     display = new DisplayChallengeMode();
     setTimeout(updateFrame, dT);
 });
@@ -99,6 +124,14 @@ $(document).ready(function(){
 function goFullScreen(){
     display.goFullScreen();
 }
+
+
+// Returns the number of frames in the given number of seconds, based on
+//  the current FPS value (frames per second).
+function secondsToFrames(seconds){
+    return seconds * FPS;
+}
+
 
 // Called each frame (via Javascript events) to re-draw the entire canvas
 //  and refresh it for the next frame.
@@ -110,7 +143,65 @@ function updateFrame(){
 
 // Parse a message received from the server through the websocket.
 function parseServerMessage(data){
-    alert(data); // TODO - just alerts for now
+    // if protocol is in standby mode, check for new instruction
+    if(protocolState == PROTOCOL_STANDBY){
+        if(data == "ADD_PARTICIPANT") // go to add participant mode
+            protocolState = PROTOCOL_ADD_PARTICIPANT_name;
+        
+        else if(data == "SET_PARTICIPANT_STATUS") // go to set status mode
+            protocolState = PROTOCOL_SET_PARTICIPANT_STATUS_name;
+        
+        else if(data == "INCORRECT_SUBMISSION") // go to wrong submission mode
+            protocolState = PROTOCOL_INCORRECT_SUBMISSION;
+    }
+    
+    // if protocol is in add participant mode and waiting for name:
+    else if(protocolState == PROTOCOL_ADD_PARTICIPANT_name){
+        PROTOCOL_TEMP_name = data;
+        protocolState = PROTOCOL_ADD_PARTICIPANT_editor;
+    }
+    
+    // if protocol is in add participant mode and waiting for editor:
+    else if(protocolState == PROTOCOL_ADD_PARTICIPANT_editor){
+        display.addCompetitor(PROTOCOL_TEMP_name, data);
+        protocolState = PROTOCOL_STANDBY;
+    }
+    
+    // if protocol is in set status mode and waiting for name:
+    else if(protocolState == PROTOCOL_SET_PARTICIPANT_STATUS_name){
+        PROTOCOL_TEMP_name = data;
+        protocolState = PROTOCOL_SET_PARTICIPANT_STATUS_type;
+    }
+    
+    // if protocol is in set status mode and waiting for status type:
+    else if(protocolState == PROTOCOL_SET_PARTICIPANT_STATUS_type){
+        var competitor = display.getCompetitor(PROTOCOL_TEMP_name);
+        if(competitor){
+            switch(data){
+                case "STATUS_WORKING":
+                    competitor.status = PARTICIPANT_WORKING;
+                    break;
+                case "STATUS_FINISHED":
+                    competitor.status = PARTICIPANT_FINISHED;
+                    notify("" + PROTOCOL_TEMP_name + " finished!",
+                        NOTIFICATION_TYPE_GOOD);
+                    break;
+                case "STATUS_FORFEIT":
+                    competitor.status = PARTICIPANT_FORFEIT;
+                    notify("" + PROTOCOL_TEMP_name + " gave up.",
+                        NOTIFICATION_TYPE_BAD);
+                    break;
+                default:
+                    break;
+            }
+        }
+        protocolState = PROTOCOL_STANDBY;
+    }
+    
+    else if(protocolState == PROTOCOL_INCORRECT_SUBMISSION){
+        notify("" + data + " was incorrect.", NOTIFICATION_TYPE_ALERT);
+        protocolState = PROTOCOL_STANDBY;
+    }
 }
 
 // Display a notification bubble on the screen that will show the given
@@ -122,19 +213,21 @@ function notify(text, type){
     var colorStr = "#FFFFFF";
     switch(type){
         case NOTIFICATION_TYPE_SYS:
+        case NOTIFICATION_TYPE_GOOD:
             colorStr = "#00FF00"; // green
             break;
         case NOTIFICATION_TYPE_ALERT:
             colorStr = "#FFFF00"; // yellow
             break;
         case NOTIFICATION_TYPE_ERROR:
+        case NOTIFICATION_TYPE_BAD:
             colorStr = "#FF0000"; // red
             break;
         case NOTIFICATION_TYPE_NORMAL:
         default:
             break; // white
     }
-    display.addMessage(new TextBubble(colorStr));
+    display.addMessage(text, colorStr);
 }
 
 
