@@ -18,52 +18,9 @@ function Display(){
     // canvas and context
     this.canvas = document.getElementById("screen");
     this.ctx = this.canvas.getContext("2d");
-}
-
-// Display object that renders to the canvas, responsible for displaying the
-//  screen as
-function DisplayChallengeMode(){
-
-    // canvas and context
-    this.canvas = document.getElementById("screen");
-    this.ctx = this.canvas.getContext("2d");
-    
-    // challenge information
-    this.challengeNumber = 0;
-    this.challengeName = "Challenge Name Here";
-    
-    // background image
-    this.backgroundImage = new Image();
-    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
-    
-    // challenge status icons
-    this.workingIcon = new Image();
-    this.workingIcon.src = DISPLAY_WORKING_ICON;
-    this.finishedIcon = new Image();
-    this.finishedIcon.src = DISPLAY_FINISHED_ICON;
-    this.forfeitIcon = new Image();
-    this.forfeitIcon.src = DISPLAY_FORFEIT_ICON;
     
     // list of message bubbles on the screen
     this.textBubbles = new Array();
-    
-    // list of competitors displayed
-    this.competitors = new Array();
-    
-    // Adds a participant to the list of active competitors.
-    this.addCompetitor = function(participant, editor){
-        var newCompetitor = new ChallengeCompetitor(participant, editor);
-        this.competitors.push(newCompetitor);
-    }
-    
-    // Returns a competitor (if found) by the given participant name.
-    this.getCompetitor = function(competitorName){
-        for(var i=0; i<this.competitors.length; i++){
-            if(this.competitors[i].participant == competitorName)
-                return this.competitors[i];
-        }
-        return false;
-    }
     
     
     // Makes the canvas go into fullscreen mode. TODO- doesn't work.
@@ -91,6 +48,46 @@ function DisplayChallengeMode(){
         // add the new text bubble
         var bubble = new TextBubble(text, colorStr);
         this.textBubbles.push(bubble);
+    }
+}
+
+
+// Display object that renders to the canvas, responsible for displaying the
+//  screen as
+function DisplayChallengeMode(){
+    
+    // challenge information
+    this.challengeNumber = 0;
+    this.challengeName = "Challenge Name Here";
+    
+    // background image
+    this.backgroundImage = new Image();
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
+    
+    // challenge status icons
+    this.workingIcon = new Image();
+    this.workingIcon.src = DISPLAY_WORKING_ICON;
+    this.finishedIcon = new Image();
+    this.finishedIcon.src = DISPLAY_FINISHED_ICON;
+    this.forfeitIcon = new Image();
+    this.forfeitIcon.src = DISPLAY_FORFEIT_ICON;
+    
+    // list of competitors displayed
+    this.competitors = new Array();
+    
+    // Adds a participant to the list of active competitors.
+    this.addCompetitor = function(participant, editor){
+        var newCompetitor = new ChallengeCompetitor(participant, editor);
+        this.competitors.push(newCompetitor);
+    }
+    
+    // Returns a competitor (if found) by the given participant name.
+    this.getCompetitor = function(competitorName){
+        for(var i=0; i<this.competitors.length; i++){
+            if(this.competitors[i].participant == competitorName)
+                return this.competitors[i];
+        }
+        return false;
     }
     
     
@@ -258,6 +255,7 @@ function DisplayChallengeMode(){
 		this.ctx.closePath();
     }
 }
+DisplayChallengeMode.prototype = new Display();
 
 
 // A self-updating TextBubble object that fades over time, and if it expired
