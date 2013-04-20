@@ -25,14 +25,24 @@ var NOTIFICATION_TYPE_ERROR = 5;
 
 // PROTOCOL STATE CONSTANTS
 var PROTOCOL_STANDBY = 0; // waiting for instruction
-var PROTOCOL_ADD_PARTICIPANT_name = 1; // waiting for add name
-var PROTOCOL_ADD_PARTICIPANT_editor = 2; // waiting for add editor
-var PROTOCOL_SET_PARTICIPANT_STATUS_name = 3; // waiting for status name
-var PROTOCOL_SET_PARTICIPANT_STATUS_type = 4; // waiting for status type
-var PROTOCOL_INCORRECT_SUBMISSION = 5; // waiting for participant name
+var PROTOCOL_ADD_PARTICIPANT_name = 10; // waiting for add name
+var PROTOCOL_ADD_PARTICIPANT_editor = 11; // waiting for add editor
+var PROTOCOL_REMOVE_PARTICIPANT = 20; // waiting for remove name
+var PROTOCOL_INIT_CHALLENGE_id = 30; // waiting for init challenge id
+var PROTOCOL_INIT_CHALLENGE_name = 31; // waiting for init challenge name
+var PROTOCOL_INIT_CHALLENGE_dlen = 32; // waiting for init description len
+var PROTOCOL_INIT_CHALLENGE_desc = 33; // waiting for init description
+var PROTOCOL_PARTICIPANT_ACCEPTED = 40; // waiting for accepted name
+var PROTOCOL_SET_PARTICIPANT_STATUS_name = 101; // waiting for status name
+var PROTOCOL_SET_PARTICIPANT_STATUS_type = 102; // waiting for status type
+var PROTOCOL_INCORRECT_SUBMISSION = 110; // waiting for participant name
 
 // Protocol temporaries (used for multi-step protocol events):
 var PROTOCOL_TEMP_name;
+var PROTOCOL_TEMP_id;
+var PROTOCOL_TEMP_dlen;
+var PROTOCOL_TEMP_curline;
+var PROTOCOL_TEMP_dlines;
 
 // Current protocol state:
 var protocolState = PROTOCOL_STANDBY;
@@ -117,19 +127,31 @@ $(document).ready(function(){
     // Start the canvas animator
     // TODO - start w/ different mode
     display = new DisplayWelcomeMode();
+    /*var lines = new Array();
+    lines.push(
+"This is a description of the challenge that you're about to do. It isn't very")
+    lines.push(
+"hard, seeing as you're just reading the description and trying to see if it even")
+    lines.push(
+"fits on the screen. Isn't it great? Assuming it DOES fit on the screen, well")
+    lines.push(
+"done. Otherwise, bad.")
+    display = new DisplayInitMode(
+                "1", "Some Challenge Name Here",
+                lines);
+    display.addAcceptingParticipant("Somebody's Name Here");
+    display.addAcceptingParticipant("Another Person");
+    display.addAcceptingParticipant("Third guy");
+    display.addAcceptingParticipant("Fourth #4");
+    display.addAcceptingParticipant("FIFTJH!");
+    */
+    
     setTimeout(updateFrame, dT);
 });
 
 
-/*$(window).bind("resize", function(){
-    var w = $(window).width();
-    var h = $(window).height();
-
-    $("#screen").css("width", w + "px");
-    $("#screen").css("height", h + "px"); 
-});*/
-
-
+// Makes the canvas go into fullscreen mode. NOTE: this does not change
+//  the canvas resolution, just expands the image to fit the screen.
 function goFullScreen(){
     display.goFullScreen();
 }
@@ -157,12 +179,27 @@ function parseServerMessage(data){
         if(data == "ADD_PARTICIPANT") // go to add participant mode
             protocolState = PROTOCOL_ADD_PARTICIPANT_name;
         
+        else if(data == "REMOVE_PARTICIPANT") // go to remove participant mode
+            protocolState = PROTOCOL_REMOVE_PARTICIPANT;
+        
+        /*** CHALLENGE INIT HEADERS ***/
+        
+        else if(data == "CHALLENGE_INITIATE")
+            protocolState = PROTOCOL_INIT_CHALLENGE_id;
+        
+        else if(data == "PARTICIPANT_ACCEPTED")
+            protocolState = PROTOCOL_PARTICIPANT_ACCEPTED;
+        
+        /*** CHALLENGE MODE HEADERS ***/
+        
         else if(data == "SET_PARTICIPANT_STATUS") // go to set status mode
             protocolState = PROTOCOL_SET_PARTICIPANT_STATUS_name;
         
         else if(data == "INCORRECT_SUBMISSION") // go to wrong submission mode
             protocolState = PROTOCOL_INCORRECT_SUBMISSION;
     }
+    
+    /*** ADD AND REMOVE PARTICIPANT STATES ***/
     
     // if protocol is in add participant mode and waiting for name:
     else if(protocolState == PROTOCOL_ADD_PARTICIPANT_name){
@@ -172,9 +209,64 @@ function parseServerMessage(data){
     
     // if protocol is in add participant mode and waiting for editor:
     else if(protocolState == PROTOCOL_ADD_PARTICIPANT_editor){
-        display.addCompetitor(PROTOCOL_TEMP_name, data);
+        var participant = new Participant(PROTOCOL_TEMP_name, data);
+        activeParticipants.push(participant);
         protocolState = PROTOCOL_STANDBY;
     }
+    
+    // if protocol is in remove participant mode and waiting for name:
+    else if(protocolState == PROTOCOL_REMOVE_PARTICIPANT){
+        // search the list to remove the participant of the sent name
+        for(var i=0; i<activeParticipants.length; i++){
+            if(activeParticipants.participant == data)
+                activeParticipants.splice(i, 1);
+        }
+        protocolState = PROTOCOL_STANDBY;
+    }
+    
+    /*** CHALLENGE INITIATE STATES ***/
+    
+    // if protocol is in init challenge mode and waiting for id:
+    else if(protocolState == PROTOCOL_INIT_CHALLENGE_id){
+        PROTOCOL_TEMP_id = data;
+        protocolState = PROTOCOL_INIT_CHALLENGE_name;
+    }
+    
+    // if protocol is in init challenge mode and waiting for name:
+    else if(protocolState == PROTOCOL_INIT_CHALLENGE_name){
+        PROTOCOL_TEMP_name = data;
+        protocolState = PROTOCOL_INIT_CHALLENGE_dlen;
+    }
+    
+    // if protocol is in init challenge mode and waiting for description len:
+    else if(protocolState == PROTOCOL_INIT_CHALLENGE_dlen){
+        PROTOCOL_TEMP_dlen = data;
+        PROTOCOL_TEMP_dlines = new Array();
+        PROTOCOL_TEMP_curline = 0;
+        protocolState = PROTOCOL_INIT_CHALLENGE_desc;
+    }
+    
+    // while protocol is in init description read mode:
+    else if(protocolState == PROTOCOL_INIT_CHALLENGE_desc){
+        // add the lines one by one
+        PROTOCOL_TEMP_dlines.push(data);
+        PROTOCOL_TEMP_curline++;
+        // if all lines have been read, go into init mode, and set the
+        //  screen to challenge init display with the appropriate data.
+        if(PROTOCOL_TEMP_curline >= PROTOCOL_TEMP_dlen){
+            display = new DisplayInitMode(
+                PROTOCOL_TEMP_id, PROTOCOL_TEMP_name, PROTOCOL_TEMP_dlines);
+            protocolState = PROTOCOL_STANDBY;
+        }
+    }
+    
+    // if protocol is in get participant accepted state waiting for name:
+    else if(protocolState == PROTOCOL_PARTICIPANT_ACCEPTED){
+        display.addAcceptingParticipant(data);
+        protocolState = PROTOCOL_STANDBY;
+    }
+    
+    /*** CHALLENGE MODE STATES ***/
     
     // if protocol is in set status mode and waiting for name:
     else if(protocolState == PROTOCOL_SET_PARTICIPANT_STATUS_name){

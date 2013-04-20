@@ -70,12 +70,8 @@ function DisplayWelcomeMode(){
     this.update = function(){
         // Clear off the screen.
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(this.backgroundImage, 0, 0, this.canvas.width, this.canvas.height);
-        
-        // Establish text sizes before going into drawing.
-        var bigTextSize = Math.floor(this.canvas.width / 36);
-        var midTextSize = Math.floor(this.canvas.width / 55);
-        var smallTextSize = Math.floor(this.canvas.width / 80);
+        this.ctx.drawImage(this.backgroundImage, 0, 0,
+            this.canvas.width, this.canvas.height);
         
         this.ctx.textAlign = "center";
         this.ctx.fillStyle = DISPLAY_FG_COLOR;
@@ -86,6 +82,96 @@ function DisplayWelcomeMode(){
     }
 }
 DisplayWelcomeMode.prototype = new Display();
+
+
+// The very first start-up display mode: just shows a welcome message.
+function DisplayInitMode(challengeId, challengeName, descriptionLines){
+    
+    // background image
+    this.backgroundImage = new Image();
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
+    
+    // challenge information
+    this.challengeId = challengeId;
+    this.challengeName = challengeName;
+    this.descriptionLines = descriptionLines;
+    this.acceptingParticipants = new Array();
+    
+    // Parameter: string
+    this.addAcceptingParticipant = function(participant){
+        if(participant.length >= 16){
+            participant = participant.substring(0, 16);
+            participant += "...";
+        }
+        this.acceptingParticipants.push(participant);
+    }
+
+
+    // Updates the welcome screen every frame.
+    this.update = function(){
+        // Clear off the screen.
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.backgroundImage, 0, 0,
+            this.canvas.width, this.canvas.height);
+        
+        // Establish text sizes before going into drawing.
+        var bigTextSize = Math.floor(this.canvas.width / 36);
+        var midTextSize = Math.floor(this.canvas.width / 55);
+        var smallTextSize = Math.floor(this.canvas.width / 110);
+        var descriptionTextSize = Math.floor(this.canvas.width / 60);
+        
+        // Establish general positions before going into drawing.
+        var edgeTop = Math.floor(this.canvas.height / 10);
+        var secondTop = Math.floor(this.canvas.height / 5.5);
+        var descriptionTop = Math.floor(this.canvas.height / 2);
+        var descriptionLineHeight = Math.floor(this.canvas.height / 17);
+        var edgeLeft = Math.floor(this.canvas.width / 16);
+        
+        // display the challenge ID and name (title) here:
+        this.ctx.fillStyle = DISPLAY_FG_COLOR;
+        this.ctx.textAlign = "left";
+        this.ctx.font =  "bold " + bigTextSize + "pt Calibri";
+        this.ctx.fillText("Challenge " + this.challengeId,
+            edgeLeft, edgeTop);
+        this.ctx.font =  "bold " + midTextSize + "pt Calibri";
+        this.ctx.fillText("Challenge " + this.challengeName,
+            edgeLeft, secondTop);
+        
+        // draw each line of the description here:
+        this.ctx.textAlign = "center";
+        this.ctx.font =  "" + descriptionTextSize + "pt Calibri";
+        var descriptionX = Math.floor(this.canvas.width/2);
+        for(var i=0; i<this.descriptionLines.length; i++){
+            this.ctx.fillText(this.descriptionLines[i],
+                descriptionX, descriptionTop);
+            descriptionTop += descriptionLineHeight;
+        }
+        
+        // draw a box for each accepting participant here
+        var boxSize = Math.ceil(this.canvas.width / 23);
+        var boxDiff = boxSize + Math.ceil(boxSize / 4);
+        var halfBoxSize = Math.floor(boxSize / 2);
+        var boxY = Math.floor(this.canvas.height / 3.4);
+        var boxX = Math.floor(
+            (this.canvas.width / 2) -
+            (boxDiff * (this.acceptingParticipants.length - 1)) / 2);
+        var boxTextTop = boxY - halfBoxSize / 2;
+        var boxTextBottom = boxY + boxSize + halfBoxSize / 1.1;
+        this.ctx.font = "" + smallTextSize + "pt Arial";
+        for(var i=0; i<this.acceptingParticipants.length; i++){
+            this.ctx.fillStyle = "#22FF44";
+            this.ctx.fillRect(boxX - halfBoxSize, boxY, boxSize, boxSize);
+            var boxTextY = boxTextTop;
+            if(i%2 != 0)
+                boxTextY = boxTextBottom;
+            this.ctx.fillStyle = "#FFFFFF";
+            this.ctx.fillText(this.acceptingParticipants[i],
+                boxX, boxTextY);
+            boxX += boxDiff;
+        }
+    }
+}
+DisplayInitMode.prototype = new Display();
 
 
 // Challenge Mode Display: responsible for drawing the canvas showing the
