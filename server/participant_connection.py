@@ -90,4 +90,7 @@ class ParticipantConnection(connection.Connection):
         self.editor = self.read_line()
         print(self.user)
         print(self.editor)
+        # Send participant to display
+        if self.boss.display:
+            self.boss.send_participant_to_display(self.user, self.editor)
         super(ParticipantConnection, self).run()

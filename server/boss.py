@@ -20,6 +20,7 @@ class Boss():
         self.challenge = None
         self.state = 0 # initial state, normal
         self.thread_lock = threading.Lock()
+        self.display = None
     
     def check_solution(self, files):
         # Check if challenge exists
@@ -124,6 +125,9 @@ class Boss():
         self.participants.append(p)
         print('Client added')
         
+    def send_participant_to_display(self, user, editor):
+        self.display.send_participant_to_display(user, editor)
+
     def set_manager(self, client_sock):
         """If there is is not already a manager connected, set the
         given socket to be a new Manager connection."""
@@ -141,7 +145,8 @@ class Boss():
         """Use the given socket to create a Display connection object, and
         adds that participant connection to the list of connected participants."""
         display = DisplayConnection(client_sock, self)
-        if not hasattr(self, 'display'):
+        if not self.display:
+            # There can only be one display
             display.start()
             self.display = display
             print('Display added')
