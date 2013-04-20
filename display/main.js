@@ -134,7 +134,7 @@ function notify(text, type){
         default:
             break; // white
     }
-    display.addMessage(new TextBubble(colorStr));
+    display.addMessage(text, colorStr);
 }
 
 

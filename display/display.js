@@ -48,42 +48,46 @@ function DisplayChallengeMode(){
     }
     
     
-    // .
-    this.addMessage = function(bubble){
+    // Add a message bubble to appear on the screen (drawn individually from
+    //  the list until they expire).
+    // TODO - if list is too big, remove the first.
+    this.addMessage = function(text, colorStr){
+        var bubble = new TextBubble(text, colorStr);
         this.textBubbles.push(bubble);
     }
     
     
     // Updates the canvas to draw every frame, after clearing it off.
     this.update = function(){
-        // clear off the screen
+        // Clear off the screen.
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // establish text sizes before going into drawing
+        // Establish text sizes before going into drawing.
         var bigTextSize = Math.floor(this.canvas.width / 36);
         var midTextSize = Math.floor(this.canvas.width / 55);
+        var smallTextSize = Math.floor(this.canvas.width / 75);
         
-        // establish general positions before going into drawing
-        var cornerTop = Math.floor(this.canvas.height / 11);
+        // Establish general positions before going into drawing.
+        var edgeTop = Math.floor(this.canvas.height / 11);
         var secondTop = Math.floor(this.canvas.height / 6);
-        var cornerLeft = Math.floor(this.canvas.width / 40);
+        var edgeLeft = Math.floor(this.canvas.width / 40);
         var midpointX = Math.floor(this.canvas.width / 2.5);
         var rightWidth = this.canvas.width - midpointX;
         var lineWidth = Math.ceil(this.canvas.width / 270);
         
-        // draw background texture for left side
+        // Draw background texture for left side.
         this.ctx.drawImage(this.backgroundImage,
             0, 0, this.canvas.width, this.canvas.height);
             
 		
-		// draw the participant list (if at least one)
+		// Draw the participant list (if at least one).
 		var numCompetitors = this.competitors.length;
 		if(numCompetitors >= 1){
-		    // compute box height: at least 1/15th of the canvas height
+		    // Compute box height: at least 1/15th of the canvas height.
 		    var boxHeight = Math.floor(this.canvas.height / (numCompetitors+1));
 		    boxHeight = Math.min(boxHeight, this.canvas.height/15);
 		    
-		    // compute line positions
+		    // Compute line positions.
 		    var curY = 0;
 		    var firstDivider = midpointX + Math.floor(rightWidth / 6.5);
 		    var secondDivider = midpointX + Math.floor(rightWidth / 1.75);
@@ -95,7 +99,7 @@ function DisplayChallengeMode(){
 		    var thirdTextX = secondDivider + textOffset;
 		    this.ctx.lineWidth = Math.ceil(lineWidth / 2);
 		    
-		    // first box is the title
+		    // First box is the title.
 		    this.ctx.fillStyle = "#FFFFFF";
 		    this.ctx.fillRect(midpointX, curY, rightWidth, boxHeight);
 		    this.ctx.beginPath();
@@ -109,13 +113,13 @@ function DisplayChallengeMode(){
 		    this.ctx.fillText("Participant", secondTextX, relativeTextY);
 		    this.ctx.fillText("Editor", thirdTextX, relativeTextY);
 		    
-		    // set for other sections
+		    // Set for other sections.
 		    this.ctx.font = "" + boxTextSize + "pt Arial";
 		    curY += boxHeight;
 		    
 		    for(var i=0; i<numCompetitors; i++){
 		    
-		        // draw rectangle to contain the color of the status
+		        // Draw rectangle to contain the color of the status.
 		        var bgColor = "#FFFFFF";
 		        switch(this.competitors[i].status){
 		            case PARTICIPANT_WORKING:
@@ -133,33 +137,33 @@ function DisplayChallengeMode(){
 		        this.ctx.fillStyle = bgColor;
 		        this.ctx.fillRect(midpointX, curY, rightWidth, boxHeight);
 		    
-		        // draw main box divider
+		        // Draw main box divider.
 		        this.ctx.beginPath();
 		            this.ctx.moveTo(midpointX, curY + boxHeight);
 		            this.ctx.lineTo(this.canvas.width, curY + boxHeight);
 		            this.ctx.stroke();
 		        this.ctx.closePath();
 		        
-		        // draw the status information
-		        //this.ctx.fillText("Status", firstTextX, relativeTextY);
+		        // Draw the status information.
+		        // TODO - draw status image here
 		        this.ctx.fillStyle = "#000000";
 		        this.ctx.fillText(this.competitors[i].participant,
 		            secondTextX, relativeTextY + curY);
 		        this.ctx.fillText(this.competitors[i].editor,
 		            thirdTextX, relativeTextY + curY);
 		        
-		        // incremement current y position for the next drawn box.
+		        // Incremement current y position for the next drawn box.
 		        curY += boxHeight;
 		    }
 		        
-		    // draw first column divider (status|name)
+		    // Draw first column divider (status|name).
 		    this.ctx.beginPath();
 		        this.ctx.moveTo(firstDivider, 0);
 		        this.ctx.lineTo(firstDivider, curY);
 		        this.ctx.stroke();
 		    this.ctx.closePath();
 		    
-		    // draw second column divider (name|editor)
+		    // Draw second column divider (name|editor).
 		    this.ctx.beginPath();
 		        this.ctx.moveTo(secondDivider, 0);
 		        this.ctx.lineTo(secondDivider, curY);
@@ -168,15 +172,28 @@ function DisplayChallengeMode(){
 		}
 		
         
-        // draw the scaled title and challenge number
+        // Draw the scaled title and challenge number.
 		this.ctx.fillStyle = "#000000";
         this.ctx.font = "bold " + bigTextSize + "pt Arial";
 		this.ctx.fillText("Challenge " + this.challengeNumber,
-		    cornerLeft, cornerTop);
+		    edgeLeft, edgeTop);
         this.ctx.font = "bold " + midTextSize + "pt Arial";
-		this.ctx.fillText(this.challengeName, cornerLeft, secondTop);
+		this.ctx.fillText(this.challengeName, edgeLeft, secondTop);
 		
-		// draw the line separator
+		// Draw the text bubbles: first, calculate the position and size for
+		//  the bubbles.
+		var bubbleH = Math.ceil(this.canvas.height / 17);
+		var bubbleW = midpointX - edgeLeft*2;
+		var bubbleY = this.canvas.height - edgeLeft - bubbleH;
+		// Loop backwards - draw most recent bubbles first.
+		for(var i=(this.textBubbles.length-1); i>=0; i--){
+		    this.textBubbles[i].update();
+		    this.textBubbles[i].draw(this.ctx,
+		        edgeLeft, bubbleY, bubbleW, bubbleH, smallTextSize);
+		    bubbleY -= (bubbleH + Math.ceil(bubbleH / 4));
+		}
+		
+		// Draw the MAIN DIVIDER (line separator).
 		this.ctx.lineWidth = lineWidth;
 		this.ctx.beginPath();
 		    this.ctx.moveTo(midpointX, 0);
@@ -187,11 +204,25 @@ function DisplayChallengeMode(){
 }
 
 
-function TextBubble(colorStr){
+// A self-updating TextBubble object that fades over time, and if it expired
+//  (i.e. if its text is done lingering), flags itself as dead, which means
+//  it should stop getting drawn (removed from list).
+function TextBubble(text, colorStr){
     //
+    this.text = text;
+    this.color = colorStr;
     
     this.update = function(){
+        
+    }
     
+    this.draw = function(ctx, x, y, w, h, textSize){
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(x, y, w, h);
+        ctx.fillStyle = this.color;
+        ctx.font = "" + textSize + "pt Arial";
+        // TODO - fix
+        ctx.fillText(this.text, x+5, y + Math.floor(h/2 + textSize/3));
     }
     
     this.isDead = function(){
