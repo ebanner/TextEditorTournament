@@ -14,7 +14,8 @@ var NOTIFICATION_TYPE_ERROR = 3;
 // GLOBAL APP VARIABLES:
 var ws = false; // websocket (initially FALSE to imply it is not connected)
 var display; // current Display object
-var dT = 1000/30; // delta time (between frames)
+var FPS = 30; // frames per second
+var dT = Math.floor(1000/FPS); // delta time (between frames)
 
 
 // Initialize the websocket (try to connect to the WS server) using the given
@@ -99,6 +100,14 @@ $(document).ready(function(){
 function goFullScreen(){
     display.goFullScreen();
 }
+
+
+// Returns the number of frames in the given number of seconds, based on
+//  the current FPS value (frames per second).
+function secondsToFrames(seconds){
+    return seconds * FPS;
+}
+
 
 // Called each frame (via Javascript events) to re-draw the entire canvas
 //  and refresh it for the next frame.

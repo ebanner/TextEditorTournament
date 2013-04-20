@@ -3,6 +3,9 @@ var PARTICIPANT_WORKING = 0;
 var PARTICIPANT_FINISHED = 1;
 var PARTICIPANT_FORFEIT = 2;
 
+var TEXT_BUBBLE_DURATION = 10; // seconds
+var TEXT_BUBBLE_FADE_TIME = 1; // seconds
+
 
 // Display object that renders to the canvas, responsible for displaying the
 //  screen as
@@ -70,7 +73,7 @@ function DisplayChallengeMode(){
         // Establish text sizes before going into drawing.
         var bigTextSize = Math.floor(this.canvas.width / 36);
         var midTextSize = Math.floor(this.canvas.width / 55);
-        var smallTextSize = Math.floor(this.canvas.width / 75);
+        var smallTextSize = Math.floor(this.canvas.width / 80);
         
         // Establish general positions before going into drawing.
         var edgeTop = Math.floor(this.canvas.height / 11);
@@ -190,11 +193,18 @@ function DisplayChallengeMode(){
 		var bubbleH = Math.ceil(this.canvas.height / 17);
 		var bubbleW = midpointX - edgeLeft*2;
 		var bubbleY = this.canvas.height - edgeLeft - bubbleH;
+		var textX = edgeLeft + Math.floor(midpointX / 40);
 		// Loop backwards - draw most recent bubbles first.
 		for(var i=(this.textBubbles.length-1); i>=0; i--){
+		    // update the bubble; if it is dead, remove it from the list
 		    this.textBubbles[i].update();
+		    if(this.textBubbles[i].isDead()){
+		        this.textBubbles.splice(i, 1);
+		        continue;
+		    }
+		    
 		    this.textBubbles[i].draw(this.ctx,
-		        edgeLeft, bubbleY, bubbleW, bubbleH, smallTextSize);
+		        edgeLeft, bubbleY, bubbleW, bubbleH, smallTextSize, textX);
 		    bubbleY -= (bubbleH + Math.ceil(bubbleH / 4));
 		}
 		
@@ -217,21 +227,49 @@ function TextBubble(text, colorStr){
     this.text = text;
     this.color = colorStr;
     
+    // Update timer values (translated to frames) to keep track of the
+    //  transparency state and the lifespan of this text bubble.
+    this.timeStep = 0;
+    this.endTime = secondsToFrames(TEXT_BUBBLE_DURATION);
+    var framesToFade = secondsToFrames(TEXT_BUBBLE_FADE_TIME);
+    this.fadeTime = this.endTime - framesToFade;
+    this.curAlpha = 1;
+    this.alphaDelta = this.curAlpha / framesToFade;
+    this.dead = false;
+    
+    // Updates the current time step to check if it's time to remove this
+    //  bubble (flag itself as dead). Also, if it is time to start fading
+    //  out the bubble, the current alpha will be calculated to reflect
+    //  the state of the fadeout.
     this.update = function(){
-        
+        this.timeStep += 1;
+        if(this.timeStep >= this.fadeTime){
+            this.curAlpha -= this.alphaDelta;
+        }
+        if(this.timeStep >= this.endTime)
+            this.dead = true;
     }
     
-    this.draw = function(ctx, x, y, w, h, textSize){
-        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-        ctx.fillRect(x, y, w, h);
-        ctx.fillStyle = this.color;
-        ctx.font = "" + textSize + "pt Arial";
-        // TODO - fix
-        ctx.fillText(this.text, x+5, y + Math.floor(h/2 + textSize/3));
+    // Draw this text bubble to the screen given the context, x and y position,
+    //  box width and height, text size, and the X position of the text.
+    // This draw function handles calulating the alpha values for the background
+    //  and when the whole bubble is fading out.
+    this.draw = function(ctx, x, y, w, h, textSize, textX){
+        ctx.save();
+            ctx.globalAlpha = this.curAlpha;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            ctx.fillRect(x, y, w, h);
+            ctx.fillStyle = this.color;
+            ctx.font = "" + textSize + "pt Arial";
+            ctx.fillText(this.text, textX, y + Math.floor(h/2 + textSize/3));
+        ctx.restore();
     }
     
+    // If this text bubble is dead, meaning it is time to remove it, then
+    //  return TRUE. Otherwise, if it should still be drawn and updated,
+    //  returns FALSE.
     this.isDead = function(){
-        return false;
+        return this.dead;
     }
 }
 
