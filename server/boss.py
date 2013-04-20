@@ -41,7 +41,7 @@ class Boss():
         """
         STATE 1 method: RUN_STATE_CHALLENGE_INIT
             --- if not in correct state, does nothing
-        SYNCHRONIZED: Called by each participant tread ndividually.
+        SYNCHRONIZED: Called by each participant thread individually.
         Tells manager about the participant that responded as ready, and checks
         all other participants. If all are ready, the challenge init phase is
         over, and the manager is notified.
@@ -66,29 +66,33 @@ class Boss():
         for participant in self.participants:
             all_ready = all_ready or participant.ready or participant.closed
             if participant.challenge_accepted:
-                num_accepting = num_accepting + 1
+                num_accepting += 1
         
         # If everyone is ready, tell manager about it and move on to next phase.
         if all_ready:
             print("Everyone is ready")
             # If manager confirms (True is returned), then start the challenge.
-            confirm = self.manager.send_challenge_ready(num_accepting,
-                len(self.participants))
-            if confirm: # If confirmed, send all participants the files and go.
-                self.phase = RUN_STATE_CHALLENGE_MODE
-                for participant in self.participants:
-                    participant.start_challenge(self.challenge)
-            else: # Otherwise, tell participants to abort challenge.
-                self.phase = RUN_STATE_NORMAL
-                for participant in self.participants:
-                    participant.cancel_challenge()
-        
+            self.manager.send_challenge_ready(num_accepting,
+                    len(self.participants))
+
         self.thread_lock.release()
         ##### Thread synchronization done. #####
-        
         print("Out of thread lock...")
-        
-    
+
+    def start_challenge(self):
+        """Send all participants the files and go"""
+        print('ENTERING RUN_CHALLENGE_MODE')
+        self.phase = RUN_STATE_CHALLENGE_MODE
+        for participant in self.participants:
+            participant.start_challenge(self.challenge)
+
+    def cancel_challenge(self):
+        """Tell participants to abort challenge"""
+        print('CANCELLING CHALLENGE')
+        self.phase = RUN_STATE_NORMAL
+        for participant in self.participants:
+            participant.cancel_challenge()
+
     def add_participant(self, client_sock):
         """
         Use the given socket to create a Participant connection object, and
@@ -115,8 +119,8 @@ class Boss():
             print('Manager rejected (one already exists)')
             
     def init_challenge(self):
-        """
-        Send the current challenge files to all participants
+        """Send the current challenge files to all participants.
+
         RETURNS 0 if challenge was initiallized sucessfully,
                 1 if there is no challenge available to init,
                 2 if another challenge is already going on,
@@ -133,7 +137,7 @@ class Boss():
             return 3
             
         for participant in self.participants:
-            # send start files to each participant
+            # Send start files to each participant
             participant.init_challenge(self.challenge)
         self.state = RUN_STATE_CHALLENGE_INIT # waiting for participants
         return 0

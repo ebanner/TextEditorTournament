@@ -10,15 +10,36 @@ class ManagerConnection(connection.Connection):
     def check_message(self, message):
         """Check the incoming message to see which activity the manager would
         like to engage in"""
-        print(message)
+        #print(message)
         if message == 'CHALLENGE_SEND_BEGIN':
             self.process_challenge_request()
         elif message == 'CHALLENGE_INITIATE':
             self.process_challenge_init_request()
+        elif message == 'CHALLENGE_START':
+            self.process_challenge_start()
+        elif message == 'CHALLENGE_CANCEL':
+            self.process_challenge_cancel()
         else:
             super(ManagerConnection, self).check_message(message)
+
+    def process_challenge_start(self):
+        """Have the boss tell participants to start the challenge"""
+        self.boss.start_challenge()
+
+    def process_challenge_cancel(self):
+        """Have the boss tell participants to cancel the challenge"""
+        self.boss.cancel_challenge()
             
     def process_challenge_request(self):
+        """Receive challenge material from manager and give the challenge to the
+        boss.
+
+        This connection receives all the material for a challenge, including the
+        challenge name, description, and all of the challenge files unless there
+        is a challenge currently going on (the boss knows if there is a
+        challenge currently underway).
+
+        """
         if self.boss.challenge_active:
             print('Boss rejects challenge request')
             self.write_line('CHALLENGE_REJECTED')
@@ -42,7 +63,7 @@ class ManagerConnection(connection.Connection):
         # Begin file transmission
         message = self.read_line()
         if message != 'FILE_TRANSMISSION_BEGIN':
-            print('Expected file transmission begin message, '
+            print('Expected FILE_TRANSMISSION_BEGIN message, '
                 'but got {} instead.'.format(message))
             return
         
@@ -58,7 +79,6 @@ class ManagerConnection(connection.Connection):
             
         # Everything went well, so send OK to manager
         self.write_line('CHALLENGE_OKAY')
-        print('left this place')
     
     def process_challenge_init_request(self):
         """
@@ -72,16 +92,16 @@ class ManagerConnection(connection.Connection):
         # Use retval to check for possible errors, and report back
         retval = self.boss.init_challenge()
         
-        if retval == 0: # all is well
+        if retval == 0: # All is well
             self.boss.challenge_active = True
             
-        elif retval == 1: # no challenge was loaded/sent yet
+        elif retval == 1: # No challenge was loaded/sent yet
             self.write_line('CHALLENGE_NOT_FOUND')
             
-        elif retval == 2: # another challenge is already going on
+        elif retval == 2: # Another challenge is already going on
             self.write_line('CHALLENGE_ALREADY_ACTIVE')
             
-        elif retval == 3: # no participants currently conneted
+        elif retval == 3: # No participants currently conneted
             self.write_line('NO_PARTICIPANTS_CONNECTED')
             
         else: # some other error
@@ -99,14 +119,10 @@ class ManagerConnection(connection.Connection):
         accepting or rejecting a challenge, and how many of a total number of
         participants have chosen to accept the challenge.
         """
+        print('IN SEND_CHALLENGE_READY')
         self.write_line('PARTICIPANT_LIST_FINISHED')
         self.write_line(str(n_part_accepting))
         self.write_line(str(n_part_total))
-        response = self.read_line()
-        if response != 'CHALLENGE_START':
-            return False
-        else: # response == 'CHALLENGE_CANCEL'
-            return True
     
     def send_challenge_finished(self):
         self.write_line('CHALLENGE_FINISH')

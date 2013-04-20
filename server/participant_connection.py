@@ -15,17 +15,17 @@ class ParticipantConnection(connection.Connection):
     def init_challenge(self, challenge):
         """Send challenge information to each client."""
         self.write_line('CHALLENGE_INITIATE')
-        print('sent init')
+        print('Sent init to a participant')
         self.write_line(str(challenge.id))
-        print('sent id')
+        print('Sent id to a paricipant')
         self.write_line(challenge.name)
-        print('sent name')
+        print('Sent name to a participant')
         self.write_line(str(len(challenge.description)))
-        print('sent # of lines = {}'.format(len(challenge.description)))
+        print('Sent # of lines = {}'.format(len(challenge.description)))
         for line in challenge.description:
             print(line)
             self.write_line(line)
-        print('sent description (line by line)')
+        print('Sent description (line by line)')
         
         self.ready = False
         
