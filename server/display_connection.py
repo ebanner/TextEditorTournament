@@ -20,7 +20,7 @@ class DisplayConnection(connection.Connection):
         self.write_line('ADD_PARTICIPANT')
         self.write_line(user)
         self.write_line(editor)
-    
+
     def close(self):
         super(DisplayConnection, self).close()
         # remove from boss

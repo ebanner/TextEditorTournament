@@ -106,28 +106,11 @@ class ManagerConnection(connection.Connection):
         else: # some other error
             self.write_line('CHALLENGE_ERROR')
     
-    def send_participant_accept_message(self, name, editor):
-        """Sends a message saying that a participant accepted a challenge."""
-        self.write_line('PARTICIPANT_ACCEPTED')
-        self.write_line(name)
-        self.write_line(editor)
-
     def send_participant_forfeit_message(self, name, editor):
         """Sends a message saying that a participant accepted a challenge."""
         self.write_line('PARTICIPANT_FORFEITED')
         self.write_line(name)
         self.write_line(editor)
-    
-    def send_challenge_ready(self, n_part_accepting, n_part_total):
-        """
-        Sends a message indicating that all participants have responded in
-        accepting or rejecting a challenge, and how many of a total number of
-        participants have chosen to accept the challenge.
-        """
-        print('IN SEND_CHALLENGE_READY')
-        self.write_line('PARTICIPANT_LIST_FINISHED')
-        self.write_line(str(n_part_accepting))
-        self.write_line(str(n_part_total))
     
     def send_challenge_finished(self):
         self.write_line('CHALLENGE_FINISH')

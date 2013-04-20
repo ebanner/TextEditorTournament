@@ -78,10 +78,12 @@ class Boss():
         
         print("In thread lock...")
         
-        # Tell the manager about who responded (if they accepted).
+        # Tell the manager and display about who responded (if they accepted).
         if responder.challenge_accepted:
             print("Participant accepted.")
             self.manager.send_participant_accept_message(responder.user,
+                responder.editor)
+            self.display.send_participant_accept_message(responder.user,
                 responder.editor)
         
         # Check if every participant is active.
@@ -176,5 +178,10 @@ class Boss():
         for participant in self.participants:
             # Send start files to each participant
             participant.init_challenge(self.challenge)
+            participant.ready = False
         self.state = RUN_STATE_CHALLENGE_INIT # waiting for participants
+
+        # Send the start files to the display
+        self.display.init_challenge(self.challenge)
+
         return 0

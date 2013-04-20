@@ -14,24 +14,7 @@ class ParticipantConnection(connection.Connection):
         self.working = False
         # Only True when the participant has forfeited
         self.forfeited = False
-        
-    def init_challenge(self, challenge):
-        """Send challenge information to each client."""
-        self.write_line('CHALLENGE_INITIATE')
-        print('Sent init to a participant')
-        self.write_line(str(challenge.id))
-        print('Sent id to a paricipant')
-        self.write_line(challenge.name)
-        print('Sent name to a participant')
-        self.write_line(str(len(challenge.description)))
-        print('Sent # of lines = {}'.format(len(challenge.description)))
-        for line in challenge.description:
-            print(line)
-            self.write_line(line)
-        print('Sent description (line by line)')
-        
-        self.ready = False
-        
+
     def start_challenge(self, challenge):
         """ """
         self.write_line('CHALLENGE_START')

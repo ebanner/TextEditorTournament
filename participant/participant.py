@@ -92,18 +92,17 @@ class Client():
         reject the challenge."""
         # Get challenge info
         challenge_id = self.read_line()
-        print(challenge_id)
+        print('Challenge ID: {}'.format(challenge_id))
         challenge_name = self.read_line()
-        print(challenge_name)
+        print('Challenge Name: {}'.format(challenge_name))
         description_line_count = int(self.read_line())
         
         # Print out the description
         description = ''
         for i in range(description_line_count):
             line = self.read_line()
-            print(line)
-            description = ''.join([description, line])
-        print(description)
+            description = ''.join([description, line+"\n"])
+        print('Description: {}'.format(description))
         
         # Prompt user to accept or reject
         print('Would you like to accept this challenge? [Y/n]')
