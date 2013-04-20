@@ -20,6 +20,7 @@ class Boss():
         self.challenge = None
         self.state = 0 # initial state, normal
         self.thread_lock = threading.Lock()
+        self.display = None
     
     def check_solution(self, files):
         # Check if challenge exists
@@ -77,10 +78,12 @@ class Boss():
         
         print("In thread lock...")
         
-        # Tell the manager about who responded (if they accepted).
+        # Tell the manager and display about who responded (if they accepted).
         if responder.challenge_accepted:
             print("Participant accepted.")
             self.manager.send_participant_accept_message(responder.user,
+                responder.editor)
+            self.display.send_participant_accept_message(responder.user,
                 responder.editor)
         
         # Check if every participant is active.
@@ -124,6 +127,9 @@ class Boss():
         self.participants.append(p)
         print('Client added')
         
+    def send_participant_to_display(self, user, editor):
+        self.display.send_participant_to_display(user, editor)
+
     def set_manager(self, client_sock):
         """If there is is not already a manager connected, set the
         given socket to be a new Manager connection."""
@@ -141,7 +147,8 @@ class Boss():
         """Use the given socket to create a Display connection object, and
         adds that participant connection to the list of connected participants."""
         display = DisplayConnection(client_sock, self)
-        if not hasattr(self, 'display'):
+        if not self.display:
+            # There can only be one display
             display.start()
             self.display = display
             print('Display added')
@@ -171,5 +178,10 @@ class Boss():
         for participant in self.participants:
             # Send start files to each participant
             participant.init_challenge(self.challenge)
+            participant.ready = False
         self.state = RUN_STATE_CHALLENGE_INIT # waiting for participants
+
+        # Send the start files to the display
+        self.display.init_challenge(self.challenge)
+
         return 0

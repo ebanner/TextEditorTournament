@@ -13,9 +13,14 @@ class DisplayConnection(connection.Connection):
 
     def run(self):
         """ """
-        self.write_line("CONNECTION_ACCEPTED")
+        self.write_line('CONNECTION_ACCEPTED')
         super(DisplayConnection, self).run()
-    
+
+    def send_participant_to_display(self, user, editor):
+        self.write_line('ADD_PARTICIPANT')
+        self.write_line(user)
+        self.write_line(editor)
+
     def close(self):
         super(DisplayConnection, self).close()
         # remove from boss

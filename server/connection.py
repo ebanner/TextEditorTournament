@@ -91,3 +91,35 @@ class Connection(threading.Thread):
         self.stream.close()
         self.socket.close()
         self.closed = True
+
+    def init_challenge(self, challenge):
+        """Send challenge information to each client."""
+        self.write_line('CHALLENGE_INITIATE')
+        self.write_line(str(challenge.id))
+        print('Sent id')
+        self.write_line(challenge.name)
+        print('Sent name')
+        self.write_line(str(len(challenge.description)))
+        print('Sent # of lines = {}'.format(len(challenge.description)))
+        for line in challenge.description:
+            print(line)
+            self.write_line(line)
+        print('Sent description (line by line)')
+
+    def send_participant_accept_message(self, name, editor):
+        """Sends a message saying that a participant accepted a challenge."""
+        self.write_line('PARTICIPANT_ACCEPTED')
+        self.write_line(name)
+        self.write_line(editor)
+
+    def send_challenge_ready(self, n_part_accepting, n_part_total):
+        """
+        Sends a message indicating that all participants have responded in
+        accepting or rejecting a challenge, and how many of a total number of
+        participants have chosen to accept the challenge.
+        """
+        print('IN SEND_CHALLENGE_READY')
+        self.write_line('PARTICIPANT_LIST_FINISHED')
+        self.write_line(str(n_part_accepting))
+        self.write_line(str(n_part_total))
+    

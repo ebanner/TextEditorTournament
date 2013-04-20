@@ -181,6 +181,8 @@ PROTOCOL (display perspective):
             - receive participant name
             ----- display that participant as ready, add to accepted list -----
         ( receive "PARTICIPANT_LIST_FINISHED" )
+        - receive number of participants accepting
+        - receive number of participants total
         
     - receive "CHALLENGE_START":
         ----- swap to challenge mode (w/ accepted participants listed) -----
