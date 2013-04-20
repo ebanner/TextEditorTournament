@@ -6,9 +6,11 @@
 
 // GLOBAL CONSTANTS
 var NOTIFICATION_TYPE_NORMAL = 0;
-var NOTIFICATION_TYPE_SYS = 1;
-var NOTIFICATION_TYPE_ALERT = 2;
-var NOTIFICATION_TYPE_ERROR = 3;
+var NOTIFICATION_TYPE_GOOD = 1;
+var NOTIFICATION_TYPE_BAD = 2;
+var NOTIFICATION_TYPE_SYS = 3;
+var NOTIFICATION_TYPE_ALERT = 4;
+var NOTIFICATION_TYPE_ERROR = 5;
 
 // PROTOCOL STATE CONSTANTS
 var PROTOCOL_STANDBY = 0; // waiting for instruction
@@ -151,10 +153,10 @@ var PROTOCOL_INCORRECT_SUBMISSION = 4; // waiting for participant name
         if(data == "ADD_PARTICIPANT") // go to add participant mode
             protocolState = PROTOCOL_ADD_PARTICIPANT_name;
         
-        else if(data == "SET_PARTICIPANT_STATUS")
+        else if(data == "SET_PARTICIPANT_STATUS") // go to set status mode
             protocolState = PROTOCOL_SET_PARTICIPANT_STATUS_name;
         
-        else if(data == "INCORRECT_SUBMISSION")
+        else if(data == "INCORRECT_SUBMISSION") // go to wrong submission mode
             protocolState = PROTOCOL_INCORRECT_SUBMISSION;
     }
     
@@ -188,12 +190,12 @@ var PROTOCOL_INCORRECT_SUBMISSION = 4; // waiting for participant name
                 case "STATUS_FINISHED":
                     competitor.status = PARTICIPANT_FINISHED;
                     notify("" + PROTOCOL_TEMP_name + " finished!",
-                        NOTIFICATION_TYPE_NORMAL);
+                        NOTIFICATION_TYPE_GOOD);
                     break;
                 case "STATUS_FORFEIT":
                     competitor.status = PARTICIPANT_FORFEIT;
                     notify("" + PROTOCOL_TEMP_name + " gave up.",
-                        NOTIFICATION_TYPE_NORMAL);
+                        NOTIFICATION_TYPE_BAD);
                     break;
                 default:
                     break;
@@ -203,7 +205,7 @@ var PROTOCOL_INCORRECT_SUBMISSION = 4; // waiting for participant name
     }
     
     else if(protocolState == PROTOCOL_INCORRECT_SUBMISSION){
-        notify("" + data + " was incorrect.", NOTIFICATION_TYPE_NORMAL);
+        notify("" + data + " was incorrect.", NOTIFICATION_TYPE_ALERT);
         protocolState = PROTOCOL_STANDBY;
     }
 }
@@ -217,12 +219,14 @@ function notify(text, type){
     var colorStr = "#FFFFFF";
     switch(type){
         case NOTIFICATION_TYPE_SYS:
+        case NOTIFICATION_TYPE_GOOD:
             colorStr = "#00FF00"; // green
             break;
         case NOTIFICATION_TYPE_ALERT:
             colorStr = "#FFFF00"; // yellow
             break;
         case NOTIFICATION_TYPE_ERROR:
+        case NOTIFICATION_TYPE_BAD:
             colorStr = "#FF0000"; // red
             break;
         case NOTIFICATION_TYPE_NORMAL:
