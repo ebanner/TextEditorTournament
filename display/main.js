@@ -116,9 +116,18 @@ $(document).ready(function(){
     
     // Start the canvas animator
     // TODO - start w/ different mode
-    display = new DisplayChallengeMode();
+    display = new DisplayWelcomeMode();
     setTimeout(updateFrame, dT);
 });
+
+
+/*$(window).bind("resize", function(){
+    var w = $(window).width();
+    var h = $(window).height();
+
+    $("#screen").css("width", w + "px");
+    $("#screen").css("height", h + "px"); 
+});*/
 
 
 function goFullScreen(){

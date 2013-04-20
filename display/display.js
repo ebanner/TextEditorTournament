@@ -6,14 +6,15 @@ var PARTICIPANT_FORFEIT = 2;
 var TEXT_BUBBLE_DURATION = 8; // seconds
 var TEXT_BUBBLE_FADE_TIME = 1; // seconds
 
-var DISPLAY_TEXT_COLOR = 0; // TODO - currently unused
-var DISPLAY_DIVIDER_COLOR = 0; // TODO - currently unused
-var DISPLAY_BACKGROUND_IMAGE = "images/bg.jpg";
+var DISPLAY_FG_COLOR = "#FFFFFF";
+var DISPLAY_BACKGROUND_IMAGE = "images/bg.png";
 var DISPLAY_WORKING_ICON = "images/what.png";
 var DISPLAY_FINISHED_ICON = "images/victory.png";
 var DISPLAY_FORFEIT_ICON = "images/cry.png";
 
 
+// Prototyle display: contains the standard variables used by all of the
+//  display objects to follow.
 function Display(){
     // canvas and context
     this.canvas = document.getElementById("screen");
@@ -25,8 +26,8 @@ function Display(){
     
     // Makes the canvas go into fullscreen mode. TODO- doesn't work.
     this.goFullScreen = function(){
-        this.canvas.width = 1600;
-        this.canvas.height = 1000;
+        //this.canvas.width = 1600;
+        //this.canvas.height = 1000;
         
         if(this.canvas.requestFullScreen)
             this.canvas.requestFullScreen();
@@ -49,11 +50,47 @@ function Display(){
         var bubble = new TextBubble(text, colorStr);
         this.textBubbles.push(bubble);
     }
+    
+    
+    // Updates and draws every frame.
+    this.update = function(){
+        // Does nothing - override required.
+    }
 }
 
 
-// Display object that renders to the canvas, responsible for displaying the
-//  screen as
+// The very first start-up display mode: just shows a welcome message.
+function DisplayWelcomeMode(){
+    
+    // background image
+    this.backgroundImage = new Image();
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
+
+    // Updates the welcome screen every frame.
+    this.update = function(){
+        // Clear off the screen.
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.backgroundImage, 0, 0, this.canvas.width, this.canvas.height);
+        
+        // Establish text sizes before going into drawing.
+        var bigTextSize = Math.floor(this.canvas.width / 36);
+        var midTextSize = Math.floor(this.canvas.width / 55);
+        var smallTextSize = Math.floor(this.canvas.width / 80);
+        
+        this.ctx.textAlign = "center";
+        this.ctx.fillStyle = DISPLAY_FG_COLOR;
+		this.ctx.font = "bold " + Math.ceil(this.canvas.width/40) + "pt Calibri";
+		this.ctx.fillText("Welcome to Text Editor Tournament 2013!",
+		    Math.floor(this.canvas.width / 2),
+		    Math.floor(this.canvas.height / 2))
+    }
+}
+DisplayWelcomeMode.prototype = new Display();
+
+
+// Challenge Mode Display: responsible for drawing the canvas showing the
+//  current challenge number and name, and messages that pop up, and
+//  showing the current progress status of each participant doing the challenge.
 function DisplayChallengeMode(){
     
     // challenge information
