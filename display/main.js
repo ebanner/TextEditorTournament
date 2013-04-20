@@ -13,6 +13,8 @@ var NOTIFICATION_TYPE_ERROR = 3;
 
 // GLOBAL APP VARIABLES:
 var ws = false; // websocket (initially FALSE to imply it is not connected)
+var display; // current Display object
+var dT = 1000/30; // delta time (between frames)
 
 
 // Initialize the websocket (try to connect to the WS server) using the given
@@ -76,10 +78,10 @@ $(document).ready(function(){
         notify("Audio playback is not supported by this browser.",
             NOTIFICATION_TYPE_ALERT);
     }
-        
+    
     // Try to initialize the websocket here.
     var retval = initWebSocket("127.0.0.1", 9999);
-    alert(retval);
+    //alert(retval);
     
     // Set up inputBox to call sendMessage function.
     $("#inputBox").keyup(function(e){
@@ -88,10 +90,22 @@ $(document).ready(function(){
             playText($("#inputBox").val());
     });
     
-    // clear all text fields/boxes
-    $("#inputBox").val("");
-    $("#textBox").val("");
+    // Start the canvas animator
+    display = new DisplayChallengeMode();
+    setTimeout(updateFrame, dT);
 });
+
+
+function goFullScreen(){
+    display.goFullScreen();
+}
+
+// Called each frame (via Javascript events) to re-draw the entire canvas
+//  and refresh it for the next frame.
+function updateFrame(){
+    display.update();
+    setTimeout(updateFrame, dT);
+}
 
 
 // Parse a message received from the server through the websocket.
@@ -105,7 +119,7 @@ function parseServerMessage(data){
 //              type: depending on the given type, the color of the text/bubble
 //                  will varry.
 function notify(text, type){
-    alert(text); // TODO - just alerts for now
+    //alert(text); // TODO - just alerts for now
 }
 
 
