@@ -52,6 +52,11 @@ function DisplayChallengeMode(){
     //  the list until they expire).
     // TODO - if list is too big, remove the first.
     this.addMessage = function(text, colorStr){
+        // if array already contains 10 bubbles, remove the oldest one (first)
+        if(this.textBubbles.length >= 10)
+            this.textBubbles.splice(0, 1);
+        
+        // add the new text bubble
         var bubble = new TextBubble(text, colorStr);
         this.textBubbles.push(bubble);
     }
