@@ -194,6 +194,9 @@ PROTOCOL (display perspective):
         - receive "INCORRECT_SUBMISSION":
             - receive participant name
             ----- announce the message -----
+    
+    - receive "CHALLEGE_CANCEL":
+        ----- revert to standby mode -----
         
     - receive "CHALLENGE_FINISH":
         // get challenge data stuff

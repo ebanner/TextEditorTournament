@@ -33,6 +33,8 @@ var PROTOCOL_INIT_CHALLENGE_name = 31; // waiting for init challenge name
 var PROTOCOL_INIT_CHALLENGE_dlen = 32; // waiting for init description len
 var PROTOCOL_INIT_CHALLENGE_desc = 33; // waiting for init description
 var PROTOCOL_PARTICIPANT_ACCEPTED = 40; // waiting for accepted name
+var PROTOCOL_START_CHALLENGE = 90; // waiting for accepted name
+var PROTOCOL_CANCEL_CHALLENGE = 91; // waiting for accepted name
 var PROTOCOL_SET_PARTICIPANT_STATUS_name = 101; // waiting for status name
 var PROTOCOL_SET_PARTICIPANT_STATUS_type = 102; // waiting for status type
 var PROTOCOL_INCORRECT_SUBMISSION = 110; // waiting for participant name
@@ -125,26 +127,7 @@ $(document).ready(function(){
     //alert(retval);
     
     // Start the canvas animator
-    // TODO - start w/ different mode
     display = new DisplayWelcomeMode();
-    /*var lines = new Array();
-    lines.push(
-"This is a description of the challenge that you're about to do. It isn't very")
-    lines.push(
-"hard, seeing as you're just reading the description and trying to see if it even")
-    lines.push(
-"fits on the screen. Isn't it great? Assuming it DOES fit on the screen, well")
-    lines.push(
-"done. Otherwise, bad.")
-    display = new DisplayInitMode(
-                "1", "Some Challenge Name Here",
-                lines);
-    display.addAcceptingParticipant("Somebody's Name Here");
-    display.addAcceptingParticipant("Another Person");
-    display.addAcceptingParticipant("Third guy");
-    display.addAcceptingParticipant("Fourth #4");
-    display.addAcceptingParticipant("FIFTJH!");
-    */
     
     setTimeout(updateFrame, dT);
 });
@@ -189,6 +172,18 @@ function parseServerMessage(data){
         
         else if(data == "PARTICIPANT_ACCEPTED")
             protocolState = PROTOCOL_PARTICIPANT_ACCEPTED;
+        
+        // if challenge start received, load challenge display
+        else if(data == "CHALLENGE_START"){
+            var acceptedCompetitors = display.acceptingParticipants;
+            display = new DisplayChallengeMode();
+            for(var i=0; i<acceptedCompetitors.length; i++)
+                display.addCompetitor(acceptedCompetitors[i]);
+        }
+        
+        // if challenge cancelled, load welcome display
+        else if(data == "CHALLENGE_CANCEL")
+            display = new DisplayWelcomeMode();
         
         /*** CHALLENGE MODE HEADERS ***/
         
