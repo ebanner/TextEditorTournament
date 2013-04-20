@@ -10,12 +10,24 @@ var NOTIFICATION_TYPE_SYS = 1;
 var NOTIFICATION_TYPE_ALERT = 2;
 var NOTIFICATION_TYPE_ERROR = 3;
 
+// PROTOCOL STATE CONSTANTS
+var PROTOCOL_STANDBY = 0; // waiting for instruction
+var PROTOCOL_ADD_PARTICIPANT_name = 1; // waiting for add name
+var PROTOCOL_ADD_PARTICIPANT_editor = 2; // waiting for add editor
+var PROTOCOL_SET_PARTICIPANT_STATUS_name = 3; // waiting for status name
+var PROTOCOL_SET_PARTICIPANT_STATUS_type = 4; // waiting for status type
+var PROTOCOL_INCORRECT_SUBMISSION = 5; // waiting for participant name
+
+// Protocol temporaries (used for multi-step protocol events)
+var PROTOCOL_TEMP_name;
 
 // GLOBAL APP VARIABLES:
 var ws = false; // websocket (initially FALSE to imply it is not connected)
 var display; // current Display object
 var FPS = 30; // frames per second
 var dT = Math.floor(1000/FPS); // delta time (between frames)
+
+var protocolState = PROTOCOL_STANDBY;
 
 
 // Initialize the websocket (try to connect to the WS server) using the given
@@ -42,7 +54,7 @@ function initWebSocket(ip, port){
     
     // When socket is open, send greetings message and notify connected.
     ws.onopen = function(){
-        ws.send("Hello, server!");
+        ws.send("TEXT_EDITOR_TOURNAMENT_TYPE_DISPLAY");
         notify("Connected to server.", NOTIFICATION_TYPE_SYS);
     };
     
@@ -112,7 +124,88 @@ function updateFrame(){
 
 // Parse a message received from the server through the websocket.
 function parseServerMessage(data){
-    alert(data); // TODO - just alerts for now
+    /*
+    - receive "ADD_PARTICIPANT"
+        - receive participant name (unique)
+        - receive participant editor
+        ----- add that participant to the list -----
+    - receive "SET_PARTICIPANT_STATUS"
+        - receive participant name
+        - receive: "STATUS_WORKING"
+        - receive: "STATUS_FINISHED"
+        - receive: "STATUS_FORFEIT"
+        ----- adjust status accordinly -----
+    - receive "INCORRECT_SUBMISSION"
+        - receive participant name
+        ----- announce the message -----
+        
+        PROTOCOL_STANDBY
+var PROTOCOL_ADD_PARTICIPANT_name = 1; // adding participant, waiting for name
+var PROTOCOL_ADD_PARTICIPANT_editor = 2; // adding participant, waiting for editor
+var PROTOCOL_SET_PARTICIPANT_STATUS = 3; // waiting for status type
+var PROTOCOL_INCORRECT_SUBMISSION = 4; // waiting for participant name
+     */
+     
+    // if protocol is in standby mode, check for new instruction
+    if(protocolState == PROTOCOL_STANDBY){
+        if(data == "ADD_PARTICIPANT") // go to add participant mode
+            protocolState = PROTOCOL_ADD_PARTICIPANT_name;
+        
+        else if(data == "SET_PARTICIPANT_STATUS")
+            protocolState = PROTOCOL_SET_PARTICIPANT_STATUS_name;
+        
+        else if(data == "INCORRECT_SUBMISSION")
+            protocolState = PROTOCOL_INCORRECT_SUBMISSION;
+    }
+    
+    // if protocol is in add participant mode and waiting for name:
+    else if(protocolState == PROTOCOL_ADD_PARTICIPANT_name){
+        PROTOCOL_TEMP_name = data;
+        protocolState = PROTOCOL_ADD_PARTICIPANT_editor;
+    }
+    
+    // if protocol is in add participant mode and waiting for editor:
+    else if(protocolState == PROTOCOL_ADD_PARTICIPANT_editor){
+        var newCompetitor = new ChallengeCompetitor(PROTOCOL_TEMP_name, data);
+        display.addCompetitor(newCompetitor);
+        protocolState = PROTOCOL_STANDBY;
+    }
+    
+    // if protocol is in set status mode and waiting for name:
+    else if(protocolState == PROTOCOL_SET_PARTICIPANT_STATUS_name){
+        PROTOCOL_TEMP_name = data;
+        protocolState = PROTOCOL_SET_PARTICIPANT_STATUS_type;
+    }
+    
+    // if protocol is in set status mode and waiting for status type:
+    else if(protocolState == PROTOCOL_SET_PARTICIPANT_STATUS_type){
+        var competitor = display.getCompetitor(PROTOCOL_TEMP_name);
+        if(competitor){
+            switch(data){
+                case "STATUS_WORKING":
+                    competitor.status = PARTICIPANT_WORKING;
+                    break;
+                case "STATUS_FINISHED":
+                    competitor.status = PARTICIPANT_FINISHED;
+                    notify("" + PROTOCOL_TEMP_name + " finished!",
+                        NOTIFICATION_TYPE_NORMAL);
+                    break;
+                case "STATUS_FORFEIT":
+                    competitor.status = PARTICIPANT_FORFEIT;
+                    notify("" + PROTOCOL_TEMP_name + " gave up.",
+                        NOTIFICATION_TYPE_NORMAL);
+                    break;
+                default:
+                    break;
+            }
+        }
+        protocolState = PROTOCOL_STANDBY;
+    }
+    
+    else if(protocolState == PROTOCOL_INCORRECT_SUBMISSION){
+        notify("" + data + " was incorrect.", NOTIFICATION_TYPE_NORMAL);
+        protocolState = PROTOCOL_STANDBY;
+    }
 }
 
 // Display a notification bubble on the screen that will show the given

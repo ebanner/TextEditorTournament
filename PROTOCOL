@@ -152,6 +152,46 @@ PROTOCOL (manager perspective):
                     - "CHALLENGE_ERROR"
 
 
+PROTOCOL (display perspective):
+    - Create a TCP connection to server
+    - send "TEXT_EDITOR_TOURNAMENT_TYPE_DISPLAY"
+    - await feedback:
+        if not "CONNECTION_ACCEPTED", end session
+      -----
+       Now, just wait for any messages (no order necessary).
+      -----
+    
+    - receive "ADD_PARTICIPANT":
+        - receive participant name (unique)
+        - receive participant editor
+        ----- add that participant to the list -----
+    
+    - receive "REMOVE_PARTICIPANT":
+        //
+        
+    - receive "CHALLENGE_INITIATE":
+        //
+        
+    - receive "CHALLENGE_START":
+        //
+        
+    - receive "CHALLENGE_FINISH":
+        //
+    
+    - receive "CHALLENGE_DATA":
+        
+    - receive "SET_PARTICIPANT_STATUS":
+        - receive participant name
+        - receive: "STATUS_WORKING"
+        - receive: "STATUS_FINISHED"
+        - receive: "STATUS_FORFEIT"
+        ----- adjust status accordinly -----
+    
+    - receive "INCORRECT_SUBMISSION":
+        - receive participant name
+        ----- announce the message -----
+
+
 Data sending:
     Data is sent as bytes as characters.
 

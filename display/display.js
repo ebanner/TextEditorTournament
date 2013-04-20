@@ -44,11 +44,23 @@ function DisplayChallengeMode(){
     // list of competitors displayed
     this.competitors = new Array();
     
-    // TODO - temporary
-    for(var i=0; i<15; i++){
+    // TODO - temporary, REMOVE
+    /*for(var i=0; i<15; i++){
         var c = new ChallengeCompetitor("name", "editor");
         c.status = i%3;
         this.competitors.push(c);
+    }*/
+    
+    this.addCompetitor = function(competitor){
+        this.competitors.push(competitor);
+    }
+    
+    this.getCompetitor = function(competitorName){
+        for(var i=0; i<this.competitors.length; i++){
+            if(this.competitors[i].participant == competitorName)
+                return this.competitors[i];
+        }
+        return false;
     }
     
     
