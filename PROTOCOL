@@ -167,29 +167,37 @@ PROTOCOL (display perspective):
         ----- add that participant to the list -----
     
     - receive "REMOVE_PARTICIPANT":
-        //
+        - receive participant name
+        ----- remove that participant from the list -----
         
     - receive "CHALLENGE_INITIATE":
-        //
+        - receive challenge id
+        - receive challenge name
+        - receive description length
+        - receive description lines (n lines)
+        ----- display INIT screen w/ information -----
+        - while not receive "PARTICIPANT_LIST_FINISHED":
+            - receive "PARTICIPANT_ACCEPTED"
+            - receive participant name
+            ----- display that participant as ready, add to accepted list -----
+        ( receive "PARTICIPANT_LIST_FINISHED" )
         
     - receive "CHALLENGE_START":
-        //
+        ----- swap to challenge mode (w/ accepted participants listed) -----
+        - receive "SET_PARTICIPANT_STATUS":
+            - receive participant name
+            - receive: "STATUS_WORKING"
+            - receive: "STATUS_FINISHED"
+            - receive: "STATUS_FORFEIT"
+            ----- adjust status accordinly -----
+        
+        - receive "INCORRECT_SUBMISSION":
+            - receive participant name
+            ----- announce the message -----
         
     - receive "CHALLENGE_FINISH":
-        //
-    
-    - receive "CHALLENGE_DATA":
-        
-    - receive "SET_PARTICIPANT_STATUS":
-        - receive participant name
-        - receive: "STATUS_WORKING"
-        - receive: "STATUS_FINISHED"
-        - receive: "STATUS_FORFEIT"
-        ----- adjust status accordinly -----
-    
-    - receive "INCORRECT_SUBMISSION":
-        - receive participant name
-        ----- announce the message -----
+        // get challenge data stuff
+        ----- swap to stats mode -----
 
 
 Data sending:

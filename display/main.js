@@ -4,6 +4,17 @@
  */
 
 
+// Participant object (struct):
+function Participant(participant, editor){
+    // Name and editor of choice.
+    this.participant = participant;
+    this.editor = editor;
+    
+    // Flagged TRUE if this participant accepts a challenge.
+    this.accepted = false;
+}
+
+
 // GLOBAL CONSTANTS
 var NOTIFICATION_TYPE_NORMAL = 0;
 var NOTIFICATION_TYPE_GOOD = 1;
@@ -20,8 +31,11 @@ var PROTOCOL_SET_PARTICIPANT_STATUS_name = 3; // waiting for status name
 var PROTOCOL_SET_PARTICIPANT_STATUS_type = 4; // waiting for status type
 var PROTOCOL_INCORRECT_SUBMISSION = 5; // waiting for participant name
 
-// Protocol temporaries (used for multi-step protocol events)
+// Protocol temporaries (used for multi-step protocol events):
 var PROTOCOL_TEMP_name;
+
+// Current protocol state:
+var protocolState = PROTOCOL_STANDBY;
 
 // GLOBAL APP VARIABLES:
 var ws = false; // websocket (initially FALSE to imply it is not connected)
@@ -29,7 +43,9 @@ var display; // current Display object
 var FPS = 30; // frames per second
 var dT = Math.floor(1000/FPS); // delta time (between frames)
 
-var protocolState = PROTOCOL_STANDBY;
+// PARTICIPANT LISTS
+var activeParticipants = new Array();
+// TODO - temporary
 
 
 // Initialize the websocket (try to connect to the WS server) using the given
@@ -99,6 +115,7 @@ $(document).ready(function(){
     //alert(retval);
     
     // Start the canvas animator
+    // TODO - start w/ different mode
     display = new DisplayChallengeMode();
     setTimeout(updateFrame, dT);
 });
@@ -126,28 +143,6 @@ function updateFrame(){
 
 // Parse a message received from the server through the websocket.
 function parseServerMessage(data){
-    /*
-    - receive "ADD_PARTICIPANT"
-        - receive participant name (unique)
-        - receive participant editor
-        ----- add that participant to the list -----
-    - receive "SET_PARTICIPANT_STATUS"
-        - receive participant name
-        - receive: "STATUS_WORKING"
-        - receive: "STATUS_FINISHED"
-        - receive: "STATUS_FORFEIT"
-        ----- adjust status accordinly -----
-    - receive "INCORRECT_SUBMISSION"
-        - receive participant name
-        ----- announce the message -----
-        
-        PROTOCOL_STANDBY
-var PROTOCOL_ADD_PARTICIPANT_name = 1; // adding participant, waiting for name
-var PROTOCOL_ADD_PARTICIPANT_editor = 2; // adding participant, waiting for editor
-var PROTOCOL_SET_PARTICIPANT_STATUS = 3; // waiting for status type
-var PROTOCOL_INCORRECT_SUBMISSION = 4; // waiting for participant name
-     */
-     
     // if protocol is in standby mode, check for new instruction
     if(protocolState == PROTOCOL_STANDBY){
         if(data == "ADD_PARTICIPANT") // go to add participant mode
@@ -168,8 +163,7 @@ var PROTOCOL_INCORRECT_SUBMISSION = 4; // waiting for participant name
     
     // if protocol is in add participant mode and waiting for editor:
     else if(protocolState == PROTOCOL_ADD_PARTICIPANT_editor){
-        var newCompetitor = new ChallengeCompetitor(PROTOCOL_TEMP_name, data);
-        display.addCompetitor(newCompetitor);
+        display.addCompetitor(PROTOCOL_TEMP_name, data);
         protocolState = PROTOCOL_STANDBY;
     }
     

@@ -3,7 +3,7 @@ var PARTICIPANT_WORKING = 0;
 var PARTICIPANT_FINISHED = 1;
 var PARTICIPANT_FORFEIT = 2;
 
-var TEXT_BUBBLE_DURATION = 10; // seconds
+var TEXT_BUBBLE_DURATION = 8; // seconds
 var TEXT_BUBBLE_FADE_TIME = 1; // seconds
 
 var DISPLAY_TEXT_COLOR = 0; // TODO - currently unused
@@ -13,6 +13,12 @@ var DISPLAY_WORKING_ICON = "images/what.png";
 var DISPLAY_FINISHED_ICON = "images/victory.png";
 var DISPLAY_FORFEIT_ICON = "images/cry.png";
 
+
+function Display(){
+    // canvas and context
+    this.canvas = document.getElementById("screen");
+    this.ctx = this.canvas.getContext("2d");
+}
 
 // Display object that renders to the canvas, responsible for displaying the
 //  screen as
@@ -44,17 +50,13 @@ function DisplayChallengeMode(){
     // list of competitors displayed
     this.competitors = new Array();
     
-    // TODO - temporary, REMOVE
-    /*for(var i=0; i<15; i++){
-        var c = new ChallengeCompetitor("name", "editor");
-        c.status = i%3;
-        this.competitors.push(c);
-    }*/
-    
-    this.addCompetitor = function(competitor){
-        this.competitors.push(competitor);
+    // Adds a participant to the list of active competitors.
+    this.addCompetitor = function(participant, editor){
+        var newCompetitor = new ChallengeCompetitor(participant, editor);
+        this.competitors.push(newCompetitor);
     }
     
+    // Returns a competitor (if found) by the given participant name.
     this.getCompetitor = function(competitorName){
         for(var i=0; i<this.competitors.length; i++){
             if(this.competitors[i].participant == competitorName)
