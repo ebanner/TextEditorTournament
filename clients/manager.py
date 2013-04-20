@@ -45,10 +45,13 @@ class Manager():
     
     def read_line(self):
         """Returns a line read from the socket."""
-        return self.stream.readline().strip()
+        line = self.stream.readline().strip()
+        print('READ: {}'.format(line))
+        return line
     
     def write_line(self, message):
         """Writes a message (line) to the socket"""
+        print('WRITE: {}'.format(message))
         self.socket.sendall(bytes(message + "\n", 'utf-8'))
         
     def write(self, data):
@@ -230,16 +233,17 @@ class Manager():
 
         self.write_line('CHALLENGE_INITIATE')
         response = self.read_line()
-        if response != 'PARTICIPANT_ACCEPTED':
-            print('Challenge rejected by server:')
-            if response == 'CHALLENGE_NOT_FOUND':
-                print('   No challenge has been sent to the server yet.')
-            elif response == 'CHALLENGE_ALREADY_ACTIVE':
-                print('   Another challenge is already active.')
-            elif response == 'NO_PARTICIPANTS_CONNECTED':
-                print('   There are no participants connected to the server.')
-            else:
-                print('   Unknown error.')
+        if response == 'CHALLENGE_NOT_FOUND':
+            print('   No challenge has been sent to the server yet.')
+            return
+        elif response == 'CHALLENGE_ALREADY_ACTIVE':
+            print('   Another challenge is already active.')
+            return
+        elif response == 'NO_PARTICIPANTS_CONNECTED':
+            print('   There are no participants connected to the server.')
+            return
+        elif response == 'CHALLENGE_ERROR':
+            print('   Unknown error')
             return
         
         while response != 'PARTICIPANT_LIST_FINISHED':

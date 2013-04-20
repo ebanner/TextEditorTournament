@@ -36,7 +36,7 @@ if __name__ == "__main__":
         elif connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_MANAGER":
             boss.set_manager(client)
         elif connection_type == "TEXT_EDITOR_TOURNAMENT_TYPE_DISPLAY":
-            pass#boss.set_display(client)
+            pass #boss.set_display(client)
         else:
             # send a reject message and close
             client.sendall(bytes("CONNECTION_REJECTED\n", 'utf-8'))

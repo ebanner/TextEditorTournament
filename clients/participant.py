@@ -89,6 +89,7 @@ class Client():
         print(challenge_name)
         description_line_count = int(self.read_line())
         
+        # Print out the description
         description = ''
         for i in range(description_line_count):
             line = self.read_line()
