@@ -91,8 +91,8 @@ class Client():
         """Receive challenge information from the server and either accept or
         reject the challenge."""
         # Get challenge info
-        challenge_id = self.read_line()
-        print('Challenge ID: {}'.format(challenge_id))
+        self.challenge_id = self.read_line()
+        print('Challenge ID: {}'.format(self.challenge_id))
         challenge_name = self.read_line()
         print('Challenge Name: {}'.format(challenge_name))
         description_line_count = int(self.read_line())
@@ -138,9 +138,11 @@ class Client():
                 # write every line to the file with a newline
                 f.write(''.join([ line + "\n" for line in start_file.lines ]))
         
-        forfeit_string = "{} is the worst editor".format(self.editor)
-        print('Press ENTER to submit your work or "{} to '
-            'forfeit.'.format(forfeit_string))
+        #forfeit_string = "{} is the worst editor".format(self.editor)
+        forfeit_string = 'forfeit'
+        #print('Press ENTER to submit your work or "{} to '
+        #    'forfeit.'.format(forfeit_string))
+        print("Press ENTER to submit your work or `forfeit'")
         finished = False
         while not finished:
             key = input(' > ')
@@ -149,22 +151,27 @@ class Client():
                 finished = True
             # TODO: elif key == "challenge reset"
             else:
-                if not self.submit_for_review(challenge_id):
+                if not self.submit_for_review():
                     print('Failed to send all files for review')
                     continue
                 else:
                     feedback = self.read_line()
                     if feedback == "CHALLENGE_RESULTS_INCORRECT":
+                        num_diff_lines = int(self.read_line())
+                        diff = ''
+                        for i in range(num_diff_lines):
+                            diff_line = self.read_line()
+                            print(diff_line)
                         continue
                     else:
                         print('Congrats! Well done.')
                         finished = True
                 
         
-    def submit_for_review(self, challenge_id):
+    def submit_for_review(self):
         """Read all of the submission files into memory and send them to the 
         participant connection server for grading."""
-        # read files into a list
+        # Read files into a list
         files = []
         for file_name in glob.glob("*"):
             try:
@@ -179,9 +186,9 @@ class Client():
             files.append(next_file)
             print('{} added to the list.'.format(file_name))
             
-        # send files to server for grading
+        # Send files to server for grading
         self.write_line('CHALLENGE_SUBMISSION')
-        self.write_line(challenge_id)
+        self.write_line(self.challenge_id)
         print('writing files')
         self.write_line('FILE_TRANSMISSION_BEGIN')
         for f in files:
@@ -192,7 +199,7 @@ class Client():
                 self.write_line(line)
         self.write_line('FILE_TRANMISSION_END')
         
-        print('finished writing files')
+        print('Finished writing files')
         return True
     
     def close(self):

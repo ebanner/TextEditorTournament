@@ -18,28 +18,33 @@ class Boss():
         self.participants = []
         self.challenge_active = False
         self.challenge = None
-        self.state = 0 # initial state, normal
+        self.state = RUN_STATE_NORMAL # initial state, normal
         self.thread_lock = threading.Lock()
         self.display = None
     
     def check_solution(self, files):
-        # Check if challenge exists
+        """Compute the diff of the submitted files vs. the solution files for
+        the active challenge"""
         num_solved = 0
         diffs = []
+        # Keep track of the total number of lines in the diff across all the
+        # files.
+        num_lines = 0
         for f in files:
-            diff, solved = self.challenge.check_file(f)
-            if solved:
+            diff = self.challenge.check_file(f)
+            if diff == False:
+                # The submitted file doesn't have a corresponding *.sol file.
+                continue
+            elif not diff:
                 num_solved += 1
-            diffs.append(diff)
-        if num_solved == self.challenge.num_solutions:
-            pass #win
-        else:
-            pass #reply incorrect message
+            else:
+                assert diff
+                # Only append the diff if it differed from the solution file
+                diffs.append(diff)
+                num_lines += len(diff)
+        return diffs, num_lines
             
-        # If everyone is done
-        #   self.manager.finish_challenge()
-    
-    def challenge_start_response(self, forfeiting):
+    def challenge_start_response(self, responder, forfeiting):
         """
         STATE 2 method: 
             --- if not in correct state, does nothing
@@ -50,16 +55,48 @@ class Boss():
 
         """
         if self.state != RUN_STATE_CHALLENGE_MODE:
+            print('Current state: {}. Expecting {}'.format(self.state,
+                RUN_STATE_CHALLENGE_MODE))
             return
 
         ##### Syncrhonize threads. #####
         self.thread_lock.acquire()
         
         print("In thread lock...")
-        if reponder.forfeited:
+        if responder.forfeited:
             print("Participant forfeited.")
-            self.manager.send_participant_forfeit_message(responder.user,
-                responder.editor)
+            self.display.send_forfeit_message(responder.user)
+        elif responder.working:
+            # Inform the display Participant gave an incorrect solution to the
+            # challenge.
+            self.display.send_incorrect_submission_message(responder.user)
+        else:
+            assert not responder.working and not responder.forfeited
+            # Participant has given correct solution
+            self.display.send_finished_message(responder.user)
+
+        # Check if every participant is finished.
+        all_finished = False
+        num_finished = 0
+        for participant in self.participants:
+            all_finished = all_finished or participant.forfeited\
+                    or not participant.working or participant.closed
+            if participant.forfeited or not participant.working:
+                num_finished += 1
+        
+        # If everyone is finished, tell manager and display about it so we can
+        # end the challenge.
+        if all_finished:
+            print("Everyone is finished")
+            self.display.send_challenge_finished()
+            self.manager.send_challenge_finished()
+            # Go back to the challenge init state
+            self.state = RUN_STATE_CHALLENGE_INIT
+            self.challenge_active = False
+
+        self.thread_lock.release()
+        ##### Thread synchronization done. #####
+        print("Out of thread lock...")
 
     def challenge_init_response(self, responder):
         """
@@ -108,14 +145,18 @@ class Boss():
     def start_challenge(self):
         """Send all participants the files and go"""
         print('ENTERING RUN_CHALLENGE_MODE')
-        self.phase = RUN_STATE_CHALLENGE_MODE
+        self.state = RUN_STATE_CHALLENGE_MODE
+        # Send materials over to participants
         for participant in self.participants:
             participant.start_challenge(self.challenge)
+
+        # Inform display the challenge is underway
+        self.display.start_challenge()
 
     def cancel_challenge(self):
         """Tell participants to abort challenge"""
         print('CANCELLING CHALLENGE')
-        self.phase = RUN_STATE_NORMAL
+        self.state = RUN_STATE_NORMAL
         for participant in self.participants:
             participant.cancel_challenge()
 

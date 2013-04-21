@@ -122,4 +122,7 @@ class Connection(threading.Thread):
         self.write_line('PARTICIPANT_LIST_FINISHED')
         self.write_line(str(n_part_accepting))
         self.write_line(str(n_part_total))
+
+    def send_challenge_finished(self):
+        self.write_line('CHALLENGE_FINISH')
     
