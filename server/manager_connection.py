@@ -80,10 +80,8 @@ class ManagerConnection(connection.Connection):
         self.write_line('CHALLENGE_OKAY')
     
     def process_challenge_init_request(self):
-        """
-        Tells the Boss to initiate a challenge. Depending on the return value
-        from the Boss, send the appropriate response to the manager.
-        """
+        """Tells the Boss to initiate a challenge. Depending on the return value
+        from the Boss, send the appropriate response to the manager."""
         if not self.boss.challenge:
             self.write_line('CHALLENGE_NOT_FOUND')
             return
@@ -112,9 +110,6 @@ class ManagerConnection(connection.Connection):
         self.write_line(name)
         self.write_line(editor)
     
-    def send_challenge_finished(self):
-        self.write_line('CHALLENGE_FINISH')
-        
     def run(self):
         """ """
         self.write_line("CONNECTION_ACCEPTED")

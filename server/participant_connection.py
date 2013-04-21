@@ -25,7 +25,11 @@ class ParticipantConnection(connection.Connection):
         pass
 
     def process_challenge_forfeit(self):
-        pass
+        print("We're forfeiting!!!!")
+        self.forfeited = True
+        # Tell the boss we are forfeiting and have it check to see if
+        # everyone if done.
+        self.boss.challenge_start_response(self, True)
 
     def process_challenge_reset(self):
         pass
@@ -57,7 +61,7 @@ class ParticipantConnection(connection.Connection):
         elif message == 'CHALLENGE_SUBMISSION':
             pass
         elif message == 'CHALLENGE_FORFEIT':
-            pass
+            self.process_challenge_forfeit()
         elif message == 'CHALLENGE_RESET':
             pass
         else:

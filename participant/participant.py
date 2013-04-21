@@ -138,9 +138,11 @@ class Client():
                 # write every line to the file with a newline
                 f.write(''.join([ line + "\n" for line in start_file.lines ]))
         
-        forfeit_string = "{} is the worst editor".format(self.editor)
-        print('Press ENTER to submit your work or "{} to '
-            'forfeit.'.format(forfeit_string))
+        #forfeit_string = "{} is the worst editor".format(self.editor)
+        forfeit_string = 'forfeit'
+        #print('Press ENTER to submit your work or "{} to '
+        #    'forfeit.'.format(forfeit_string))
+        print("Press ENTER to submit your work or `forfeit'")
         finished = False
         while not finished:
             key = input(' > ')
