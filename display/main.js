@@ -57,7 +57,6 @@ var dT = Math.floor(1000/FPS); // delta time (between frames)
 
 // PARTICIPANT LISTS
 var activeParticipants = new Array();
-// TODO - temporary
 
 
 // Initialize the websocket (try to connect to the WS server) using the given
@@ -180,12 +179,18 @@ function parseServerMessage(data){
         
         // if challenge start received, load challenge display
         else if(data == "CHALLENGE_START"){
-            var acceptedCompetitors = display.acceptingParticipants;
             var challengeId = display.challengeId
             var challengeName = display.challengeName;
             display = new DisplayChallengeMode(challengeId, challengeName);
-            for(var i=0; i<acceptedCompetitors.length; i++)
-                display.addCompetitor(acceptedCompetitors[i]);
+            // find each accepting challenger; if found, add him/her and
+            //  their respective editor to the list.
+            for(var i=0; i<activeParticipants.length; i++){
+                if(activeParticipants[i].accepted)
+                    display.addCompetitor(
+                        activeParticipants[i].participant,
+                        activeParticipants[i].editor);
+                activeParticipants[i].accepted = false;
+            }
         }
         
         // if challenge cancelled, load welcome display
@@ -199,6 +204,11 @@ function parseServerMessage(data){
         
         else if(data == "INCORRECT_SUBMISSION") // go to wrong submission mode
             protocolState = PROTOCOL_INCORRECT_SUBMISSION;
+        
+        else if(data == "CHALLENGE_FINISH"){
+            display = new DisplayStatsMode();
+            protocolState = PROTOCOL_STANDBY; // TODO - change
+        }
     }
     
     /*** ADD AND REMOVE PARTICIPANT STATES ***/
@@ -264,7 +274,14 @@ function parseServerMessage(data){
     
     // if protocol is in get participant accepted state waiting for name:
     else if(protocolState == PROTOCOL_PARTICIPANT_ACCEPTED){
-        display.addAcceptingParticipant(data);
+        // find the active participant that the name matches to
+        for(var i=0; i<activeParticipants.length; i++){
+            if(activeParticipants[i].participant == data){
+                activeParticipants[i].accepted = true;
+                display.addAcceptingParticipant(data);
+                break;
+            }
+        }
         protocolState = PROTOCOL_STANDBY;
     }
     

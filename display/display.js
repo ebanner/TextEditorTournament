@@ -6,7 +6,7 @@ var PARTICIPANT_FORFEIT = 2;
 var TEXT_BUBBLE_DURATION = 8; // seconds
 var TEXT_BUBBLE_FADE_TIME = 1; // seconds
 
-var DISPLAY_FG_COLOR = "#FFFFFF";
+var DISPLAY_FG_COLOR = "#000000";
 var DISPLAY_BACKGROUND_IMAGE = "images/bg.png";
 var DISPLAY_WORKING_ICON = "images/what.png";
 var DISPLAY_FINISHED_ICON = "images/victory.png";
@@ -22,6 +22,10 @@ function Display(){
     
     // list of message bubbles on the screen
     this.textBubbles = new Array();
+    
+    // background image
+    this.backgroundImage = new Image();
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
     
     
     // Makes the canvas go into fullscreen mode, and increases the resolution
@@ -53,26 +57,71 @@ function Display(){
     }
     
     
+    // Clears off the screen, and draws the background image.
+    this.drawBG = function(){
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.backgroundImage, 0, 0,
+            this.canvas.width, this.canvas.height);
+    }
+    
+    
+    // Standardly used variables that get updated each frame, and can be
+    //  manually updated by themselves.
+    this.midpointX = 0;
+    this.edgeLeft = 0;
+    this.smallTextSize = 0;
+    
+    // Update function for the standard values.
+    this.updateStandardValues = function(){
+        this.midpointX = Math.floor(this.canvas.width / 2.5);
+        this.edgeLeft = Math.floor(this.canvas.width / 25);
+        this.smallTextSize = Math.floor(this.canvas.width / 80);
+    }
+    
+    
+    // Draws the message bubbles on the screen.
+    this.drawMessageBubbles = function(){
+        this.ctx.textAlign = "left";
+        var bubbleH = Math.ceil(this.canvas.height / 17);
+		var bubbleW = this.midpointX - Math.ceil(this.midpointX / 6.5);
+		var bubbleY = this.canvas.height - this.edgeLeft - bubbleH;
+		var textX = this.edgeLeft + Math.floor(this.midpointX / 40);
+		// Loop backwards - draw most recent bubbles first.
+		for(var i=(this.textBubbles.length-1); i>=0; i--){
+		    // update the bubble; if it is dead, remove it from the list
+		    this.textBubbles[i].update();
+		    if(this.textBubbles[i].isDead()){
+		        this.textBubbles.splice(i, 1);
+		        continue;
+		    }
+		    // draw the bubble if it isn't dead
+		    this.textBubbles[i].draw(this.ctx,
+		        this.edgeLeft, bubbleY, bubbleW, bubbleH,
+		        this.smallTextSize, textX);
+		    bubbleY -= (bubbleH + Math.ceil(bubbleH / 4));
+		}
+    }
+    
+    
     // Updates and draws every frame.
     this.update = function(){
-        // Does nothing - override required.
+        // Override to add more functionality.
+        this.drawBG();
+        this.updateStandardValues();
+        this.drawMessageBubbles();
     }
 }
 
 
 // The very first start-up display mode: just shows a welcome message.
 function DisplayWelcomeMode(){
-    
-    // background image
-    this.backgroundImage = new Image();
-    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
 
     // Updates the welcome screen every frame.
     this.update = function(){
-        // Clear off the screen.
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(this.backgroundImage, 0, 0,
-            this.canvas.width, this.canvas.height);
+        // Do standard per-frame updates:
+        this.drawBG();
+        this.updateStandardValues();
+        this.drawMessageBubbles();
         
         this.ctx.textAlign = "center";
         this.ctx.fillStyle = DISPLAY_FG_COLOR;
@@ -87,10 +136,6 @@ DisplayWelcomeMode.prototype = new Display();
 
 // The very first start-up display mode: just shows a welcome message.
 function DisplayInitMode(challengeId, challengeName, descriptionLines){
-    
-    // background image
-    this.backgroundImage = new Image();
-    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
     
     // challenge information
     this.challengeId = challengeId;
@@ -110,10 +155,10 @@ function DisplayInitMode(challengeId, challengeName, descriptionLines){
 
     // Updates the welcome screen every frame.
     this.update = function(){
-        // Clear off the screen.
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(this.backgroundImage, 0, 0,
-            this.canvas.width, this.canvas.height);
+        // Do standard per-frame updates:
+        this.drawBG();
+        this.updateStandardValues();
+        this.drawMessageBubbles();
         
         // Establish text sizes before going into drawing.
         var bigTextSize = Math.floor(this.canvas.width / 36);
@@ -165,7 +210,7 @@ function DisplayInitMode(challengeId, challengeName, descriptionLines){
             var boxTextY = boxTextTop;
             if(i%2 != 0)
                 boxTextY = boxTextBottom;
-            this.ctx.fillStyle = "#FFFFFF";
+            this.ctx.fillStyle = DISPLAY_FG_COLOR;
             this.ctx.fillText(this.acceptingParticipants[i],
                 boxX, boxTextY);
             boxX += boxDiff;
@@ -183,10 +228,6 @@ function DisplayChallengeMode(challengeId, challengeName){
     // challenge information
     this.challengeNumber = challengeId;
     this.challengeName = challengeName;
-    
-    // background image
-    this.backgroundImage = new Image();
-    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
     
     // challenge status icons
     this.workingIcon = new Image();
@@ -217,8 +258,10 @@ function DisplayChallengeMode(challengeId, challengeName){
     
     // Updates the canvas to draw every frame, after clearing it off.
     this.update = function(){
-        // Clear off the screen.
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // Do standard per-frame updates:
+        this.drawBG();
+        this.updateStandardValues();
+        this.drawMessageBubbles();
 		    
 		// general line color
 		this.ctx.strokeStyle = "#000000";
@@ -239,10 +282,6 @@ function DisplayChallengeMode(challengeId, challengeName){
         
         // left-align text
         this.ctx.textAlign = "left";
-        
-        // Draw background texture for left side.
-        this.ctx.drawImage(this.backgroundImage,
-            0, 0, this.canvas.width, this.canvas.height);
             
 		
 		// Draw the participant list (if at least one).
@@ -355,27 +394,6 @@ function DisplayChallengeMode(challengeId, challengeName){
 		this.ctx.fillText(this.challengeName, edgeLeft, secondTop);
 		
 		
-		// Draw the text bubbles: first, calculate the position and size for
-		//  the bubbles.
-		var bubbleH = Math.ceil(this.canvas.height / 17);
-		var bubbleW = midpointX - Math.ceil(midpointX / 6.5);
-		var bubbleY = this.canvas.height - edgeLeft - bubbleH;
-		var textX = edgeLeft + Math.floor(midpointX / 40);
-		// Loop backwards - draw most recent bubbles first.
-		for(var i=(this.textBubbles.length-1); i>=0; i--){
-		    // update the bubble; if it is dead, remove it from the list
-		    this.textBubbles[i].update();
-		    if(this.textBubbles[i].isDead()){
-		        this.textBubbles.splice(i, 1);
-		        continue;
-		    }
-		    // draw the bubble if it isn't dead
-		    this.textBubbles[i].draw(this.ctx,
-		        edgeLeft, bubbleY, bubbleW, bubbleH, smallTextSize, textX);
-		    bubbleY -= (bubbleH + Math.ceil(bubbleH / 4));
-		}
-		
-		
 		// Draw the MAIN DIVIDER (line separator).
 		this.ctx.strokeStyle = "#00FF00";
 		this.ctx.lineWidth = lineWidth;
@@ -387,6 +405,15 @@ function DisplayChallengeMode(challengeId, challengeName){
     }
 }
 DisplayChallengeMode.prototype = new Display();
+
+
+// Display mode for showing after-challenge data, including info about the
+//  last challenge, as well as general editor stats (i.e. which editor
+//  is currently in the lead).
+function DisplayStatsMode(){
+    // TODO - implement
+}
+DisplayStatsMode.prototype = new Display();
 
 
 // A self-updating TextBubble object that fades over time, and if it expired
