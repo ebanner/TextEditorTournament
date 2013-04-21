@@ -29,10 +29,19 @@ class DisplayConnection(connection.Connection):
         self.write_line('CHALLENGE_START')
         self.state = CHALLENGE_MODE
 
-    def send_participant_forfeit_message(self, name):
+    def send_forfeit_message(self, name):
         self.write_line('SET_PARTICIPANT_STATUS')
         self.write_line(name)
         self.write_line('STATUS_FORFEIT')
+
+    def send_incorrect_submission_message(self, name):
+        self.write_line('INCORRECT_SUBMISSION')
+        self.write_line(name)
+
+    def send_finished_message(self, name):
+        self.write_line('SET_PARTICIPANT_STATUS')
+        self.write_line(name)
+        self.write_line('STATUS_FINISHED')
 
     def close(self):
         super(DisplayConnection, self).close()

@@ -23,22 +23,27 @@ class Boss():
         self.display = None
     
     def check_solution(self, files):
-        # Check if challenge exists
+        """Compute the diff of the submitted files vs. the solution files for
+        the active challenge"""
         num_solved = 0
         diffs = []
+        # Keep track of the total number of lines in the diff across all the
+        # files.
+        num_lines = 0
         for f in files:
-            diff, solved = self.challenge.check_file(f)
-            if solved:
+            diff = self.challenge.check_file(f)
+            if diff == False:
+                # The submitted file doesn't have a corresponding *.sol file.
+                continue
+            elif not diff:
                 num_solved += 1
-            diffs.append(diff)
-        if num_solved == self.challenge.num_solutions:
-            pass #win
-        else:
-            pass #reply incorrect message
+            else:
+                assert diff
+                # Only append the diff if it differed from the solution file
+                diffs.append(diff)
+                num_lines += len(diff)
+        return diffs, num_lines
             
-        # If everyone is done
-        #   self.manager.finish_challenge()
-    
     def challenge_start_response(self, responder, forfeiting):
         """
         STATE 2 method: 
@@ -60,14 +65,22 @@ class Boss():
         print("In thread lock...")
         if responder.forfeited:
             print("Participant forfeited.")
-            self.display.send_participant_forfeit_message(responder.user)
+            self.display.send_forfeit_message(responder.user)
+        elif responder.working:
+            # Inform the display Participant gave an incorrect solution to the
+            # challenge.
+            self.display.send_incorrect_submission_message(responder.user)
+        else:
+            assert not responder.working and not responder.forfeited
+            # Participant has given correct solution
+            self.display.send_finished_message(responder.user)
 
         # Check if every participant is finished.
         all_finished = False
         num_finished = 0
         for participant in self.participants:
             all_finished = all_finished or participant.forfeited\
-                    or not participent.working or participant.closed
+                    or not participant.working or participant.closed
             if participant.forfeited or not participant.working:
                 num_finished += 1
         
@@ -77,14 +90,13 @@ class Boss():
             print("Everyone is finished")
             self.display.send_challenge_finished()
             self.manager.send_challenge_finished()
+            # Go back to the challenge init state
+            self.state = RUN_STATE_CHALLENGE_INIT
+            self.challenge_active = False
 
         self.thread_lock.release()
         ##### Thread synchronization done. #####
         print("Out of thread lock...")
-
-        # Go back to the challenge init state
-        self.state = RUN_STATE_CHALLENGE_INIT
-        self.challenge_active = False
 
     def challenge_init_response(self, responder):
         """
