@@ -128,6 +128,11 @@ $(document).ready(function(){
     
     // Start the canvas animator
     display = new DisplayWelcomeMode();
+    /*display = new DisplayChallengeMode("0", "Test Challenge");
+    display.challengeName = "Hi";
+    display.addCompetitor("person1", "vim")
+    display.addCompetitor("person2", "something else")
+    display.addCompetitor("person3", "gedit")*/
     
     setTimeout(updateFrame, dT);
 });
@@ -176,7 +181,9 @@ function parseServerMessage(data){
         // if challenge start received, load challenge display
         else if(data == "CHALLENGE_START"){
             var acceptedCompetitors = display.acceptingParticipants;
-            display = new DisplayChallengeMode();
+            var challengeId = display.challengeId
+            var challengeName = display.challengeName;
+            display = new DisplayChallengeMode(challengeId, challengeName);
             for(var i=0; i<acceptedCompetitors.length; i++)
                 display.addCompetitor(acceptedCompetitors[i]);
         }

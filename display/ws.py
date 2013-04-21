@@ -2,6 +2,7 @@
 
 import socket
 import sys
+import time
 
 import hashlib
 import base64
@@ -176,8 +177,114 @@ if __name__ == '__main__':
     client.sendall(handshake.encode())
     
     connected = True
-    receiver = Receiver(client)
-    receiver.start()
+    #receiver = Receiver(client)
+    #receiver.start()
+    
+    # run a demo test scenario protocol
+    send_data(client, "CONNECTION_ACCEPTED")
+    
+    send_data(client, "ADD_PARTICIPANT")
+    send_data(client, "Richard")
+    send_data(client, "GEdit")
+    
+    send_data(client, "ADD_PARTICIPANT")
+    send_data(client, "Edward")
+    send_data(client, "vim")
+    
+    send_data(client, "ADD_PARTICIPANT")
+    send_data(client, "Some Guy")
+    send_data(client, "vim")
+    
+    send_data(client, "ADD_PARTICIPANT")
+    send_data(client, "Troll")
+    send_data(client, "nano")
+    
+    send_data(client, "ADD_PARTICIPANT")
+    send_data(client, "Nick")
+    send_data(client, "Eclipse")
+    
+    send_data(client, "ADD_PARTICIPANT")
+    send_data(client, "Dr. Someguy")
+    send_data(client, "emacs")
+    
+    send_data(client, "ADD_PARTICIPANT")
+    send_data(client, "Jimmy")
+    send_data(client, "GEdit")
+    
+    send_data(client, "REMOVE_PARTICIPANT")
+    send_data(client, "Jimmy")
+    
+    time.sleep(8)
+    
+    send_data(client, "CHALLENGE_INITIATE")
+    send_data(client, "1")
+    send_data(client, "First Test Challenge")
+    send_data(client, "4")
+    send_data(client, "This is just a test description, so please ignore it.")
+    send_data(client, "Even if you choose to do this challenge, it will not")
+    send_data(client, "matter, because we're not actually doing it. Seriously.")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    
+    time.sleep(1.5)
+    send_data(client, "PARTICIPANT_ACCEPTED")
+    send_data(client, "Troll")
+    
+    time.sleep(1.5)
+    send_data(client, "PARTICIPANT_ACCEPTED")
+    send_data(client, "Dr. Someguy")
+    
+    time.sleep(2)
+    send_data(client, "PARTICIPANT_ACCEPTED")
+    send_data(client, "Richard")
+    
+    time.sleep(0.1)
+    send_data(client, "PARTICIPANT_ACCEPTED")
+    send_data(client, "Edward")
+    
+    time.sleep(4)
+    send_data(client, "PARTICIPANT_ACCEPTED")
+    send_data(client, "Nick")
+    
+    time.sleep(5)
+    
+    send_data(client, "CHALLENGE_START")
+    
+    time.sleep(0.5)
+    send_data(client, "SET_PARTICIPANT_STATUS")
+    send_data(client, "Troll")
+    send_data(client, "STATUS_FINISHED")
+    
+    time.sleep(5)
+    send_data(client, "INCORRECT_SUBMISSION")
+    send_data(client, "Dr. Someguy")
+    
+    time.sleep(7)
+    send_data(client, "SET_PARTICIPANT_STATUS")
+    send_data(client, "Edward")
+    send_data(client, "STATUS_FINISHED")
+    
+    time.sleep(4)
+    send_data(client, "SET_PARTICIPANT_STATUS")
+    send_data(client, "Richard")
+    send_data(client, "STATUS_FINISHED")
+    
+    time.sleep(2)
+    send_data(client, "INCORRECT_SUBMISSION")
+    send_data(client, "Dr. Someguy")
+    
+    time.sleep(1.5)
+    send_data(client, "SET_PARTICIPANT_STATUS")
+    send_data(client, "Nick")
+    send_data(client, "STATUS_FINISHED")
+    
+    time.sleep(5)
+    send_data(client, "SET_PARTICIPANT_STATUS")
+    send_data(client, "Dr. Someguy")
+    send_data(client, "STATUS_FORFEIT")
+    
+    time.sleep(4)
+    send_data(client, "CHALLENGE_FINISH")
+    
     
     while True:
         print("\033[94m", end="")

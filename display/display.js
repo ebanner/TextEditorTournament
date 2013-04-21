@@ -24,10 +24,11 @@ function Display(){
     this.textBubbles = new Array();
     
     
-    // Makes the canvas go into fullscreen mode. TODO- doesn't work.
+    // Makes the canvas go into fullscreen mode, and increases the resolution
+    //  to a better quality.
     this.goFullScreen = function(){
-        //this.canvas.width = 1600;
-        //this.canvas.height = 1000;
+        this.canvas.width = 1600;
+        this.canvas.height = 1000;
         
         if(this.canvas.requestFullScreen)
             this.canvas.requestFullScreen();
@@ -177,11 +178,11 @@ DisplayInitMode.prototype = new Display();
 // Challenge Mode Display: responsible for drawing the canvas showing the
 //  current challenge number and name, and messages that pop up, and
 //  showing the current progress status of each participant doing the challenge.
-function DisplayChallengeMode(){
+function DisplayChallengeMode(challengeId, challengeName){
     
     // challenge information
-    this.challengeNumber = 0;
-    this.challengeName = "Challenge Name Here";
+    this.challengeNumber = challengeId;
+    this.challengeName = challengeName;
     
     // background image
     this.backgroundImage = new Image();
@@ -218,6 +219,9 @@ function DisplayChallengeMode(){
     this.update = function(){
         // Clear off the screen.
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		    
+		// general line color
+		this.ctx.strokeStyle = "#000000";
         
         // Establish text sizes before going into drawing.
         var bigTextSize = Math.floor(this.canvas.width / 36);
@@ -227,11 +231,14 @@ function DisplayChallengeMode(){
         // Establish general positions before going into drawing.
         var edgeTop = Math.floor(this.canvas.height / 11);
         var secondTop = Math.floor(this.canvas.height / 6);
-        var edgeLeft = Math.floor(this.canvas.width / 40);
+        //var edgeLeft = Math.floor(this.canvas.width / 40);
+        var edgeLeft = Math.floor(this.canvas.width / 25);
         var midpointX = Math.floor(this.canvas.width / 2.5);
         var rightWidth = this.canvas.width - midpointX;
         var lineWidth = Math.ceil(this.canvas.width / 270);
         
+        // left-align text
+        this.ctx.textAlign = "left";
         
         // Draw background texture for left side.
         this.ctx.drawImage(this.backgroundImage,
@@ -340,7 +347,7 @@ function DisplayChallengeMode(){
 		
         
         // Draw the scaled title and challenge number.
-		this.ctx.fillStyle = "#000000";
+		this.ctx.fillStyle = DISPLAY_FG_COLOR;
         this.ctx.font = "bold " + bigTextSize + "pt Arial";
 		this.ctx.fillText("Challenge " + this.challengeNumber,
 		    edgeLeft, edgeTop);
@@ -351,7 +358,7 @@ function DisplayChallengeMode(){
 		// Draw the text bubbles: first, calculate the position and size for
 		//  the bubbles.
 		var bubbleH = Math.ceil(this.canvas.height / 17);
-		var bubbleW = midpointX - edgeLeft*2;
+		var bubbleW = midpointX - Math.ceil(midpointX / 6.5);
 		var bubbleY = this.canvas.height - edgeLeft - bubbleH;
 		var textX = edgeLeft + Math.floor(midpointX / 40);
 		// Loop backwards - draw most recent bubbles first.
@@ -370,6 +377,7 @@ function DisplayChallengeMode(){
 		
 		
 		// Draw the MAIN DIVIDER (line separator).
+		this.ctx.strokeStyle = "#00FF00";
 		this.ctx.lineWidth = lineWidth;
 		this.ctx.beginPath();
 		    this.ctx.moveTo(midpointX, 0);
@@ -420,6 +428,7 @@ function TextBubble(text, colorStr){
         ctx.save();
             ctx.globalAlpha = this.curAlpha;
             ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		    ctx.fillStyle = "#505050";
             ctx.fillRect(x, y, w, h);
             ctx.fillStyle = this.color;
             ctx.font = "" + textSize + "pt Arial";
