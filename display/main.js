@@ -330,6 +330,7 @@ function parseServerMessage(data){
 //              type: depending on the given type, the color of the text/bubble
 //                  will varry.
 function notify(text, type){
+    playText(text);
     var colorStr = "#FFFFFF";
     switch(type){
         case NOTIFICATION_TYPE_SYS:
@@ -356,10 +357,13 @@ function notify(text, type){
 function playText(text){
     if (text == "")
         return false;
-    var audio = document.createElement("audio");
-    audio.setAttribute("src",
-        "http://translate.google.com/translate_tts?tl=en&q="
-        + encodeURIComponent(text));
+    
+    var audio = new Audio();//document.createElement("audio");
+    //audio.setAttribute("src",
+    audio.src =
+        //"http://translate.google.com/translate_tts?tl=en&q="
+        "http://speechutil.com/convert/ogg?text=%27"
+        + encodeURIComponent(text) + "%27";
     audio.load();
     audio.play();
 }

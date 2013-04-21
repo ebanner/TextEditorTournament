@@ -205,7 +205,7 @@ function DisplayInitMode(challengeId, challengeName, descriptionLines){
         var boxTextBottom = boxY + boxSize + halfBoxSize / 1.1;
         this.ctx.font = "" + smallTextSize + "pt Arial";
         for(var i=0; i<this.acceptingParticipants.length; i++){
-            this.ctx.fillStyle = "#22FF44";
+            this.ctx.fillStyle = "#33BB55";
             this.ctx.fillRect(boxX - halfBoxSize, boxY, boxSize, boxSize);
             var boxTextY = boxTextTop;
             if(i%2 != 0)
