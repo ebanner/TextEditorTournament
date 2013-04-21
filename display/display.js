@@ -6,70 +6,28 @@ var PARTICIPANT_FORFEIT = 2;
 var TEXT_BUBBLE_DURATION = 8; // seconds
 var TEXT_BUBBLE_FADE_TIME = 1; // seconds
 
-var DISPLAY_TEXT_COLOR = 0; // TODO - currently unused
-var DISPLAY_DIVIDER_COLOR = 0; // TODO - currently unused
-var DISPLAY_BACKGROUND_IMAGE = "images/bg.jpg";
+var DISPLAY_FG_COLOR = "#FFFFFF";
+var DISPLAY_BACKGROUND_IMAGE = "images/bg.png";
 var DISPLAY_WORKING_ICON = "images/what.png";
 var DISPLAY_FINISHED_ICON = "images/victory.png";
 var DISPLAY_FORFEIT_ICON = "images/cry.png";
 
 
+// Prototyle display: contains the standard variables used by all of the
+//  display objects to follow.
 function Display(){
     // canvas and context
     this.canvas = document.getElementById("screen");
     this.ctx = this.canvas.getContext("2d");
-}
-
-// Display object that renders to the canvas, responsible for displaying the
-//  screen as
-function DisplayChallengeMode(){
-
-    // canvas and context
-    this.canvas = document.getElementById("screen");
-    this.ctx = this.canvas.getContext("2d");
-    
-    // challenge information
-    this.challengeNumber = 0;
-    this.challengeName = "Challenge Name Here";
-    
-    // background image
-    this.backgroundImage = new Image();
-    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
-    
-    // challenge status icons
-    this.workingIcon = new Image();
-    this.workingIcon.src = DISPLAY_WORKING_ICON;
-    this.finishedIcon = new Image();
-    this.finishedIcon.src = DISPLAY_FINISHED_ICON;
-    this.forfeitIcon = new Image();
-    this.forfeitIcon.src = DISPLAY_FORFEIT_ICON;
     
     // list of message bubbles on the screen
     this.textBubbles = new Array();
     
-    // list of competitors displayed
-    this.competitors = new Array();
-    
-    // Adds a participant to the list of active competitors.
-    this.addCompetitor = function(participant, editor){
-        var newCompetitor = new ChallengeCompetitor(participant, editor);
-        this.competitors.push(newCompetitor);
-    }
-    
-    // Returns a competitor (if found) by the given participant name.
-    this.getCompetitor = function(competitorName){
-        for(var i=0; i<this.competitors.length; i++){
-            if(this.competitors[i].participant == competitorName)
-                return this.competitors[i];
-        }
-        return false;
-    }
-    
     
     // Makes the canvas go into fullscreen mode. TODO- doesn't work.
     this.goFullScreen = function(){
-        this.canvas.width = 1600;
-        this.canvas.height = 1000;
+        //this.canvas.width = 1600;
+        //this.canvas.height = 1000;
         
         if(this.canvas.requestFullScreen)
             this.canvas.requestFullScreen();
@@ -91,6 +49,168 @@ function DisplayChallengeMode(){
         // add the new text bubble
         var bubble = new TextBubble(text, colorStr);
         this.textBubbles.push(bubble);
+    }
+    
+    
+    // Updates and draws every frame.
+    this.update = function(){
+        // Does nothing - override required.
+    }
+}
+
+
+// The very first start-up display mode: just shows a welcome message.
+function DisplayWelcomeMode(){
+    
+    // background image
+    this.backgroundImage = new Image();
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
+
+    // Updates the welcome screen every frame.
+    this.update = function(){
+        // Clear off the screen.
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.backgroundImage, 0, 0,
+            this.canvas.width, this.canvas.height);
+        
+        this.ctx.textAlign = "center";
+        this.ctx.fillStyle = DISPLAY_FG_COLOR;
+		this.ctx.font = "bold " + Math.ceil(this.canvas.width/40) + "pt Calibri";
+		this.ctx.fillText("Welcome to Text Editor Tournament 2013!",
+		    Math.floor(this.canvas.width / 2),
+		    Math.floor(this.canvas.height / 2))
+    }
+}
+DisplayWelcomeMode.prototype = new Display();
+
+
+// The very first start-up display mode: just shows a welcome message.
+function DisplayInitMode(challengeId, challengeName, descriptionLines){
+    
+    // background image
+    this.backgroundImage = new Image();
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
+    
+    // challenge information
+    this.challengeId = challengeId;
+    this.challengeName = challengeName;
+    this.descriptionLines = descriptionLines;
+    this.acceptingParticipants = new Array();
+    
+    // Parameter: string
+    this.addAcceptingParticipant = function(participant){
+        if(participant.length >= 16){
+            participant = participant.substring(0, 16);
+            participant += "...";
+        }
+        this.acceptingParticipants.push(participant);
+    }
+
+
+    // Updates the welcome screen every frame.
+    this.update = function(){
+        // Clear off the screen.
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.backgroundImage, 0, 0,
+            this.canvas.width, this.canvas.height);
+        
+        // Establish text sizes before going into drawing.
+        var bigTextSize = Math.floor(this.canvas.width / 36);
+        var midTextSize = Math.floor(this.canvas.width / 55);
+        var smallTextSize = Math.floor(this.canvas.width / 110);
+        var descriptionTextSize = Math.floor(this.canvas.width / 60);
+        
+        // Establish general positions before going into drawing.
+        var edgeTop = Math.floor(this.canvas.height / 10);
+        var secondTop = Math.floor(this.canvas.height / 5.5);
+        var descriptionTop = Math.floor(this.canvas.height / 2);
+        var descriptionLineHeight = Math.floor(this.canvas.height / 17);
+        var edgeLeft = Math.floor(this.canvas.width / 16);
+        
+        // display the challenge ID and name (title) here:
+        this.ctx.fillStyle = DISPLAY_FG_COLOR;
+        this.ctx.textAlign = "left";
+        this.ctx.font =  "bold " + bigTextSize + "pt Calibri";
+        this.ctx.fillText("Challenge " + this.challengeId,
+            edgeLeft, edgeTop);
+        this.ctx.font =  "bold " + midTextSize + "pt Calibri";
+        this.ctx.fillText("Challenge " + this.challengeName,
+            edgeLeft, secondTop);
+        
+        // draw each line of the description here:
+        this.ctx.textAlign = "center";
+        this.ctx.font =  "" + descriptionTextSize + "pt Calibri";
+        var descriptionX = Math.floor(this.canvas.width/2);
+        for(var i=0; i<this.descriptionLines.length; i++){
+            this.ctx.fillText(this.descriptionLines[i],
+                descriptionX, descriptionTop);
+            descriptionTop += descriptionLineHeight;
+        }
+        
+        // draw a box for each accepting participant here
+        var boxSize = Math.ceil(this.canvas.width / 23);
+        var boxDiff = boxSize + Math.ceil(boxSize / 4);
+        var halfBoxSize = Math.floor(boxSize / 2);
+        var boxY = Math.floor(this.canvas.height / 3.4);
+        var boxX = Math.floor(
+            (this.canvas.width / 2) -
+            (boxDiff * (this.acceptingParticipants.length - 1)) / 2);
+        var boxTextTop = boxY - halfBoxSize / 2;
+        var boxTextBottom = boxY + boxSize + halfBoxSize / 1.1;
+        this.ctx.font = "" + smallTextSize + "pt Arial";
+        for(var i=0; i<this.acceptingParticipants.length; i++){
+            this.ctx.fillStyle = "#22FF44";
+            this.ctx.fillRect(boxX - halfBoxSize, boxY, boxSize, boxSize);
+            var boxTextY = boxTextTop;
+            if(i%2 != 0)
+                boxTextY = boxTextBottom;
+            this.ctx.fillStyle = "#FFFFFF";
+            this.ctx.fillText(this.acceptingParticipants[i],
+                boxX, boxTextY);
+            boxX += boxDiff;
+        }
+    }
+}
+DisplayInitMode.prototype = new Display();
+
+
+// Challenge Mode Display: responsible for drawing the canvas showing the
+//  current challenge number and name, and messages that pop up, and
+//  showing the current progress status of each participant doing the challenge.
+function DisplayChallengeMode(){
+    
+    // challenge information
+    this.challengeNumber = 0;
+    this.challengeName = "Challenge Name Here";
+    
+    // background image
+    this.backgroundImage = new Image();
+    this.backgroundImage.src = DISPLAY_BACKGROUND_IMAGE;
+    
+    // challenge status icons
+    this.workingIcon = new Image();
+    this.workingIcon.src = DISPLAY_WORKING_ICON;
+    this.finishedIcon = new Image();
+    this.finishedIcon.src = DISPLAY_FINISHED_ICON;
+    this.forfeitIcon = new Image();
+    this.forfeitIcon.src = DISPLAY_FORFEIT_ICON;
+    
+    // list of competitors displayed
+    this.competitors = new Array();
+    
+    // Adds a participant to the list of active competitors.
+    this.addCompetitor = function(participant, editor){
+        var newCompetitor = new ChallengeCompetitor(participant, editor);
+        this.competitors.push(newCompetitor);
+    }
+    
+    // Returns a competitor (if found) by the given participant name.
+    this.getCompetitor = function(competitorName){
+        for(var i=0; i<this.competitors.length; i++){
+            if(this.competitors[i].participant == competitorName)
+                return this.competitors[i];
+        }
+        return false;
     }
     
     
@@ -258,6 +378,7 @@ function DisplayChallengeMode(){
 		this.ctx.closePath();
     }
 }
+DisplayChallengeMode.prototype = new Display();
 
 
 // A self-updating TextBubble object that fades over time, and if it expired

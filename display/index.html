@@ -3,7 +3,7 @@
 <title>WebSocket Test</title>
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="style.css" />
 
 <!--script type="text/javascript">
     // send message over the socket (if socket is ready)
@@ -36,17 +36,19 @@
 
 <body style="text-align:center;">
 
-    <h1>Text Editing Tournament</h1>
+    <h1>Text Editor Tournament</h1>
     
     <p><canvas id="screen" width="800" height="500"
         style="background: #FFFFFF; border: 5px solid black;" role="img">
             Your browser does not support the canvas element.
     </canvas></p>
 
+
     <script type="text/javascript" src="display.js"></script>
     <script type="text/javascript" src="main.js"></script>
     
-    <p><a href="javascript:goFullScreen();">Go Fullscreen</a></p>
+    <p><button onclick="goFullScreen();">Go Fullscreen</button></p>
+
 
 </body>
 
