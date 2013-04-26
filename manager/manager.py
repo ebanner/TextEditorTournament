@@ -7,7 +7,7 @@ import tarfile
 import glob
 
 HOST = 'localhost'
-PORT = 9999
+PORT = 6900
 
 class File:
     """A struct that contains the name of a file and the lines in the file"""

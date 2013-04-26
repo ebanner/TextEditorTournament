@@ -9,7 +9,7 @@ import file_obj
 
 
 HOST = 'localhost'
-PORT = 9999
+PORT = 6900
 WORKING_DIRECTORY = 'battlefield'
 
 class File:
@@ -104,13 +104,14 @@ class Client():
             description = ''.join([description, line+"\n"])
         print('Description: {}'.format(description))
         
-        # Prompt user to accept or reject
-        print('Would you like to accept this challenge? [Y/n]')
-        answer = input(' > ')
-        if answer.lower() == 'y':
-            self.write_line('CHALLENGE_ACCEPTED')
-        else:
-            self.write_line('CHALLENGE_REJECTED')
+        answer = '===*^*==='
+        while answer.lower() != 'y' and answer.lower() != 'n':
+            # Prompt user to accept or reject
+            answer = input('Would you like to accept this challenge? [Y/n] ')
+            if answer.lower() == 'y':
+                self.write_line('CHALLENGE_ACCEPTED')
+            elif answer.lower() == 'n':
+                self.write_line('CHALLENGE_REJECTED')
         
     def process_challenge_start(self):
         """Retrieve the challenge files from the Boss.
@@ -131,7 +132,11 @@ class Client():
         
         # Wipe all of the files in the working directory
         for file_name in glob.glob("*"):
-            os.remove(file_name)
+            # Check to see if file exists to guard against race condition with
+            # multiple users sharing same working directory.
+            try:
+                os.remove(file_name)
+            except IOError: pass
             
         for start_file in files:
             with open(start_file.name, 'w') as f:
@@ -189,7 +194,6 @@ class Client():
         # Send files to server for grading
         self.write_line('CHALLENGE_SUBMISSION')
         self.write_line(self.challenge_id)
-        print('writing files')
         self.write_line('FILE_TRANSMISSION_BEGIN')
         for f in files:
             self.write_line('SEND_FILE_BEGIN')

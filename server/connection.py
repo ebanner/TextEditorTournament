@@ -113,11 +113,9 @@ class Connection(threading.Thread):
         self.write_line(editor)
 
     def send_challenge_ready(self, n_part_accepting, n_part_total):
-        """
-        Sends a message indicating that all participants have responded in
+        """Sends a message indicating that all participants have responded in
         accepting or rejecting a challenge, and how many of a total number of
-        participants have chosen to accept the challenge.
-        """
+        participants have chosen to accept the challenge."""
         print('IN SEND_CHALLENGE_READY')
         self.write_line('PARTICIPANT_LIST_FINISHED')
         self.write_line(str(n_part_accepting))

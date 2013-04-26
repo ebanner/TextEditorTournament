@@ -16,10 +16,12 @@ class ParticipantConnection(connection.Connection):
         self.forfeited = False
 
     def start_challenge(self, challenge):
-        """ """
-        self.write_line('CHALLENGE_START')
-        self.write_files(challenge.start_files)
-        self.working = True
+        """Send over the signal to start the challenge only if the user has
+        accepted the challenge."""
+        if self.challenge_accepted:
+            self.write_line('CHALLENGE_START')
+            self.write_files(challenge.start_files)
+            self.working = True
         
     def process_challenge_submission(self):
         """Grade challenge submission and return either
@@ -48,14 +50,14 @@ class ParticipantConnection(connection.Connection):
 
         # We are not forfeiting, just letting the boss know that we
         # have made an attempt at solving the problem.
-        self.boss.challenge_start_response(self, False)
+        self.boss.challenge_start_response(self)
 
     def process_challenge_forfeit(self):
-        print("We're forfeiting!!!!")
+        print("We're forfeiting!!!! It's over Johnny!")
         self.forfeited = True
         # Tell the boss we are forfeiting and have it check to see if
         # everyone if done.
-        self.boss.challenge_start_response(self, True)
+        self.boss.challenge_start_response(self)
 
     def process_challenge_reset(self):
         pass

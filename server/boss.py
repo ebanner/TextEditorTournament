@@ -44,7 +44,7 @@ class Boss():
                 num_lines += len(diff)
         return diffs, num_lines
             
-    def challenge_start_response(self, responder, forfeiting):
+    def challenge_start_response(self, responder):
         """
         STATE 2 method: 
             --- if not in correct state, does nothing
@@ -54,13 +54,14 @@ class Boss():
         manager is notified.
 
         """
+        ##### Syncrhonize threads. #####
+        self.thread_lock.acquire()
+
         if self.state != RUN_STATE_CHALLENGE_MODE:
             print('Current state: {}. Expecting {}'.format(self.state,
                 RUN_STATE_CHALLENGE_MODE))
+            self.thread_lock.release()
             return
-
-        ##### Syncrhonize threads. #####
-        self.thread_lock.acquire()
         
         print("In thread lock...")
         if responder.forfeited:
@@ -76,11 +77,12 @@ class Boss():
             self.display.send_finished_message(responder.user)
 
         # Check if every participant is finished.
-        all_finished = False
+        all_finished = True
         num_finished = 0
         for participant in self.participants:
-            all_finished = all_finished or participant.forfeited\
-                    or not participant.working or participant.closed
+            all_finished = all_finished and (participant.forfeited\
+                    or not participant.working or participant.closed\
+                    or not participant.challenge_accepted)
             if participant.forfeited or not participant.working:
                 num_finished += 1
         
@@ -93,6 +95,10 @@ class Boss():
             # Go back to the challenge init state
             self.state = RUN_STATE_CHALLENGE_INIT
             self.challenge_active = False
+            # Update each participant's attributes for the next challenge
+            for participant in self.participants:
+                participant.ready = False
+                participant.forfeited = False
 
         self.thread_lock.release()
         ##### Thread synchronization done. #####
@@ -107,13 +113,14 @@ class Boss():
         all other participants. If all are ready, the challenge init phase is
         over, and the manager is notified.
         """
-        if self.state != RUN_STATE_CHALLENGE_INIT:
-            return
-        
         ##### Syncrhonize threads. #####
         self.thread_lock.acquire()
         
         print("In thread lock...")
+
+        if self.state != RUN_STATE_CHALLENGE_INIT:
+            self.thread_lock.release()
+            return
         
         # Tell the manager and display about who responded (if they accepted).
         if responder.challenge_accepted:
@@ -124,10 +131,10 @@ class Boss():
                 responder.editor)
         
         # Check if every participant is active.
-        all_ready = False
+        all_ready = True
         num_accepting = 0
         for participant in self.participants:
-            all_ready = all_ready or participant.ready or participant.closed
+            all_ready = all_ready and (participant.ready or participant.closed)
             if participant.challenge_accepted:
                 num_accepting += 1
         
@@ -157,6 +164,7 @@ class Boss():
         """Tell participants to abort challenge"""
         print('CANCELLING CHALLENGE')
         self.state = RUN_STATE_NORMAL
+        self.challenge_active = False
         for participant in self.participants:
             participant.cancel_challenge()
 
