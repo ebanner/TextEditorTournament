@@ -299,6 +299,8 @@ function DisplayChallengeMode(challengeId, challengeName){
 		    var relativeTextY = Math.ceil((boxHeight/2) + (boxTextSize/3));
 		    var textOffset = Math.ceil(rightWidth/60);
 		    var firstTextX = midpointX + textOffset;
+		    var firstTextXmid =
+		        midpointX + Math.floor((firstDivider - midpointX) / 2);
 		    var secondTextX = firstDivider + textOffset;
 		    var thirdTextX = secondDivider + textOffset;
 		    var statusImageOffset = Math.floor(boxHeight / 8);
@@ -336,7 +338,6 @@ function DisplayChallengeMode(challengeId, challengeName){
 		                break;
 		            case PARTICIPANT_FINISHED:
 		                bgColor = "#AAFFAA";
-		                statusImage = this.finishedIcon; // swap to finished icon
 		                break;
 		            case PARTICIPANT_FORFEIT:
 		                bgColor = "#FF8888";
@@ -356,10 +357,18 @@ function DisplayChallengeMode(challengeId, challengeName){
 		        this.ctx.closePath();
 		        
 		        // Draw the status information.
-		        this.ctx.drawImage(statusImage,
-		            statusImageX, curY + statusImageOffset,
-		            statusImageSize, statusImageSize);
 		        this.ctx.fillStyle = "#000000";
+		        this.ctx.textAlign = "center";
+		        if(this.competitors[i].finishedPlace > 0){
+		            this.ctx.fillText("" + this.competitors[i].finishedPlace,
+		                firstTextXmid, relativeTextY + curY);
+		        }
+		        else{
+    		        this.ctx.drawImage(statusImage,
+		                statusImageX, curY + statusImageOffset,
+		                statusImageSize, statusImageSize);
+		        }
+		        this.ctx.textAlign = "left";
 		        this.ctx.fillText(this.competitors[i].participant,
 		            secondTextX, relativeTextY + curY);
 		        this.ctx.fillText(this.competitors[i].editor,
@@ -483,5 +492,5 @@ function ChallengeCompetitor(participant, editor){
     this.status = PARTICIPANT_WORKING;
     
     // Time that a participant finished.
-    this.finishedTime = 0;
+    this.finishedPlace = 0;
 }

@@ -55,6 +55,20 @@ var display; // current Display object
 var FPS = 30; // frames per second
 var dT = Math.floor(1000/FPS); // delta time (between frames)
 
+// SOUND OBJECTS
+var acceptSound = new Audio("audio/pop.wav");
+acceptSound.load();
+var startSound = new Audio("audio/airhorn.wav");
+startSound.load();
+var finishedSound = new Audio("audio/finished.wav");
+finishedSound.load();
+var forfeitSound = new Audio("audio/forfeit.wav");
+forfeitSound.load();
+var wrongSound = new Audio("audio/wrong.wav");
+wrongSound.load();
+var errorSound = new Audio("audio/error.wav");
+errorSound.load();
+
 // PARTICIPANT LISTS
 var activeParticipants = new Array();
 
@@ -91,6 +105,7 @@ function initWebSocket(ip, port){
     ws.onerror = function(error) {
         notify("The WebSocket has experienced an error.",
             NOTIFICATION_TYPE_ERROR);
+        protocolState = PROTOCOL_STANDBY;
         //console.log('WebSocket Error ' + error); TODO - what?
     };
     
@@ -98,6 +113,8 @@ function initWebSocket(ip, port){
     //  to indicate that it is no longer connected.
     ws.onclose = function(){
         notify("Disconnected from server.", NOTIFICATION_TYPE_ALERT);
+        errorSound.play();
+        protocolState = PROTOCOL_STANDBY;
         ws = false;
     }
     
@@ -179,6 +196,8 @@ function parseServerMessage(data){
         
         // if challenge start received, load challenge display
         else if(data == "CHALLENGE_START"){
+            startSound.play();
+            numFinished = 0; // number done initially at none
             var challengeId = display.challengeId
             var challengeName = display.challengeName;
             display = new DisplayChallengeMode(challengeId, challengeName);
@@ -206,8 +225,12 @@ function parseServerMessage(data){
             protocolState = PROTOCOL_INCORRECT_SUBMISSION;
         
         else if(data == "CHALLENGE_FINISH"){
-            display = new DisplayStatsMode();
-            protocolState = PROTOCOL_STANDBY; // TODO - change
+            notify("Challenge Finished!", NOTIFICATION_TYPE_GOOD);
+        }
+        
+        // TODO - finish implementation
+        else if(data == "CHALLENGE_STATUS_DATA"){
+            // TODO
         }
     }
     
@@ -279,6 +302,7 @@ function parseServerMessage(data){
             if(activeParticipants[i].participant == data){
                 activeParticipants[i].accepted = true;
                 display.addAcceptingParticipant(data);
+                acceptSound.play();
                 break;
             }
         }
@@ -305,11 +329,22 @@ function parseServerMessage(data){
                     competitor.status = PARTICIPANT_FINISHED;
                     notify("" + PROTOCOL_TEMP_name + " finished!",
                         NOTIFICATION_TYPE_GOOD);
+                    finishedSound.play();
+                    // if first one to finish, play "first done" text
+                    numFinished++;
+                    if(numFinished == 1)
+                        playText("First submission by " + competitor.participant
+                            + " representing " + competitor.editor);
+                    // set the correct placement in the challenge, and partially
+                    //  sort the array accounting for this competitor being done.
+                    competitor.finishedPlace = numFinished;
+                    // s
                     break;
                 case "STATUS_FORFEIT":
                     competitor.status = PARTICIPANT_FORFEIT;
                     notify("" + PROTOCOL_TEMP_name + " gave up.",
                         NOTIFICATION_TYPE_BAD);
+                    forfeitSound.play();
                     break;
                 default:
                     break;
@@ -320,6 +355,8 @@ function parseServerMessage(data){
     
     else if(protocolState == PROTOCOL_INCORRECT_SUBMISSION){
         notify("" + data + " was incorrect.", NOTIFICATION_TYPE_ALERT);
+        wrongSound.play();
+        playText("" + data + ", your submission was incorrect.");
         protocolState = PROTOCOL_STANDBY;
     }
 }
@@ -330,7 +367,7 @@ function parseServerMessage(data){
 //              type: depending on the given type, the color of the text/bubble
 //                  will varry.
 function notify(text, type){
-    playText(text);
+    //playText(text);
     var colorStr = "#FFFFFF";
     switch(type){
         case NOTIFICATION_TYPE_SYS:
