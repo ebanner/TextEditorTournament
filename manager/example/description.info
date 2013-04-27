@@ -1,0 +1,8 @@
+Example Challenge
+
+Welcome to Text Editor Tournament 2013. This is an example challenge
+designed to get you familiar with the interface. To complete this example
+challenge, all you need to do is open the file "example.txt" in your
+workspace directory, and change the line from "print(' h e l l o ' )" to
+"print('hello')". Use another terminal window or a GUI. Once finished,
+simply hit ENTER on your keyboard with your client terminal window focused.

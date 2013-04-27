@@ -1,0 +1,7 @@
+Tabs And Spaces
+
+In "tabs.py", convert every TAB (indent) to spaces where each indent is at most
+six (6) spaces wide. In "spaces.cpp", convert every indentation of spaces into
+a tab. Keep in mind that a TAB does not necessarily always use up all spaces
+(i.e. if you TAB after a word, it may very well just move up one space).
+Note: a tab is "\t" (escaped ascii).

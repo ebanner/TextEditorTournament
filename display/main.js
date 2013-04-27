@@ -38,6 +38,7 @@ var PROTOCOL_CANCEL_CHALLENGE = 91; // waiting for accepted name
 var PROTOCOL_SET_PARTICIPANT_STATUS_name = 101; // waiting for status name
 var PROTOCOL_SET_PARTICIPANT_STATUS_type = 102; // waiting for status type
 var PROTOCOL_INCORRECT_SUBMISSION = 110; // waiting for participant name
+var PROTOCOL_RECV_STATUS = 201; // waiting to receive status info
 
 // Protocol temporaries (used for multi-step protocol events):
 var PROTOCOL_TEMP_name;
@@ -225,12 +226,8 @@ function parseServerMessage(data){
             protocolState = PROTOCOL_INCORRECT_SUBMISSION;
         
         else if(data == "CHALLENGE_FINISH"){
-            notify("Challenge Finished!", NOTIFICATION_TYPE_GOOD);
-        }
-        
-        // TODO - finish implementation
-        else if(data == "CHALLENGE_STATUS_DATA"){
             display = DisplayStatsMode();
+            protocolState = PROTOCOL_RECV_STATUS;
         }
     }
     
