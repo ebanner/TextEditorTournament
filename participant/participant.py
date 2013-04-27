@@ -136,7 +136,7 @@ class Client():
             # multiple users sharing same working directory.
             try:
                 os.remove(file_name)
-            except IOError: pass
+            except OSError: pass
             
         for start_file in files:
             with open(start_file.name, 'w') as f:

@@ -1,3 +1,5 @@
+import time
+
 import connection
 
 class ParticipantConnection(connection.Connection):
@@ -14,6 +16,8 @@ class ParticipantConnection(connection.Connection):
         self.working = False
         # Only True when the participant has forfeited
         self.forfeited = False
+        # Time it takes the user to get the correct answer
+        self.time = -1
 
     def start_challenge(self, challenge):
         """Send over the signal to start the challenge only if the user has
@@ -46,6 +50,7 @@ class ParticipantConnection(connection.Connection):
         else:
             # Signal that we got the correct answer
             self.working = False
+            self.time = time.time() - self.boss.start_time
             self.write_line('CHALLENGE_RESULTS_CORRECT')
 
         # We are not forfeiting, just letting the boss know that we
@@ -53,8 +58,10 @@ class ParticipantConnection(connection.Connection):
         self.boss.challenge_start_response(self)
 
     def process_challenge_forfeit(self):
-        print("We're forfeiting!!!! It's over Johnny!")
+        print("We're forfeiting!!!")
         self.forfeited = True
+        self.time = time.time() - self.boss.start_time
+        print("Setting {}'s time to {}".format(self.user, self.time))
         # Tell the boss we are forfeiting and have it check to see if
         # everyone if done.
         self.boss.challenge_start_response(self)
