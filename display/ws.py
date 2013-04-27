@@ -304,7 +304,8 @@ if __name__ == '__main__':
     send_data(client, "CHALLENGE_FINISH")
     
     # Create the socket to the submission server and try to connect
-    x = """sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    x = """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((HOST, int(SUBMISSION_SERVER_PORT)))
     except Exception as e:
@@ -323,6 +324,6 @@ if __name__ == '__main__':
         # client.
         message = read_line(server_stream)
         send_data(client, message)
-"""
+	"""
     #sock.close()
     client.close()
