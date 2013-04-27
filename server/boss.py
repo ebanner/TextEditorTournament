@@ -1,6 +1,8 @@
 # boss.py
 
 import threading
+import time
+
 from participant_connection import ParticipantConnection
 from manager_connection import ManagerConnection
 from display_connection import DisplayConnection
@@ -21,6 +23,8 @@ class Boss():
         self.state = RUN_STATE_NORMAL # initial state, normal
         self.thread_lock = threading.Lock()
         self.display = None
+        # Time at which the most recently started challenge began
+        self.start_time = -1
     
     def check_solution(self, files):
         """Compute the diff of the submitted files vs. the solution files for
@@ -89,8 +93,10 @@ class Boss():
         # If everyone is finished, tell manager and display about it so we can
         # end the challenge.
         if all_finished:
-            print("Everyone is finished")
-            self.display.send_challenge_finished()
+            print("EVERYONE IS FINISHED")
+            # Wait 5 seconds before sending out CHALLENGE_FINISHED
+            time.sleep(5)
+            self.display.send_challenge_finished(self.participants)
             self.manager.send_challenge_finished()
             # Go back to the challenge init state
             self.state = RUN_STATE_CHALLENGE_INIT
@@ -99,6 +105,7 @@ class Boss():
             for participant in self.participants:
                 participant.ready = False
                 participant.forfeited = False
+                participant.time = -1
 
         self.thread_lock.release()
         ##### Thread synchronization done. #####
@@ -159,6 +166,9 @@ class Boss():
 
         # Inform display the challenge is underway
         self.display.start_challenge()
+
+        # Start the timer
+        self.start_time = time.time()
 
     def cancel_challenge(self):
         """Tell participants to abort challenge"""

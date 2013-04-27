@@ -202,7 +202,23 @@ PROTOCOL (display perspective):
         
     - receive "CHALLENGE_FINISH":
         // get challenge data stuff
-        ----- swap to stats mode -----
+
+        - while not receive "MINIMUM_EDITOR_TIMES_STATISTIC_END"
+            -----
+             For every editor, receive the best time
+            -----
+            - receive editor e
+            - recieve average time for editor e (ms)
+
+        - while not receive "INDIVIDUAL_PARTICIPANT_STATISTICS_END"
+            -----
+             Receive the participants in order of best times to worst
+            -----
+            - receive participant name
+            - receive participant editor
+            - receive participant time (ms)
+
+        - receive average completion time (ms)
 
 
 Data sending:

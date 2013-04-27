@@ -1,6 +1,7 @@
 import connection
 import challenge
 import time
+import operator
 
 NORMAL_MODE = 0
 CHALLENGE_MODE = 1
@@ -47,3 +48,43 @@ class DisplayConnection(connection.Connection):
         super(DisplayConnection, self).close()
         # remove from boss
         delattr(self.boss, 'display')
+
+    def send_challenge_finished(self, participants):
+        self.write_line('CHALLENGE_FINISH')
+
+        # Get a dictionary of each editor to a list of times for that editor
+        editor_times = {}
+        for participant in participants:
+            if participant.editor not in editor_times:
+                editor_times[participant.editor] = [int(participant.time * 1000)]
+            else:
+                editor_times[participant.editor].append(
+                        int(participant.time * 1000))
+
+        print('Editor times: {}'.format(editor_times))
+        # Compute the minimum time for every editor
+        minimum_times = [ 
+                (editor, min(times)) for editor, times in editor_times.items() ]
+        # Sort the editors in ascending time
+        minimum_times.sort(key=operator.itemgetter(1))
+        print('Minimum times sorted: {}'.format(minimum_times))
+
+        # Send over each of the minimum editor times in order
+        for editor, minimum_time in minimum_times:
+            self.write_line(editor)
+            self.write_line(str(minimum_time))
+        self.write_line('MINIMUM_EDITOR_TIMES_STATISTIC_END')
+
+        # Send completion time for every participant in order of best time first
+        parts = [ (p.user, p.editor, int(p.time * 1000)) for p in participants ]
+        parts.sort(key=operator.itemgetter(2))
+        for part in parts:
+            self.write_line(part[0])
+            self.write_line(part[1])
+            self.write_line(str(part[2]))
+        self.write_line('INDIVIDUAL_PARTICIPANT_STATISTICS_END')
+
+        # Send the average time for all the participants as a whole
+        times = [ participant.time for participant in participants ]
+        self.write_line(str(int(sum(times)/len(times) * 1000)))
+
