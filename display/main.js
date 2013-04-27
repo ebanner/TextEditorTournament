@@ -230,7 +230,7 @@ function parseServerMessage(data){
         
         // TODO - finish implementation
         else if(data == "CHALLENGE_STATUS_DATA"){
-            // TODO
+            display = DisplayStatsMode();
         }
     }
     
@@ -319,7 +319,9 @@ function parseServerMessage(data){
     
     // if protocol is in set status mode and waiting for status type:
     else if(protocolState == PROTOCOL_SET_PARTICIPANT_STATUS_type){
-        var competitor = display.getCompetitor(PROTOCOL_TEMP_name);
+        var retvals = display.getCompetitor(PROTOCOL_TEMP_name);
+        var competitor = retvals[0];
+        var index = retvals[1];
         if(competitor){
             switch(data){
                 case "STATUS_WORKING":
@@ -335,10 +337,12 @@ function parseServerMessage(data){
                     if(numFinished == 1)
                         playText("First submission by " + competitor.participant
                             + " representing " + competitor.editor);
-                    // set the correct placement in the challenge, and partially
-                    //  sort the array accounting for this competitor being done.
+                    // set the correct placement in the challenge, and swap the
+                    //  finished competitor's placement in the array with
+                    //  whichever competitor is actually in that position now.
                     competitor.finishedPlace = numFinished;
-                    // s
+                    display.competitors[index] = display.competitors[numFinished-1];
+                    display.competitors[numFinished-1] = competitor;
                     break;
                 case "STATUS_FORFEIT":
                     competitor.status = PARTICIPANT_FORFEIT;

@@ -303,6 +303,9 @@ if __name__ == '__main__':
     time.sleep(4)
     send_data(client, "CHALLENGE_FINISH")
     
+    time.sleep(5)
+    send_data(client, "CHALLENGE_STATUS_DATA")
+    
     # Create the socket to the submission server and try to connect
     x = """sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:

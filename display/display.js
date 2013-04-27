@@ -246,11 +246,12 @@ function DisplayChallengeMode(challengeId, challengeName){
         this.competitors.push(newCompetitor);
     }
     
-    // Returns a competitor (if found) by the given participant name.
+    // Returns a competitor (if found) by the given participant name,
+    //  followed by the index of the array said competitor is in.
     this.getCompetitor = function(competitorName){
         for(var i=0; i<this.competitors.length; i++){
             if(this.competitors[i].participant == competitorName)
-                return this.competitors[i];
+                return [this.competitors[i], i];
         }
         return false;
     }
