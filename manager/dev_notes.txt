@@ -1,0 +1,14 @@
+Current challenges:
+
+    exampe (challenge 0)
+
+
+By Richard:
+The ones with "*" next to them are arguably ones with biased to the maker.
+
+    spelling
+    *tabs_and_spaces
+    fix_indentation
+    *duplications
+    *matching_brackets
+    *compile_error

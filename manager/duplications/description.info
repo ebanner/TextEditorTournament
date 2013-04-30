@@ -1,0 +1,7 @@
+Duplicating Code
+
+This challenge involves duplicating lines of code. Open "Code.java" and copy
+all of the text and paste it right below the existing text, separated by one
+empty line. Then change every instance of "myFirstVariable" to
+"mySecondVariable" in the copied text. Also, update the print statement in
+the copied text to say "My second variable is ...".

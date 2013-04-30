@@ -1,0 +1,6 @@
+Fixing Indentation
+
+Indentation is important. Open up ImageMap.java and fix the bad indentation.
+You should not need to remove or create new lines. Only change the
+whitespace before each line of code. This example uses SPACES, and NOT TABS.
+Make sure your correction also uses SPACES (four spaces per indent).

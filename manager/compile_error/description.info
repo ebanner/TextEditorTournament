@@ -1,0 +1,6 @@
+Fixing Compile Errors
+
+Compile TFTPServer.java with "javac TFTPServer.java" from your terminal.
+It will not compile: you'll see an error message indicating the error and the
+line it happened on. There are THREE mistakes in the code, and they're very
+simple. Fix them. Once your code compiles, it means you got it.
