@@ -1,0 +1,5 @@
+Numbering a List
+
+This challenge is from vimgolf.com! Open "list.txt" and edit it so that each
+line is numbered as follows: line number, period, and a space. For example,
+change "line one" to "1. line one".

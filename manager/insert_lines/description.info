@@ -1,0 +1,6 @@
+Insert Lines
+
+This challenge is from vimgolf.com! Open "file.rb" and insert two empty lines
+between every comment-separated section (except the top). That is, wherever
+you see a comment (line starting with "#"), put 2 empty lines above it,
+EXCEPT the first line in the file. You should insert a total of 10 new lines.

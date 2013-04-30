@@ -1,0 +1,6 @@
+Text Wrap
+
+This challenge is from vimgolf.com. Open "text.txt" and change it so that no
+single line is longer than 80 columns. You should fit as many words as
+possible on each line. Don't split words apart. Also, don't leave any extra
+whitespace at the end of the lines.

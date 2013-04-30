@@ -12,3 +12,8 @@ The ones with "*" next to them are arguably ones with biased to the maker.
     *duplications
     *matching_brackets
     *compile_error
+    text_wrap
+    *matching_brackets
+    insert_lines
+    numbering_list
+    remove_whitespace
