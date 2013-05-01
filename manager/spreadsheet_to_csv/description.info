@@ -1,0 +1,28 @@
+Ugly spreadsheet copy/paste to CSV
+
+Convert an ugly spreadsheet copy/paste into a CSV format. Taken from
+vimgolf.com.
+
+e.g.
+
+QINGDAO
+SHANGHAI
+SHANTOU
+
+885
+885
+910
+
+1585
+1585
+1635
+
+1710
+1710
+1760
+
+becomes
+
+QINGDAO,885,1585,1710
+SHANGHAI,885,1585,1710
+SHANTOU,910,1635,1760

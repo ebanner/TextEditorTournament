@@ -1,0 +1,12 @@
+Vertical Limit
+
+Transform a succession of one word lines to an array of strings. Taken from
+vimgolf.com.
+
+e.g.
+
+spam ham eggs
+
+becomes
+
+["spam", "ham", "eggs"]

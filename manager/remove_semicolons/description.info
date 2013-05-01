@@ -1,0 +1,16 @@
+Remove semicolons
+
+Someone bloke has come along and dirtied up your beautiful Python code with
+unnecessary semicolons. Delete them before someone sees your code!
+
+e.g.
+
+x = 5;
+y = x;
+print(x + y);
+
+becomes 
+
+x = 5
+y  = x
+print(x + y)

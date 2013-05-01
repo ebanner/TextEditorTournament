@@ -1,0 +1,20 @@
+camelCase to names_with_underscores
+
+Someone likes Java. They like Java soooo much that they've brought over
+camelCasing to Python when they should be naming their
+variables_with_underscores. Rid them of this nasty habit and set them on the
+path to good Python idomaticity!
+
+e.g.
+
+def myFunction():
+    myNum = 5
+    yourNum = 66
+    resultForNow = 9
+
+becomes
+
+def my_function():
+    my_num = 5
+    your_num = 66
+    result_for_now = 9
