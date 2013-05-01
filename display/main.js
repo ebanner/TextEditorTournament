@@ -1,3 +1,6 @@
+SERVER_ADDR = "127.0.0.1";
+SERVER_PORT = 9999;
+
 /* Contains the visual display data:
  *  Creates a websocket client that receives real-time updates from the server
  *  and displays them, along with audio playback.
@@ -140,7 +143,7 @@ $(document).ready(function(){
     }
     
     // Try to initialize the websocket here.
-    var retval = initWebSocket("127.0.0.1", 9999);
+    var retval = initWebSocket(SERVER_ADDR, SERVER_PORT);
     //alert(retval);
     
     // Start the canvas animator
