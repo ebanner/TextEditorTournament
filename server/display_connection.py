@@ -55,7 +55,11 @@ class DisplayConnection(connection.Connection):
         # Get a dictionary of each editor to a list of times for that editor
         editor_times = {}
         for participant in participants:
-            if participant.editor not in editor_times:
+            if participant.forfeited or not participant.challenge_accepted:
+                # Don't send over information about a participant if that
+                # participant forfeited.
+                continue
+            elif participant.editor not in editor_times:
                 editor_times[participant.editor] = [int(participant.time * 1000)]
             else:
                 editor_times[participant.editor].append(
@@ -76,7 +80,8 @@ class DisplayConnection(connection.Connection):
         self.write_line('MINIMUM_EDITOR_TIMES_STATISTIC_END')
 
         # Send completion time for every participant in order of best time first
-        parts = [ (p.user, p.editor, int(p.time * 1000)) for p in participants ]
+        parts = [ (p.user, p.editor, int(p.time * 1000)) for p in participants
+                if not p.forfeited and p.challenge_accepted ]
         parts.sort(key=operator.itemgetter(2))
         for part in parts:
             self.write_line(part[0])
@@ -85,6 +90,11 @@ class DisplayConnection(connection.Connection):
         self.write_line('INDIVIDUAL_PARTICIPANT_STATISTICS_END')
 
         # Send the average time for all the participants as a whole
-        times = [ participant.time for participant in participants ]
-        self.write_line(str(int(sum(times)/len(times) * 1000)))
-
+        times = [ participant.time for participant in participants if not
+                participant.forfeited and participant.challenge_accepted ]
+        if times:
+            # At least one participant finished
+            self.write_line(str(int(sum(times)/len(times) * 1000)))
+        else:
+            # No one actually finished without forfeiting
+            self.write_line('-1')
