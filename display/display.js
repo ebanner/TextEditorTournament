@@ -436,12 +436,27 @@ function DisplayStatsMode(){
         this.averageTime = time;
     }
     
+    // called each frame to update
+    this.curPulseAlpha = 0.5;
+    this.curBlueVal = 0;
+    this.blueDelta = (200 / secondsToFrames(0.5));
+    this.pulseDelta = (0.5 / secondsToFrames(0.25));
     this.update = function(){
         // Do standard per-frame updates:
         this.drawBG();
         this.updateStandardValues();
         this.drawMessageBubbles();
         
+        // update alpha for pulsing winner
+        this.curPulseAlpha += this.pulseDelta;
+        this.curBlueVal += this.blueDelta;
+        if(this.curBlueVal <= 0 || this.curBlueVal >= 200)
+            this.blueDelta *= -1;
+        if(this.curPulseAlpha <= 0.25 || this.curPulseAlpha >= 1){
+            this.pulseDelta *= -1;
+        }
+        
+        // calculate re-used values
         var centerX = Math.floor(this.canvas.width / 2);
         var topY = Math.floor(this.canvas.height / 8);
         var bigFont = "bold " + Math.ceil(this.canvas.width/35) + "pt Calibri";
@@ -481,7 +496,7 @@ function DisplayStatsMode(){
 		    if(i == 0){
 		        this.ctx.save();
 		            this.ctx.fillStyle = "#00FF00";
-		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.globalAlpha = this.curPulseAlpha;
 		            this.ctx.fillRect(
 		                leftCenterX - halfDivSize*2,
 		                curY + Math.floor(divHeight/3),
