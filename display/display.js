@@ -444,31 +444,27 @@ function DisplayStatsMode(){
         
         var centerX = Math.floor(this.canvas.width / 2);
         var topY = Math.floor(this.canvas.height / 8);
-        var bigFont = "bold " + Math.ceil(this.canvas.width/40) + "pt Calibri";
+        var bigFont = "bold " + Math.ceil(this.canvas.width/35) + "pt Calibri";
         var normalFont = "" + Math.ceil(this.canvas.width/65) + "pt Calibri";
-        var columnTitleFont = "bold " + Math.ceil(this.canvas.width/65)
-            + "pt Calibri";
-        var leftCenterX = Math.floor(centerX / 2);
+        var columnTitleFont = "bold "
+            + Math.ceil(this.canvas.width/60) + "pt Calibri";
+        var leftCenterX = Math.floor((centerX/2) - (this.canvas.width/20));
         var rightCenterX = centerX + leftCenterX;
-        var topOfColumns = Math.floor(topY * 1.8);
+        var topOfColumns = Math.floor(topY * 1.7);
         var thinLineWidth = Math.ceil(this.canvas.width / 500);
+        
+        // set stroke and fill styles
+        this.ctx.fillStyle = DISPLAY_FG_COLOR;
+		this.ctx.strokeStyle = DISPLAY_FG_COLOR;
         
         // draw average time
         this.ctx.textAlign = "center";
-        this.ctx.fillStyle = DISPLAY_FG_COLOR;
 		this.ctx.font = bigFont;
-		this.ctx.fillText("Average Time: " + this.averageTime, centerX, topY);
-		
-		// draw left side divider
-		this.ctx.lineWidth = thinLineWidth;
-		this.ctx.strokeStyle = DISPLAY_FG_COLOR;
-        this.ctx.beginPath();
-		    this.ctx.moveTo(leftCenterX, topOfColumns);
-		    this.ctx.lineTo(leftCenterX, this.canvas.height);
-		    this.ctx.stroke();
-	    this.ctx.closePath();
+		this.ctx.fillText("Average Time: " + this.averageTime + " (ms)",
+		    centerX, topY);
 	    
 	    // draw column headers
+		var halfDivSize = Math.ceil(this.canvas.width / 12);
 		var divHeight = Math.floor(this.canvas.height / 15);
 		var curY = topOfColumns + divHeight;
 		var distFromMid = Math.ceil(this.canvas.width / 40);
@@ -476,11 +472,33 @@ function DisplayStatsMode(){
 	    this.ctx.textAlign = "right";
 	    this.ctx.fillText("Editor", leftCenterX - distFromMid, curY);
 	    this.ctx.textAlign = "left";
-	    this.ctx.fillText("Time", leftCenterX + distFromMid, curY);
+	    this.ctx.fillText("Time (ms)", leftCenterX + distFromMid, curY);
 		
 		// draw editors by time finished
 		this.ctx.font = normalFont;
 		for(var i=0; i<this.editorTimes.length; i++){
+		    // if first place, highlight it in green!
+		    if(i == 0){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#00FF00";
+		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.fillRect(
+		                leftCenterX - halfDivSize*2,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*4, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
+		    // if last place, highlight it red!
+		    else if(i == (this.editorTimes.length - 1)){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#FF0000";
+		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.fillRect(
+		                leftCenterX - halfDivSize*2,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*4, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
 		    curY += divHeight;
 		    this.ctx.textAlign = "right";
 		    this.ctx.fillText(
@@ -492,18 +510,11 @@ function DisplayStatsMode(){
 		        leftCenterX + distFromMid, curY);
 		}
 		
-		// draw rightside divider 1 (left)
-		var halfDivSize = Math.ceil(this.canvas.width / 12);
+		// draw left side divider
+		this.ctx.lineWidth = thinLineWidth;
         this.ctx.beginPath();
-		    this.ctx.moveTo(rightCenterX - halfDivSize, topOfColumns);
-		    this.ctx.lineTo(rightCenterX - halfDivSize, this.canvas.height);
-		    this.ctx.stroke();
-	    this.ctx.closePath();
-		
-		// draw rightside divider 2 (right)
-        this.ctx.beginPath();
-		    this.ctx.moveTo(rightCenterX + halfDivSize, topOfColumns);
-		    this.ctx.lineTo(rightCenterX + halfDivSize, this.canvas.height);
+		    this.ctx.moveTo(leftCenterX, topOfColumns);
+		    this.ctx.lineTo(leftCenterX, curY + divHeight);
 		    this.ctx.stroke();
 	    this.ctx.closePath();
 		
@@ -516,12 +527,34 @@ function DisplayStatsMode(){
 	    this.ctx.textAlign = "center";
 	    this.ctx.fillText("Editor", rightCenterX, curY);
 	    this.ctx.textAlign = "left";
-	    this.ctx.fillText("Time",
+	    this.ctx.fillText("Time (ms)",
 	        rightCenterX + distFromMid + halfDivSize, curY);
 		
 		// draw participants by time finished
 		this.ctx.font = normalFont;
 		for(var i=0; i<this.participantTimes.length; i++){
+		    // if first place, highlight it in green!
+		    if(i == 0){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#00FF00";
+		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.fillRect(
+		                rightCenterX - halfDivSize*3,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*6, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
+		    // if last place, highlight it red!
+		    else if(i == (this.participantTimes.length - 1)){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#FF0000";
+		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.fillRect(
+		                rightCenterX - halfDivSize*3,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*6, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
 		    curY += divHeight;
 		    this.ctx.textAlign = "right";
 		    this.ctx.fillText(
@@ -536,6 +569,21 @@ function DisplayStatsMode(){
 		        this.participantTimes[i][2],
 		        rightCenterX + distFromMid + halfDivSize, curY);
 		}
+		
+		// draw rightside divider 1 (left)
+		curY += divHeight;
+        this.ctx.beginPath();
+		    this.ctx.moveTo(rightCenterX - halfDivSize, topOfColumns);
+		    this.ctx.lineTo(rightCenterX - halfDivSize, curY);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
+		
+		// draw rightside divider 2 (right)
+        this.ctx.beginPath();
+		    this.ctx.moveTo(rightCenterX + halfDivSize, topOfColumns);
+		    this.ctx.lineTo(rightCenterX + halfDivSize, curY);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
     }
 }
 DisplayStatsMode.prototype = new Display();

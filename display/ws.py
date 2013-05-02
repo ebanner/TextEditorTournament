@@ -322,6 +322,7 @@ if __name__ == '__main__':
     #time.sleep(5)
     send_data(client, "INDIVIDUAL_PARTICIPANT_STATISTICS_END")
     send_data(client, "5325")
+    time.sleep(5)
     
     #"""
     
