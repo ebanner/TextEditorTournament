@@ -199,7 +199,7 @@ if __name__ == '__main__':
     #receiver.start()
     
     # run a demo test scenario protocol
-    #x = """
+    x = """
     send_data(client, "CONNECTION_ACCEPTED")
     
     send_data(client, "ADD_PARTICIPANT")
@@ -238,12 +238,25 @@ if __name__ == '__main__':
     send_data(client, "CHALLENGE_INITIATE")
     send_data(client, "1")
     send_data(client, "First Test Challenge")
-    send_data(client, "4")
+    send_data(client, "17")
     send_data(client, "This is just a test description, so please ignore it.")
     send_data(client, "Even if you choose to do this challenge, it will not")
     send_data(client, "matter, because we're not actually doing it. Seriously.")
     send_data(client, "Just ignore this. It's for testing purposes only!")
-    
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    send_data(client, "Just ignore this. It's for testing purposes only!")
+    time.sleep(10)
     time.sleep(0.1)
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Troll")
@@ -323,11 +336,10 @@ if __name__ == '__main__':
     send_data(client, "INDIVIDUAL_PARTICIPANT_STATISTICS_END")
     send_data(client, "5325")
     time.sleep(5)
-    
-    #"""
+    """
     
     # Create the socket to the submission server and try to connect
-    x = """
+    #x = """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((HOST, int(SUBMISSION_SERVER_PORT)))
@@ -342,11 +354,11 @@ if __name__ == '__main__':
     write_line(server_stream, 'TEXT_EDITOR_TOURNAMENT_TYPE_DISPLAY')
     message = '==*^*=='
 
-    while message:
+    while True:
         # Read updates from the competition and write them to the web browser
         # client.
         message = read_line(server_stream)
         send_data(client, message)
-	"""
-    #sock.close()
+	#"""
+    sock.close()
     client.close()
