@@ -9,7 +9,7 @@ import boss
 
 
 # global variables
-HOST, PORT = "localhost", 6900
+HOST, PORT = "0.0.0.0", 6900
 boss = boss.Boss()
 
 

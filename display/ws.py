@@ -165,7 +165,7 @@ if __name__ == '__main__':
     
     listener = socket.socket()
     listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    listener.bind((HOST, int(PORT)))
+    listener.bind(("0.0.0.0", int(PORT)))
     listener.listen(0)
     print("Waiting for a client to connect...")
     
