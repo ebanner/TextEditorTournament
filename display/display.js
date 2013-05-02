@@ -421,7 +421,122 @@ DisplayChallengeMode.prototype = new Display();
 //  last challenge, as well as general editor stats (i.e. which editor
 //  is currently in the lead).
 function DisplayStatsMode(){
-    // TODO - implement
+    
+    this.averageTime = "";
+    this.editorTimes = new Array();
+    this.participantTimes = new Array();
+    
+    this.addEditorTime = function(editor, time){
+        this.editorTimes.push([editor, time]);
+    }
+    this.addParticipantTime = function(participant, editor, time){
+        this.participantTimes.push([participant, editor, time]);
+    }
+    this.setAverageTime = function(time){
+        this.averageTime = time;
+    }
+    
+    this.update = function(){
+        // Do standard per-frame updates:
+        this.drawBG();
+        this.updateStandardValues();
+        this.drawMessageBubbles();
+        
+        var centerX = Math.floor(this.canvas.width / 2);
+        var topY = Math.floor(this.canvas.height / 8);
+        var bigFont = "bold " + Math.ceil(this.canvas.width/40) + "pt Calibri";
+        var normalFont = "" + Math.ceil(this.canvas.width/65) + "pt Calibri";
+        var columnTitleFont = "bold " + Math.ceil(this.canvas.width/65)
+            + "pt Calibri";
+        var leftCenterX = Math.floor(centerX / 2);
+        var rightCenterX = centerX + leftCenterX;
+        var topOfColumns = Math.floor(topY * 1.8);
+        var thinLineWidth = Math.ceil(this.canvas.width / 500);
+        
+        // draw average time
+        this.ctx.textAlign = "center";
+        this.ctx.fillStyle = DISPLAY_FG_COLOR;
+		this.ctx.font = bigFont;
+		this.ctx.fillText("Average Time: " + this.averageTime, centerX, topY);
+		
+		// draw left side divider
+		this.ctx.lineWidth = thinLineWidth;
+		this.ctx.strokeStyle = DISPLAY_FG_COLOR;
+        this.ctx.beginPath();
+		    this.ctx.moveTo(leftCenterX, topOfColumns);
+		    this.ctx.lineTo(leftCenterX, this.canvas.height);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
+	    
+	    // draw column headers
+		var divHeight = Math.floor(this.canvas.height / 15);
+		var curY = topOfColumns + divHeight;
+		var distFromMid = Math.ceil(this.canvas.width / 40);
+	    this.ctx.font = columnTitleFont;
+	    this.ctx.textAlign = "right";
+	    this.ctx.fillText("Editor", leftCenterX - distFromMid, curY);
+	    this.ctx.textAlign = "left";
+	    this.ctx.fillText("Time", leftCenterX + distFromMid, curY);
+		
+		// draw editors by time finished
+		this.ctx.font = normalFont;
+		for(var i=0; i<this.editorTimes.length; i++){
+		    curY += divHeight;
+		    this.ctx.textAlign = "right";
+		    this.ctx.fillText(
+		        this.editorTimes[i][0],
+		        leftCenterX - distFromMid, curY);
+		    this.ctx.textAlign = "left";
+		    this.ctx.fillText(
+		        this.editorTimes[i][1],
+		        leftCenterX + distFromMid, curY);
+		}
+		
+		// draw rightside divider 1 (left)
+		var halfDivSize = Math.ceil(this.canvas.width / 12);
+        this.ctx.beginPath();
+		    this.ctx.moveTo(rightCenterX - halfDivSize, topOfColumns);
+		    this.ctx.lineTo(rightCenterX - halfDivSize, this.canvas.height);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
+		
+		// draw rightside divider 2 (right)
+        this.ctx.beginPath();
+		    this.ctx.moveTo(rightCenterX + halfDivSize, topOfColumns);
+		    this.ctx.lineTo(rightCenterX + halfDivSize, this.canvas.height);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
+		
+		//  draw column headers
+		curY = topOfColumns + divHeight;
+	    this.ctx.font = columnTitleFont;
+	    this.ctx.textAlign = "right";
+	    this.ctx.fillText("Participant",
+	        rightCenterX - distFromMid - halfDivSize, curY);
+	    this.ctx.textAlign = "center";
+	    this.ctx.fillText("Editor", rightCenterX, curY);
+	    this.ctx.textAlign = "left";
+	    this.ctx.fillText("Time",
+	        rightCenterX + distFromMid + halfDivSize, curY);
+		
+		// draw participants by time finished
+		this.ctx.font = normalFont;
+		for(var i=0; i<this.participantTimes.length; i++){
+		    curY += divHeight;
+		    this.ctx.textAlign = "right";
+		    this.ctx.fillText(
+		        this.participantTimes[i][0],
+		        rightCenterX - distFromMid - halfDivSize, curY);
+		    this.ctx.textAlign = "center";
+		    this.ctx.fillText(
+		        this.participantTimes[i][1],
+		        rightCenterX, curY);
+		    this.ctx.textAlign = "left";
+		    this.ctx.fillText(
+		        this.participantTimes[i][2],
+		        rightCenterX + distFromMid + halfDivSize, curY);
+		}
+    }
 }
 DisplayStatsMode.prototype = new Display();
 

@@ -199,7 +199,7 @@ if __name__ == '__main__':
     #receiver.start()
     
     # run a demo test scenario protocol
-    x = """
+    #x = """
     send_data(client, "CONNECTION_ACCEPTED")
     
     send_data(client, "ADD_PARTICIPANT")
@@ -233,7 +233,7 @@ if __name__ == '__main__':
     send_data(client, "REMOVE_PARTICIPANT")
     send_data(client, "Jimmy")
     
-    time.sleep(8)
+    time.sleep(1)
     
     send_data(client, "CHALLENGE_INITIATE")
     send_data(client, "1")
@@ -244,15 +244,15 @@ if __name__ == '__main__':
     send_data(client, "matter, because we're not actually doing it. Seriously.")
     send_data(client, "Just ignore this. It's for testing purposes only!")
     
-    time.sleep(1.5)
+    time.sleep(0.1)
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Troll")
     
-    time.sleep(1.5)
+    time.sleep(0.1)
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Dr. Someguy")
     
-    time.sleep(2)
+    time.sleep(0.1)
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Richard")
     
@@ -260,53 +260,73 @@ if __name__ == '__main__':
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Edward")
     
-    time.sleep(4)
+    time.sleep(0.1)
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Nick")
     
-    time.sleep(5)
+    time.sleep(0.1)
     
     send_data(client, "CHALLENGE_START")
     
-    time.sleep(0.5)
+    time.sleep(0.1)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Troll")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(5)
+    time.sleep(0.1)
     send_data(client, "INCORRECT_SUBMISSION")
     send_data(client, "Dr. Someguy")
     
-    time.sleep(7)
+    time.sleep(0.1)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Edward")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(4)
+    time.sleep(0.1)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Richard")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(2)
+    time.sleep(0.1)
     send_data(client, "INCORRECT_SUBMISSION")
     send_data(client, "Dr. Someguy")
     
-    time.sleep(1.5)
+    time.sleep(0.1)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Nick")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(5)
+    time.sleep(0.1)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Dr. Someguy")
     send_data(client, "STATUS_FORFEIT")
     
-    time.sleep(5)
+    time.sleep(0.1)
     send_data(client, "CHALLENGE_FINISH")
-    """
+    
+    #time.sleep(5)
+    send_data(client, "vim")
+    send_data(client, "10")
+    #time.sleep(5)
+    send_data(client, "GEdit")
+    send_data(client, "5000000")
+    #time.sleep(5)
+    send_data(client, "MINIMUM_EDITOR_TIMES_STATISTIC_END")
+    send_data(client, "Richard")
+    send_data(client, "GEdit")
+    send_data(client, "5000000")
+    #time.sleep(5)
+    send_data(client, "Edward")
+    send_data(client, "vim")
+    send_data(client, "0")
+    #time.sleep(5)
+    send_data(client, "INDIVIDUAL_PARTICIPANT_STATISTICS_END")
+    send_data(client, "5325")
+    
+    #"""
     
     # Create the socket to the submission server and try to connect
-    #x = """
+    x = """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((HOST, int(SUBMISSION_SERVER_PORT)))
@@ -326,6 +346,6 @@ if __name__ == '__main__':
         # client.
         message = read_line(server_stream)
         send_data(client, message)
-	#"""
+	"""
     #sock.close()
     client.close()

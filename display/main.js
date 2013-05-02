@@ -41,9 +41,15 @@ var PROTOCOL_CANCEL_CHALLENGE = 91; // waiting for accepted name
 var PROTOCOL_SET_PARTICIPANT_STATUS_name = 101; // waiting for status name
 var PROTOCOL_SET_PARTICIPANT_STATUS_type = 102; // waiting for status type
 var PROTOCOL_INCORRECT_SUBMISSION = 110; // waiting for participant name
-var PROTOCOL_RECV_STATUS = 201; // waiting to receive status info
+var PROTOCOL_RECV_EDITOR_STATUS_editor = 201; // waiting to receive editor name
+var PROTOCOL_RECV_EDITOR_STATUS_time = 202; // waiting to receive editor time
+var PROTOCOL_RECV_PARTICIPANT_STATUS_name = 210; //
+var PROTOCOL_RECV_PARTICIPANT_STATUS_editor = 211; //
+var PROTOCOL_RECV_PARTICIPANT_STATUS_time = 212; //
+var PROTOCOL_RECV_AVERAGE_TIME = 220; //
 
 // Protocol temporaries (used for multi-step protocol events):
+var PROTOCOL_TEMP_editor;
 var PROTOCOL_TEMP_name;
 var PROTOCOL_TEMP_id;
 var PROTOCOL_TEMP_dlen;
@@ -229,10 +235,60 @@ function parseServerMessage(data){
             protocolState = PROTOCOL_INCORRECT_SUBMISSION;
         
         else if(data == "CHALLENGE_FINISH"){
-            display = DisplayStatsMode();
-            protocolState = PROTOCOL_RECV_STATUS;
+            display = new DisplayStatsMode();
+            protocolState = PROTOCOL_RECV_EDITOR_STATUS_editor;
         }
     }
+    
+    /*** RECEIVE EDITOR TIME STATS ***/
+    
+    // if protocol is in receive editor status mode and waiting for editor
+    else if(protocolState == PROTOCOL_RECV_EDITOR_STATUS_editor){
+        if(data == "MINIMUM_EDITOR_TIMES_STATISTIC_END"){
+            protocolState = PROTOCOL_RECV_PARTICIPANT_STATUS_name;
+        }
+        else{
+            PROTOCOL_TEMP_editor = data;
+            protocolState = PROTOCOL_RECV_EDITOR_STATUS_time;
+        }
+    }
+    
+    //
+    else if(protocolState == PROTOCOL_RECV_EDITOR_STATUS_time){
+        display.addEditorTime(PROTOCOL_TEMP_editor, data);
+        protocolState = PROTOCOL_RECV_EDITOR_STATUS_editor;
+    }
+    
+    //--------------------
+    else if(protocolState == PROTOCOL_RECV_PARTICIPANT_STATUS_name){
+        if(data == "INDIVIDUAL_PARTICIPANT_STATISTICS_END"){
+            protocolState = PROTOCOL_RECV_AVERAGE_TIME;
+        }
+        else{
+            PROTOCOL_TEMP_name = data;
+            protocolState = PROTOCOL_RECV_PARTICIPANT_STATUS_editor;
+        }
+    }
+    
+    //
+    else if(protocolState == PROTOCOL_RECV_PARTICIPANT_STATUS_editor){
+        PROTOCOL_TEMP_editor = data;
+        protocolState = PROTOCOL_RECV_PARTICIPANT_STATUS_time;
+    }
+    
+    //
+    else if(protocolState == PROTOCOL_RECV_PARTICIPANT_STATUS_time){
+        display.addParticipantTime(
+            PROTOCOL_TEMP_name, PROTOCOL_TEMP_editor, data);
+        protocolState = PROTOCOL_RECV_PARTICIPANT_STATUS_name;
+    }
+    
+    //--------------------------
+    else if(protocolState == PROTOCOL_RECV_AVERAGE_TIME){
+        display.setAverageTime(data);
+        protocolState = PROTOCOL_STANDBY;
+    }
+    
     
     /*** ADD AND REMOVE PARTICIPANT STATES ***/
     
