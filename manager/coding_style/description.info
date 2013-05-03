@@ -2,7 +2,8 @@ Aligning function arguments to match a specific coding style
 
 Most projects have specific coding style guidelines. In this case, the argument
 list must be broken into a new line for each argument, with the argument names
-right aligned, taking into account pointers. Taken from vimgolf.com.
+right aligned, taking into account pointers. As usual, do NOT use tabs! Taken
+from vimgolf.com.
 
 e.g.
 
