@@ -295,7 +295,7 @@ if __name__ == '__main__':
     send_data(client, "Edward")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(300)
+    time.sleep(5)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Richard")
     send_data(client, "STATUS_FINISHED")
@@ -314,7 +314,7 @@ if __name__ == '__main__':
     send_data(client, "Dr. Someguy")
     send_data(client, "STATUS_FORFEIT")
     
-    time.sleep(5)
+    time.sleep(10)
     send_data(client, "CHALLENGE_FINISH")
     
     #time.sleep(5)
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     #time.sleep(5)
     send_data(client, "INDIVIDUAL_PARTICIPANT_STATISTICS_END")
     send_data(client, "5325")
-    time.sleep(5)
+    time.sleep(50)
     #"""
     
     # Create the socket to the submission server and try to connect

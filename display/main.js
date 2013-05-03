@@ -291,6 +291,12 @@ function parseServerMessage(data){
     // if protocol is in receive average time mode and waiting for time
     else if(protocolState == PROTOCOL_RECV_AVERAGE_TIME){
         display.setAverageTime(data);
+        // announce best and worst editor
+        var words =
+            "" + display.editorTimes[0][0] + " wins this challenge. " +
+            "" + display.editorTimes[display.editorTimes.length-1][0] +
+            " sucks.";
+        playText(words);
         protocolState = PROTOCOL_STANDBY;
     }
     
@@ -407,17 +413,6 @@ function parseServerMessage(data){
                     competitor.finishedPlace = numFinished;
                     display.competitors[index] = display.competitors[numFinished-1];
                     display.competitors[numFinished-1] = competitor;
-                    
-                    // if only one more person remains, make display onTime
-                    //  notify a random announcement to "hurry up"
-                    /*display.setEndTime(secondsToFrames(5));
-                    var index = display.competitors.length - 1;
-                    display.lastParticipant =
-                        display.competitors[index].participant;
-                    display.onTime = function() {
-                        announceLongWait(this.lastParticipant);
-                        this.setEndTime(secondsToFrames(5));
-                    }*/
                     break;
                 case "STATUS_FORFEIT":
                     competitor.status = PARTICIPANT_FORFEIT;
@@ -506,6 +501,10 @@ longWaitComments.push([
 longWaitComments.push([
     "I've seen paint dry faster than you type, ",
     "."]);
+longWaitComments.push([
+    "",
+    ", if you keep this up, I'm going to uninstall your editor from all " +
+        "computers in the UNIX lab."]);
 longWaitComments.push([
     "I can see this challenge was clearly not designed for amateurs, ",
     "."]);
