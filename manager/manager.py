@@ -46,12 +46,12 @@ class Manager():
     def read_line(self):
         """Returns a line read from the socket."""
         line = self.stream.readline().strip()
-        print('READ: {}'.format(line))
+        #print('READ: {}'.format(line))
         return line
     
     def write_line(self, message):
         """Writes a message (line) to the socket"""
-        print('WRITE: {}'.format(message))
+        #print('WRITE: {}'.format(message))
         self.socket.sendall(bytes(message + "\n", 'utf-8'))
         
     def write(self, data):
