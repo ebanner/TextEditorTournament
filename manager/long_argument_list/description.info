@@ -1,0 +1,32 @@
+Making Long Argument List More Readable
+
+The following function call would benefit from having its arguments put on their
+own lines, instead of all on one line. Make this change to make the code more
+readable. Note: each keyword argument must been indented 8 spaces.
+
+e.g.
+
+user = Users(username='matt', password='nick', firstname='Jonathan', middlename='Anthony', lastname='Smith', street='01 Hills Road', city='Potsdam', state='NY', zipcode='13676', residence='Townhouse', roomnumber='499', phonenumber=9999999999, email='monty@potsdam.edu', privileges=2, trainingvalue=3, administrativevalue=3, operationalvalue=4, portablenumber=10)
+
+becomes
+
+user = Users(
+        username='matt',
+        password='nick',
+        firstname='Jonathan',
+        middlename='Anthony',
+        lastname='Smith',
+        street='01 Hills Road',
+        city='Potsdam',
+        state='NY',
+        zipcode='13676',
+        residence='Townhouse',
+        roomnumber='499',
+        phonenumber=9999999999,
+        email='monty@potsdam.edu',
+        privileges=2,
+        trainingvalue=3,
+        administrativevalue=3,
+        operationalvalue=4,
+        portablenumber=10
+        )

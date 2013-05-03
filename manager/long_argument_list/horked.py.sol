@@ -1,0 +1,62 @@
+user = Users(
+        username='turdona193',
+        password='nick',
+        firstname='Nicholas',
+        middlename='Anthony',
+        lastname='Turdo',
+        street='3510 Barrington Dr',
+        city='Potsdam',
+        state='NY',
+        zipcode='13676',
+        residence='Townhouse',
+        roomnumber='A1-104',
+        phonenumber=6462595690,
+        email='turdona193@potsdam.edu',
+        privileges=2,
+        trainingvalue=3,
+        administrativevalue=3,
+        operationalvalue=4,
+        portablenumber=10
+        )
+
+user = Users(
+        username='muehlbjp193',
+        password='jared',
+        firstname='Jared',
+        middlename='Paul',
+        lastname='Muehlbauer',
+        street='2512 Barrington Dr',
+        city='Potsdam',
+        state='NY',
+        zipcode='13676',
+        residence='Townhouse',
+        roomnumber='A1-201',
+        phonenumber=6462595690,
+        email='muehlbjp193@potsdam.edu',
+        privileges=2,
+        trainingvalue=3,
+        administrativevalue=4,
+        operationalvalue=6,
+        portablenumber=7
+        )
+
+user = Users(
+        username='guarintb193',
+        password='tim',
+        firstname='Tim',
+        middlename='Bret',
+        lastname='Guarino',
+        street='1459 Barrington Dr',
+        city='Potsdam',
+        state='NY',
+        zipcode='13676',
+        residence='Townhouse',
+        roomnumber='A1-204',
+        phonenumber=6462595690,
+        email='guarintb193@potsdam.edu',
+        privileges=2,
+        trainingvalue=3,
+        administrativevalue=4,
+        operationalvalue=6,
+        portablenumber=1
+        )
