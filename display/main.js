@@ -1,5 +1,9 @@
-SERVER_ADDR = "127.0.0.1";
+//SERVER_ADDR = "127.0.0.1";
+SERVER_ADDR = "137.143.158.1";
 SERVER_PORT = 9999;
+
+INSULT_DELAY_INITIAL = 120;
+INSULT_DELAY = 60;
 
 /* Contains the visual display data:
  *  Creates a websocket client that receives real-time updates from the server
@@ -78,6 +82,18 @@ var wrongSound = new Audio("audio/wrong.wav");
 wrongSound.load();
 var errorSound = new Audio("audio/error.wav");
 errorSound.load();
+
+// MUSIC SOUNDS
+var battleMusic = new Array();
+var battleMusic1 = new Audio("audio/battle_music_1.mp3");
+battleMusic1.load();
+battleMusic.push(battleMusic1);
+var battleMusic2 = new Audio("audio/battle_music_2.mp3");
+battleMusic2.load();
+battleMusic.push(battleMusic2);
+var curBattleMusic = false;
+
+var talkSound = false;
 
 // PARTICIPANT LISTS
 var activeParticipants = new Array();
@@ -208,6 +224,14 @@ function parseServerMessage(data){
         // if challenge start received, load challenge display
         else if(data == "CHALLENGE_START"){
             startSound.play();
+            
+            // play a random battle music clip
+            var index = Math.floor(Math.random() * battleMusic.length);
+        	curBattleMusic = battleMusic[index];
+        	curBattleMusic.loop = true;
+        	curBattleMusic.volume = 0.5;
+        	curBattleMusic.play();
+			
             numFinished = 0; // number done initially at none
             var challengeId = display.challengeId
             var challengeName = display.challengeName;
@@ -237,6 +261,11 @@ function parseServerMessage(data){
         
         else if(data == "CHALLENGE_FINISH"){
             display = new DisplayStatsMode();
+            // stop playing the music
+            if(curBattleMusic){
+            	curBattleMusic.pause();
+            	curBattleMusic = false;
+        	}
             protocolState = PROTOCOL_RECV_EDITOR_STATUS_editor;
         }
     }
@@ -292,11 +321,13 @@ function parseServerMessage(data){
     else if(protocolState == PROTOCOL_RECV_AVERAGE_TIME){
         display.setAverageTime(data);
         // announce best and worst editor
-        var words =
-            "" + display.editorTimes[0][0] + " wins this challenge. " +
-            "" + display.editorTimes[display.editorTimes.length-1][0] +
-            " sucks.";
-        playText(words);
+        if(display.editorTimes.length >= 1){
+			var words =
+				"" + display.editorTimes[0][0] + " wins this challenge. " +
+				"" + display.editorTimes[display.editorTimes.length-1][0] +
+				" sucks.";
+			playText(words);
+		}
         protocolState = PROTOCOL_STANDBY;
     }
     
@@ -502,6 +533,9 @@ longWaitComments.push([
     "I've seen paint dry faster than you type, ",
     "."]);
 longWaitComments.push([
+    "Error: null pointer exception in ",
+    "'s brain."]);
+longWaitComments.push([
     "",
     ", if you keep this up, I'm going to uninstall your editor from all " +
         "computers in the UNIX lab."]);
@@ -569,7 +603,11 @@ var longWaitCommentIndex = Math.floor(Math.random() * longWaitComments.length);
 //  participant is taking too long.
 function announceLongWait(participant) {
     var comment = longWaitComments[longWaitCommentIndex];
-    playText("" + comment[0] + participant + comment[1]);
+    var words = "" + comment[0] + participant + comment[1];
+    if(words.length > 100 || Math.random() < 0.5) // play with male voice
+        playText2(words);
+    else // play with Google voice
+        playText(words);
     longWaitCommentIndex++;
     if(longWaitCommentIndex >= longWaitComments.length)
         longWaitCommentIndex = 0;
@@ -582,11 +620,34 @@ function playText(text){
     if (text == "")
         return false;
     
-    var audio = new Audio();
-    audio.src =
+    // pause audio if it's playing
+    if(talkSound && !talkSound.paused)
+    	talkSound.pause();
+	
+    talkSound = new Audio();
+    talkSound.src =
+        "http://translate.google.com/translate_tts?tl=en&q="
+        //"http://speechutil.com/convert/ogg?text=%27"
+        + encodeURIComponent(text);// + "%27";
+    talkSound.load();
+    talkSound.play();
+}
+
+// Queries Google Translate text-to-speech API to playback the given text.
+//  NOTE: currently, this does not work on Firefox.    
+function playText2(text){
+    if (text == "")
+        return false;
+    
+    // pause audio if it's playing
+    if(talkSound && !talkSound.paused)
+    	talkSound.pause();
+	
+	talkSound = new Audio();
+    talkSound.src =
         //"http://translate.google.com/translate_tts?tl=en&q="
         "http://speechutil.com/convert/ogg?text=%27"
         + encodeURIComponent(text) + "%27";
-    audio.load();
-    audio.play();
+    talkSound.load();
+    talkSound.play();
 }

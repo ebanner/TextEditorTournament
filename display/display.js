@@ -272,7 +272,7 @@ function DisplayChallengeMode(challengeId, challengeName){
     
     
     // Randomly announce a dis to slow competitors each 12 seconds
-    this.setEndTime(secondsToFrames(20));
+    this.setEndTime(secondsToFrames(INSULT_DELAY_INITIAL));
     this.onTime = function() {
         var numStillWaiting = this.competitors.length - numFinished;
         if(numStillWaiting <= 0)
@@ -280,7 +280,7 @@ function DisplayChallengeMode(challengeId, challengeName){
         var offset = Math.floor(Math.random() * numStillWaiting);
         var index = this.competitors.length - 1 - offset;
         announceLongWait(this.competitors[index].participant);
-        this.setEndTime(secondsToFrames(12));
+        this.setEndTime(secondsToFrames(INSULT_DELAY));
     }
     
     
