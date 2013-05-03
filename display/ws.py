@@ -256,7 +256,7 @@ if __name__ == '__main__':
     send_data(client, "Just ignore this. It's for testing purposes only!")
     send_data(client, "Just ignore this. It's for testing purposes only!")
     send_data(client, "Just ignore this. It's for testing purposes only!")
-    time.sleep(10)
+    time.sleep(3)
     time.sleep(0.1)
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Troll")
@@ -295,7 +295,7 @@ if __name__ == '__main__':
     send_data(client, "Edward")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(0.1)
+    time.sleep(300)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Richard")
     send_data(client, "STATUS_FINISHED")
@@ -309,7 +309,7 @@ if __name__ == '__main__':
     send_data(client, "Nick")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(10)
+    time.sleep(1)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Dr. Someguy")
     send_data(client, "STATUS_FORFEIT")

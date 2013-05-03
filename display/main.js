@@ -81,6 +81,7 @@ errorSound.load();
 
 // PARTICIPANT LISTS
 var activeParticipants = new Array();
+var numFinished = 0;
 
 
 // Initialize the websocket (try to connect to the WS server) using the given
@@ -351,6 +352,7 @@ function parseServerMessage(data){
         if(PROTOCOL_TEMP_curline >= PROTOCOL_TEMP_dlen){
             display = new DisplayInitMode(
                 PROTOCOL_TEMP_id, PROTOCOL_TEMP_name, PROTOCOL_TEMP_dlines);
+            playText("Challenge " + PROTOCOL_TEMP_id + " initiated.");
             protocolState = PROTOCOL_STANDBY;
         }
     }
@@ -382,6 +384,7 @@ function parseServerMessage(data){
         var retvals = display.getCompetitor(PROTOCOL_TEMP_name);
         var competitor = retvals[0];
         var index = retvals[1];
+        //display.onTime = function() {}; // empty out onTime function
         if(competitor){
             switch(data){
                 case "STATUS_WORKING":
@@ -397,12 +400,24 @@ function parseServerMessage(data){
                     if(numFinished == 1)
                         playText("First submission by " + competitor.participant
                             + " representing " + competitor.editor);
+                    
                     // set the correct placement in the challenge, and swap the
                     //  finished competitor's placement in the array with
                     //  whichever competitor is actually in that position now.
                     competitor.finishedPlace = numFinished;
                     display.competitors[index] = display.competitors[numFinished-1];
                     display.competitors[numFinished-1] = competitor;
+                    
+                    // if only one more person remains, make display onTime
+                    //  notify a random announcement to "hurry up"
+                    /*display.setEndTime(secondsToFrames(5));
+                    var index = display.competitors.length - 1;
+                    display.lastParticipant =
+                        display.competitors[index].participant;
+                    display.onTime = function() {
+                        announceLongWait(this.lastParticipant);
+                        this.setEndTime(secondsToFrames(5));
+                    }*/
                     break;
                 case "STATUS_FORFEIT":
                     competitor.status = PARTICIPANT_FORFEIT;
@@ -455,14 +470,120 @@ function notify(text, type){
 }
 
 
+// list of "hurry up" comments (tuples; participant's name is added in middle.
+var longWaitComments = new Array();
+longWaitComments.push([
+    "Hurry up, ",
+    ". Any day now."]);
+longWaitComments.push([
+    "",
+    ", are you writing by hand? What's taking so long?"]);
+longWaitComments.push([
+    "",
+    ", this is a competition. The point is to be quick."]);
+longWaitComments.push([
+    "By all means, take your time ",
+    ". It's not like we have anywhere better to be."]);
+longWaitComments.push([
+    "If this was a competition for the worst editor, I bet ",
+    " would win."]);
+longWaitComments.push([
+    "Almost done there, ",
+    "?"]);
+longWaitComments.push([
+    "What's taking so long, ",
+    "? I'm about to fall into sleep mode."]);
+longWaitComments.push([
+    "I've seen glaciers type faster than you, ",
+    ""]);
+longWaitComments.push([
+    "",
+    ", these computers are getting replaced in a few months. " +
+        "Please finish before then."]);
+longWaitComments.push([
+    "The lightbulb on this projector only has so many hours of life, ",
+    "."]);
+longWaitComments.push([
+    "I've seen paint dry faster than you type, ",
+    "."]);
+longWaitComments.push([
+    "I can see this challenge was clearly not designed for amateurs, ",
+    "."]);
+longWaitComments.push([
+    "Please, ",
+    ", use a better editor next time. Perhaps Notepad."]);
+longWaitComments.push([
+    "You've hit a new record, ",
+    ". Your words per minute are now 0 point 0 0 0 0 0 0 0 0 0. 3."]);
+longWaitComments.push([
+    "I would cut you some slack, ",
+    ", but paper jams were obsolete for the past 40 years."]);
+longWaitComments.push([
+    "Your method for this challenge reminds me of the Ostrich algorithm, ",
+    ""]);
+longWaitComments.push([
+    "",
+    ", I can read and write to a disk faster than you type."]);
+longWaitComments.push([
+    "",
+    ", I've done extensive analysis on your typing runtime. It's exponential."]);
+longWaitComments.push([
+    "I can probably solve the halting problem before you finish this challenge, ",
+    ""]);
+longWaitComments.push([
+    "",
+    ", you are like a process currently requesting a resource: faster typing speed. " +
+        "Unfortunately, it's currently being occupied by every other participant."]);
+longWaitComments.push([
+    "",
+    ", you are like the Bubble sort of typing."]);
+longWaitComments.push([
+    "This challenge isn't exaclty N P complete, ",
+    ""]);
+longWaitComments.push([
+    "",
+    ", this is Richard Stallman. Stop eating my foot."]);
+longWaitComments.push([
+    "",
+    " extends class Typing implements interface Slow."]);
+longWaitComments.push([
+    "",
+    ", the only way you can win the challenge now is if you D-DOS me."]);
+longWaitComments.push([
+    "",
+    ", your typing speed can use some optimization."]);
+longWaitComments.push([
+    "",
+    "Clearly, you're having as hard of a time with this challenge as you would "
+        + "with the Art of Programming books."]);
+longWaitComments.push([
+    "Dear ",
+    ", you're a horrible person. Sincerily, Linus Torvalds."]);
+longWaitComments.push([
+    "I've seen infinite loops finish faster than you, ",
+    ""]);
+    
+// randomly choose a starting index
+var longWaitCommentIndex = Math.floor(Math.random() * longWaitComments.length);
+
+// Randomly plays a text-to-speech message to indicate that the given
+//  participant is taking too long.
+function announceLongWait(participant) {
+    var comment = longWaitComments[longWaitCommentIndex];
+    playText("" + comment[0] + participant + comment[1]);
+    longWaitCommentIndex++;
+    if(longWaitCommentIndex >= longWaitComments.length)
+        longWaitCommentIndex = 0;
+}
+
+
 // Queries Google Translate text-to-speech API to playback the given text.
 //  NOTE: currently, this does not work on Firefox.    
 function playText(text){
     if (text == "")
         return false;
     
-    var audio = new Audio();//document.createElement("audio");
-    //audio.setAttribute("src",
+    var audio = new Audio();
     audio.src =
         //"http://translate.google.com/translate_tts?tl=en&q="
         "http://speechutil.com/convert/ogg?text=%27"
