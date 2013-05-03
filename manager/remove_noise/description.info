@@ -1,6 +1,9 @@
 Remove noise from HTTP log
 
-This piece of log (from the year 2000) contains some irrelevant data. We only want to see the HTTP method and resource.
+This piece of log (from the year 2000) contains some irrelevant data. We only
+want to see the HTTP method and resource. You must eliminate all text leading up
+to the GET and remove all text after the path immediately following the GET.
+Taken from vimgolf.com.
 
 e.g.
 

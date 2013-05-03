@@ -5,16 +5,20 @@ camelCasing to Python when they should be naming their
 variables_with_underscores. Rid them of this nasty habit and set them on the
 path to good Python idomaticity!
 
+Note: class names must NOT be converted_to_underscores. Leave them
+InTheirCurrentForm.
+
 e.g.
 
-def myFunction():
-    myNum = 5
-    yourNum = 66
-    resultForNow = 9
+def FooBar:
+    yourNum = 10
+    myNum = 20
+    theNum = yourNum + myNum
+
 
 becomes
 
 def my_function():
-    my_num = 5
-    your_num = 66
-    result_for_now = 9
+    your_num = 10
+    my_num = 20
+    the_num = your_num + my_num

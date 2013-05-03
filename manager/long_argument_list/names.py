@@ -1,0 +1,5 @@
+user = Users(username='matt', password='nick', firstname='Jonathan', middlename='Anthony', lastname='Smith', street='01 Hills Road', city='Potsdam', state='NY', zipcode='13676', residence='Townhouse', roomnumber='499', phonenumber=9999999999, email='monty@potsdam.edu', privileges=2, trainingvalue=3, administrativevalue=3, operationalvalue=4, portablenumber=10)
+
+user = Users(username='bob', password='jared', firstname='Michael', middlename='Paul', lastname='Legard', street='99 Village View Bluff', city='Potsdam', state='NY', zipcode='13676', residence='Knowles', roomnumber='201', phonenumber=8888888888, email='spam@potsdam.edu', privileges=2, trainingvalue=3, administrativevalue=4, operationalvalue=6, portablenumber=7)
+
+user = Users(username='jim', password='tim', firstname='Anderson', middlename='Bret', lastname='Stewart', street='66 Court Street', city='Potsdam', state='NY', zipcode='13676', residence='Draime', roomnumber='4', phonenumber=3333333333, email='foobar@potsdam.edu', privileges=2, trainingvalue=3, administrativevalue=4, operationalvalue=6, portablenumber=1)

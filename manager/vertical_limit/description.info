@@ -5,8 +5,15 @@ vimgolf.com.
 
 e.g.
 
-spam ham eggs
+There
+is
+no
+vertical
+limit
+for
+vim
+Ninjas
 
 becomes
 
-["spam", "ham", "eggs"]
+[ "There", "is", "no", "vertical", "limit", "for", "vim", "Ninjas" ]

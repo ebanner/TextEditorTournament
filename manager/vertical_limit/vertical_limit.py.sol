@@ -1,1 +1,1 @@
-[ "There", "is", "no", "vertical", "limit", "for", "vim", "Ninjas" ]
+["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "Donec", "a", "tortor", "augue", "Pellentesque", "habitant", "morbi", "tristique", "senectus", "et", "netus", "et", "malesuada", "fames", "ac", "turpis", "egestas", "Ut", "pellentesque", "massa", "eget", "fringilla", "commodo", "eros", "augue"]

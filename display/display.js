@@ -65,14 +65,28 @@ function Display(){
     }
     
     
+    // Timer values and event function that gets run whenever a timer ticks
+    //  down. Override to use for custom timer events.
+    this.endTime = -1; // time value when onTime event is triggered
+    this.curTime = 0; // current display time
+    this.onTime = function(){} // OVERRIDE this event function
+    this.setEndTime = function(ticks){
+        this.endTime = this.curTime + ticks;
+    }
+    
     // Standardly used variables that get updated each frame, and can be
     //  manually updated by themselves.
     this.midpointX = 0;
     this.edgeLeft = 0;
     this.smallTextSize = 0;
     
-    // Update function for the standard values.
+    // Update function for the standard values and time tick by 1. If current
+    //  time matches endTime, runs the onTime function.
     this.updateStandardValues = function(){
+        this.curTime++;
+        if(this.curTime == this.endTime)
+            this.onTime();
+        
         this.midpointX = Math.floor(this.canvas.width / 2.5);
         this.edgeLeft = Math.floor(this.canvas.width / 25);
         this.smallTextSize = Math.floor(this.canvas.width / 80);
@@ -254,6 +268,19 @@ function DisplayChallengeMode(challengeId, challengeName){
                 return [this.competitors[i], i];
         }
         return false;
+    }
+    
+    
+    // Randomly announce a dis to slow competitors each 12 seconds
+    this.setEndTime(secondsToFrames(20));
+    this.onTime = function() {
+        var numStillWaiting = this.competitors.length - numFinished;
+        if(numStillWaiting <= 0)
+            return;
+        var offset = Math.floor(Math.random() * numStillWaiting);
+        var index = this.competitors.length - 1 - offset;
+        announceLongWait(this.competitors[index].participant);
+        this.setEndTime(secondsToFrames(12));
     }
     
     
