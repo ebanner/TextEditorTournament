@@ -253,13 +253,15 @@ function parseServerMessage(data){
         }
     }
     
-    //
+    // if protocol is in receive editor status mode and waiting for time
     else if(protocolState == PROTOCOL_RECV_EDITOR_STATUS_time){
         display.addEditorTime(PROTOCOL_TEMP_editor, data);
         protocolState = PROTOCOL_RECV_EDITOR_STATUS_editor;
     }
     
-    //--------------------
+    /*** RECEIVE PARTICIPANT TIME STATS ***/
+    
+    // if protocol is in receive participant status and waiting for name
     else if(protocolState == PROTOCOL_RECV_PARTICIPANT_STATUS_name){
         if(data == "INDIVIDUAL_PARTICIPANT_STATISTICS_END"){
             protocolState = PROTOCOL_RECV_AVERAGE_TIME;
@@ -270,20 +272,22 @@ function parseServerMessage(data){
         }
     }
     
-    //
+    // if protocol is in receive participant status and waiting for editor
     else if(protocolState == PROTOCOL_RECV_PARTICIPANT_STATUS_editor){
         PROTOCOL_TEMP_editor = data;
         protocolState = PROTOCOL_RECV_PARTICIPANT_STATUS_time;
     }
     
-    //
+    // if protocol is in receive participant status and waiting for time
     else if(protocolState == PROTOCOL_RECV_PARTICIPANT_STATUS_time){
         display.addParticipantTime(
             PROTOCOL_TEMP_name, PROTOCOL_TEMP_editor, data);
         protocolState = PROTOCOL_RECV_PARTICIPANT_STATUS_name;
     }
     
-    //--------------------------
+    /*** RECEIVE AVERAGE TIME VALUE ***/
+    
+    // if protocol is in receive average time mode and waiting for time
     else if(protocolState == PROTOCOL_RECV_AVERAGE_TIME){
         display.setAverageTime(data);
         protocolState = PROTOCOL_STANDBY;
@@ -405,6 +409,8 @@ function parseServerMessage(data){
                     notify("" + PROTOCOL_TEMP_name + " gave up.",
                         NOTIFICATION_TYPE_BAD);
                     forfeitSound.play();
+                    playText("" + competitor.participant + " gave up. " +
+                        "That's because " + competitor.editor + " sucks.");
                     break;
                 default:
                     break;
@@ -413,6 +419,7 @@ function parseServerMessage(data){
         protocolState = PROTOCOL_STANDBY;
     }
     
+    // if protocol is in incorrect submission mode and waiting for user name.
     else if(protocolState == PROTOCOL_INCORRECT_SUBMISSION){
         notify("" + data + " was incorrect.", NOTIFICATION_TYPE_ALERT);
         wrongSound.play();
@@ -427,7 +434,6 @@ function parseServerMessage(data){
 //              type: depending on the given type, the color of the text/bubble
 //                  will varry.
 function notify(text, type){
-    //playText(text);
     var colorStr = "#FFFFFF";
     switch(type){
         case NOTIFICATION_TYPE_SYS:

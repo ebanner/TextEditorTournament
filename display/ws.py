@@ -199,7 +199,7 @@ if __name__ == '__main__':
     #receiver.start()
     
     # run a demo test scenario protocol
-    x = """
+    #x = """
     send_data(client, "CONNECTION_ACCEPTED")
     
     send_data(client, "ADD_PARTICIPANT")
@@ -277,7 +277,7 @@ if __name__ == '__main__':
     send_data(client, "PARTICIPANT_ACCEPTED")
     send_data(client, "Nick")
     
-    time.sleep(0.1)
+    time.sleep(5)
     
     send_data(client, "CHALLENGE_START")
     
@@ -309,12 +309,12 @@ if __name__ == '__main__':
     send_data(client, "Nick")
     send_data(client, "STATUS_FINISHED")
     
-    time.sleep(0.1)
+    time.sleep(10)
     send_data(client, "SET_PARTICIPANT_STATUS")
     send_data(client, "Dr. Someguy")
     send_data(client, "STATUS_FORFEIT")
     
-    time.sleep(0.1)
+    time.sleep(5)
     send_data(client, "CHALLENGE_FINISH")
     
     #time.sleep(5)
@@ -336,10 +336,10 @@ if __name__ == '__main__':
     send_data(client, "INDIVIDUAL_PARTICIPANT_STATISTICS_END")
     send_data(client, "5325")
     time.sleep(5)
-    """
+    #"""
     
     # Create the socket to the submission server and try to connect
-    #x = """
+    x = """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((HOST, int(SUBMISSION_SERVER_PORT)))
@@ -359,6 +359,6 @@ if __name__ == '__main__':
         # client.
         message = read_line(server_stream)
         send_data(client, message)
-	#"""
+	"""
     sock.close()
     client.close()
