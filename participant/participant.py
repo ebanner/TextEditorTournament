@@ -236,8 +236,10 @@ class Client():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 2:
-        ignored_filename, HOST, PORT = sys.argv
+    if len(sys.argv) == 3:
+        _, HOST, PORT = sys.argv
+    elif len(sys.argv) ==  2:
+        _, HOST = sys.argv
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:

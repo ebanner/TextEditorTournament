@@ -65,14 +65,28 @@ function Display(){
     }
     
     
+    // Timer values and event function that gets run whenever a timer ticks
+    //  down. Override to use for custom timer events.
+    this.endTime = -1; // time value when onTime event is triggered
+    this.curTime = 0; // current display time
+    this.onTime = function(){} // OVERRIDE this event function
+    this.setEndTime = function(ticks){
+        this.endTime = this.curTime + ticks;
+    }
+    
     // Standardly used variables that get updated each frame, and can be
     //  manually updated by themselves.
     this.midpointX = 0;
     this.edgeLeft = 0;
     this.smallTextSize = 0;
     
-    // Update function for the standard values.
+    // Update function for the standard values and time tick by 1. If current
+    //  time matches endTime, runs the onTime function.
     this.updateStandardValues = function(){
+        this.curTime++;
+        if(this.curTime == this.endTime)
+            this.onTime();
+        
         this.midpointX = Math.floor(this.canvas.width / 2.5);
         this.edgeLeft = Math.floor(this.canvas.width / 25);
         this.smallTextSize = Math.floor(this.canvas.width / 80);
@@ -257,6 +271,19 @@ function DisplayChallengeMode(challengeId, challengeName){
     }
     
     
+    // Randomly announce a dis to slow competitors each 12 seconds
+    this.setEndTime(secondsToFrames(20));
+    this.onTime = function() {
+        var numStillWaiting = this.competitors.length - numFinished;
+        if(numStillWaiting <= 0)
+            return;
+        var offset = Math.floor(Math.random() * numStillWaiting);
+        var index = this.competitors.length - 1 - offset;
+        announceLongWait(this.competitors[index].participant);
+        this.setEndTime(secondsToFrames(12));
+    }
+    
+    
     // Updates the canvas to draw every frame, after clearing it off.
     this.update = function(){
         // Do standard per-frame updates:
@@ -421,7 +448,185 @@ DisplayChallengeMode.prototype = new Display();
 //  last challenge, as well as general editor stats (i.e. which editor
 //  is currently in the lead).
 function DisplayStatsMode(){
-    // TODO - implement
+    
+    this.averageTime = "";
+    this.editorTimes = new Array();
+    this.participantTimes = new Array();
+    
+    this.addEditorTime = function(editor, time){
+        this.editorTimes.push([editor, time]);
+    }
+    this.addParticipantTime = function(participant, editor, time){
+        this.participantTimes.push([participant, editor, time]);
+    }
+    this.setAverageTime = function(time){
+        this.averageTime = time;
+    }
+    
+    // called each frame to update
+    this.curPulseAlpha = 0.5;
+    this.curBlueVal = 0;
+    this.blueDelta = (200 / secondsToFrames(0.5));
+    this.pulseDelta = (0.5 / secondsToFrames(0.25));
+    this.update = function(){
+        // Do standard per-frame updates:
+        this.drawBG();
+        this.updateStandardValues();
+        this.drawMessageBubbles();
+        
+        // update alpha for pulsing winner
+        this.curPulseAlpha += this.pulseDelta;
+        this.curBlueVal += this.blueDelta;
+        if(this.curBlueVal <= 0 || this.curBlueVal >= 200)
+            this.blueDelta *= -1;
+        if(this.curPulseAlpha <= 0.25 || this.curPulseAlpha >= 1){
+            this.pulseDelta *= -1;
+        }
+        
+        // calculate re-used values
+        var centerX = Math.floor(this.canvas.width / 2);
+        var topY = Math.floor(this.canvas.height / 8);
+        var bigFont = "bold " + Math.ceil(this.canvas.width/35) + "pt Calibri";
+        var normalFont = "" + Math.ceil(this.canvas.width/65) + "pt Calibri";
+        var columnTitleFont = "bold "
+            + Math.ceil(this.canvas.width/60) + "pt Calibri";
+        var leftCenterX = Math.floor((centerX/2) - (this.canvas.width/20));
+        var rightCenterX = centerX + leftCenterX;
+        var topOfColumns = Math.floor(topY * 1.7);
+        var thinLineWidth = Math.ceil(this.canvas.width / 500);
+        
+        // set stroke and fill styles
+        this.ctx.fillStyle = DISPLAY_FG_COLOR;
+		this.ctx.strokeStyle = DISPLAY_FG_COLOR;
+        
+        // draw average time
+        this.ctx.textAlign = "center";
+		this.ctx.font = bigFont;
+		this.ctx.fillText("Average Time: " + this.averageTime + " (ms)",
+		    centerX, topY);
+	    
+	    // draw column headers
+		var halfDivSize = Math.ceil(this.canvas.width / 12);
+		var divHeight = Math.floor(this.canvas.height / 15);
+		var curY = topOfColumns + divHeight;
+		var distFromMid = Math.ceil(this.canvas.width / 40);
+	    this.ctx.font = columnTitleFont;
+	    this.ctx.textAlign = "right";
+	    this.ctx.fillText("Editor", leftCenterX - distFromMid, curY);
+	    this.ctx.textAlign = "left";
+	    this.ctx.fillText("Time (ms)", leftCenterX + distFromMid, curY);
+		
+		// draw editors by time finished
+		this.ctx.font = normalFont;
+		for(var i=0; i<this.editorTimes.length; i++){
+		    // if first place, highlight it in green!
+		    if(i == 0){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#00FF00";
+		            this.ctx.globalAlpha = this.curPulseAlpha;
+		            this.ctx.fillRect(
+		                leftCenterX - halfDivSize*2,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*4, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
+		    // if last place, highlight it red!
+		    else if(i == (this.editorTimes.length - 1)){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#FF0000";
+		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.fillRect(
+		                leftCenterX - halfDivSize*2,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*4, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
+		    curY += divHeight;
+		    this.ctx.textAlign = "right";
+		    this.ctx.fillText(
+		        this.editorTimes[i][0],
+		        leftCenterX - distFromMid, curY);
+		    this.ctx.textAlign = "left";
+		    this.ctx.fillText(
+		        this.editorTimes[i][1],
+		        leftCenterX + distFromMid, curY);
+		}
+		
+		// draw left side divider
+		this.ctx.lineWidth = thinLineWidth;
+        this.ctx.beginPath();
+		    this.ctx.moveTo(leftCenterX, topOfColumns);
+		    this.ctx.lineTo(leftCenterX, curY + divHeight);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
+		
+		//  draw column headers
+		curY = topOfColumns + divHeight;
+	    this.ctx.font = columnTitleFont;
+	    this.ctx.textAlign = "right";
+	    this.ctx.fillText("Participant",
+	        rightCenterX - distFromMid - halfDivSize, curY);
+	    this.ctx.textAlign = "center";
+	    this.ctx.fillText("Editor", rightCenterX, curY);
+	    this.ctx.textAlign = "left";
+	    this.ctx.fillText("Time (ms)",
+	        rightCenterX + distFromMid + halfDivSize, curY);
+		
+		// draw participants by time finished
+		this.ctx.font = normalFont;
+		for(var i=0; i<this.participantTimes.length; i++){
+		    // if first place, highlight it in green!
+		    if(i == 0){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#00FF00";
+		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.fillRect(
+		                rightCenterX - halfDivSize*3,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*6, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
+		    // if last place, highlight it red!
+		    else if(i == (this.participantTimes.length - 1)){
+		        this.ctx.save();
+		            this.ctx.fillStyle = "#FF0000";
+		            this.ctx.globalAlpha = 0.25;
+		            this.ctx.fillRect(
+		                rightCenterX - halfDivSize*3,
+		                curY + Math.floor(divHeight/3),
+		                halfDivSize*6, Math.floor(0.9 * divHeight));
+		        this.ctx.restore();
+		    }
+		    curY += divHeight;
+		    this.ctx.textAlign = "right";
+		    this.ctx.fillText(
+		        this.participantTimes[i][0],
+		        rightCenterX - distFromMid - halfDivSize, curY);
+		    this.ctx.textAlign = "center";
+		    this.ctx.fillText(
+		        this.participantTimes[i][1],
+		        rightCenterX, curY);
+		    this.ctx.textAlign = "left";
+		    this.ctx.fillText(
+		        this.participantTimes[i][2],
+		        rightCenterX + distFromMid + halfDivSize, curY);
+		}
+		
+		// draw rightside divider 1 (left)
+		curY += divHeight;
+        this.ctx.beginPath();
+		    this.ctx.moveTo(rightCenterX - halfDivSize, topOfColumns);
+		    this.ctx.lineTo(rightCenterX - halfDivSize, curY);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
+		
+		// draw rightside divider 2 (right)
+        this.ctx.beginPath();
+		    this.ctx.moveTo(rightCenterX + halfDivSize, topOfColumns);
+		    this.ctx.lineTo(rightCenterX + halfDivSize, curY);
+		    this.ctx.stroke();
+	    this.ctx.closePath();
+    }
 }
 DisplayStatsMode.prototype = new Display();
 
