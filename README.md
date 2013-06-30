@@ -37,7 +37,7 @@ Terminology
 ### Submission server `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
-[Manager](Manager-managermanagerpy), Participant, Display) must register with the [Submission server](#submission-server-serversubmission_serverpy). Simply
+[Manager](#Manager-managermanagerpy), Participant, Display) must register with the [Submission server](#submission-server-serversubmission_serverpy). Simply
 put, the [Submission server](#submission-server-serversubmission_serverpy) is the brain of the tournament.
 
 ### Display server `display/ws.py`
@@ -53,7 +53,7 @@ tournament statistics it recieves using the HTML5 canvas element.
 ### Manager `manager/manager.py` 
 
 Interface by which challenges are managed (loaded, initiated, cancelled). The
-[Manager](Manager-managermanagerpy) has the following command set:
+[Manager](#Manager-managermanagerpy) has the following command set:
 
 * **load challenge_id challenge_name**
     * Load up a new challenge named **challenge_name** with a challenge
@@ -64,7 +64,7 @@ Interface by which challenges are managed (loaded, initiated, cancelled). The
 * **ls**
     * List challenges in the current directory
 * **quit**
-    * Exit the [Manager](Manager-managermanagerpy)
+    * Exit the [Manager](#Manager-managermanagerpy)
 
 ### Participant `participant/participant.py`
 
@@ -78,7 +78,7 @@ correct solution.
 
 ### Challenge
 
-A directory that resides in the same directory as the [Manager](Manager-managermanagerpy). Within this
+A directory that resides in the same directory as the [Manager](#Manager-managermanagerpy). Within this
 directory must be several types of files:
 
 * A Description File
@@ -125,7 +125,7 @@ same machine. In order to run the Display server on another machine, change the
 **SERVER_ADDR** value line in `main.js` to the IP address of the machine the
 Display server is running on.
 
-Start [Manager](Manager-managermanagerpy)
+Start [Manager](#Manager-managermanagerpy)
 =============
 
 Open a terminal, traverse into `manager/`, and issue the following command:
@@ -145,18 +145,18 @@ where **submission_server_id** is the IP address of the machine that the
 If **submission_server_ip** is omitted, **localhost** is used.
 
 The Participants are then prompted to enter their name and editor. They must
-then wait for the [Manager](Manager-managermanagerpy) to Load up a Challenge.
+then wait for the [Manager](#Manager-managermanagerpy) to Load up a Challenge.
 
 Load up a Challenge
 ===================
 
-Issue the **load** command from the [Manager](Manager-managermanagerpy)'s prompt with a legal challenge.
+Issue the **load** command from the [Manager](#Manager-managermanagerpy)'s prompt with a legal challenge.
 
 Start the Challenge
 ===================
 
-The [Manager](Manager-managermanagerpy) can then issue the **init** command and every participant will be
+The [Manager](#Manager-managermanagerpy) can then issue the **init** command and every participant will be
 sent the challenge description and will be prompted to accept it. Once all
-participants have responded, the [Manager](Manager-managermanagerpy) can then start the challenge or cancel
-it. If the [Manager](Manager-managermanagerpy) starts the challenge, the challenge will continue until
+participants have responded, the [Manager](#Manager-managermanagerpy) can then start the challenge or cancel
+it. If the [Manager](#Manager-managermanagerpy) starts the challenge, the challenge will continue until
 every participant has either successfully completed it or forfeited.
