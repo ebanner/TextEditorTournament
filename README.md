@@ -34,12 +34,11 @@ The course of events that transpire in a typical tournament are as follows:
 Terminology
 ===========
 
-### Submission server
-#### `server/submission_server.py`
+### Submission server `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
-Manager, Participant, Display) must register with the Submission server. Simply
-put, the Submission Server is the brain of the tournament.
+Manager, Participant, Display) must register with the [Submission server](#submission-server-serversubmission_serverpy). Simply
+put, the [Submission server](#submission-server-serversubmission_serverpy) is the brain of the tournament.
 
 ### Display server `display/ws.py`
 
@@ -73,7 +72,7 @@ Recieves information about Challenges and can accept or reject Challenges that
 are presented. If a Participant accepts a challenge, then they must proceed to
 work toward completing the Challenge. Once the Participant is confident they
 have completed the Challenge correctly, the Participant can then submit the
-Challenge to the Submission server. If the Participant completed the Challenge
+Challenge to the [Submission server](#submission-server-serversubmission_serverpy). If the Participant completed the Challenge
 incorrectly, the Participant will recieve a diff of their work against what the
 correct solution.
 
@@ -104,7 +103,7 @@ Open a terminal, traverse into `server/`, and issuing the following command:
 
     $ python3 submission_server.py
 
-The Submission server by default runs on port 6900.
+The [Submission server](#submission-server-serversubmission_serverpy) by default runs on port 6900.
 
 Start Display Server
 ====================
@@ -113,7 +112,7 @@ Open a terminal, traverse into `display/`, and issue the following command:
 
     $ python3 ws.py
 
-This Display server listens on port 9999 and assumes the Submission server is
+This Display server listens on port 9999 and assumes the [Submission server](#submission-server-serversubmission_serverpy) is
 running on port 6900.
 
 Start Display web client
@@ -142,7 +141,7 @@ following:
     $ python3 participant.py [submission_server_ip]
 
 where **submission_server_id** is the IP address of the machine that the
-Submission server is running on. If **submission_server_ip** is omitted,
+[Submission server](#submission-server-serversubmission_serverpy) is running on. If **submission_server_ip** is omitted,
 **localhost** is used.
 
 The Participants are then prompted to enter their name and editor. They must
