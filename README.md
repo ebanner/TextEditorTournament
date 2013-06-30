@@ -39,11 +39,10 @@ Terminology
 The most important piece of running a tournament. Clients of every type (e.g.
 [Manager](#manager-managermanagerpy), 
 [Participant](#participant-participantparticipantpy), 
-[Display web client](#display-web-client-displayindexhtml)) 
-must register with the 
-[Submission server](#submission-server-serversubmission_serverpy). Simply
-put, the [Submission server](#submission-server-serversubmission_serverpy) 
-is the brain of the tournament.
+[Display](#display-server-displaywspy) must register with the [Submission
+server](#submission-server-serversubmission_serverpy). Simply put, the
+[Submission server](#submission-server-serversubmission_serverpy) is the brain
+of the tournament.
 
 ### Display server `display/ws.py`
 
