@@ -37,7 +37,7 @@ Terminology
 ### Submission server `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
-[Manager](#manager-managermanagerpy), Participant, Display) must register with the [Submission server](#submission-server-serversubmission_serverpy). Simply
+[Manager](#manager-managermanagerpy), [Participant](#participant-participantparticipantpy), Display) must register with the [Submission server](#submission-server-serversubmission_serverpy). Simply
 put, the [Submission server](#submission-server-serversubmission_serverpy) is the brain of the tournament.
 
 ### Display server `display/ws.py`
@@ -69,11 +69,11 @@ Interface by which challenges are managed (loaded, initiated, cancelled). The
 ### Participant `participant/participant.py`
 
 Recieves information about Challenges and can accept or reject Challenges that
-are presented. If a Participant accepts a challenge, then they must proceed to
-work toward completing the Challenge. Once the Participant is confident they
-have completed the Challenge correctly, the Participant can then submit the
-Challenge to the [Submission server](#submission-server-serversubmission_serverpy). If the Participant completed the Challenge
-incorrectly, the Participant will recieve a diff of their work against what the
+are presented. If a [Participant](#participant-participantparticipantpy) accepts a challenge, then they must proceed to
+work toward completing the Challenge. Once the [Participant](#participant-participantparticipantpy) is confident they
+have completed the Challenge correctly, the [Participant](#participant-participantparticipantpy) can then submit the
+Challenge to the [Submission server](#submission-server-serversubmission_serverpy). If the [Participant](#participant-participantparticipantpy) completed the Challenge
+incorrectly, the [Participant](#participant-participantparticipantpy) will recieve a diff of their work against what the
 correct solution.
 
 ### Challenge
@@ -88,7 +88,7 @@ directory must be several types of files:
         * The rest of the file contains a description of the challenge and
           optionally an example
 * Challenge Files
-    * These files are the text files that will be sent over to Participants at
+    * These files are the text files that will be sent over to [Participant](#participant-participantparticipantpy)s at
       the beginning of a challenge
 * Solution Files
     * These files have a `.sol` extension and are the files that the challenge
@@ -135,7 +135,7 @@ Open a terminal, traverse into `manager/`, and issue the following command:
 Have Participants Connect
 ====================
 
-For every Participant, supply them with `participant.py` and have them issue the
+For every [Participant](#participant-participantparticipantpy), supply them with `participant.py` and have them issue the
 following:
 
     $ python3 participant.py [submission_server_ip]
@@ -144,7 +144,7 @@ where **submission_server_id** is the IP address of the machine that the
 [Submission server](#submission-server-serversubmission_serverpy) is running on.
 If **submission_server_ip** is omitted, **localhost** is used.
 
-The Participants are then prompted to enter their name and editor. They must
+The [Participant](#participant-participantparticipantpy)s are then prompted to enter their name and editor. They must
 then wait for the [Manager](#manager-managermanagerpy) to Load up a Challenge.
 
 Load up a Challenge
