@@ -17,17 +17,17 @@ The course of events that transpire in a typical tournament are as follows:
 
 [1) Start Submission server](#start-submission-server)
 
-2) Start Display server
+[2)-Start-Display-server](#start-display-server)
 
-3) Start Display web client
+[3)-Start-Display-web-client](#start-display-web-client)
 
-4) Start Manager
+[4)-Start-Manager](#start-manager)
 
-5) Have Clients Connect
+[5)-Have-Clients-Connect](#have-clients-connect)
 
-6) Load up a Challenge
+[6)-Load-up-a-Challenge](#load-up-a-challenge)
 
-7) Start the Challenge
+[7)-Start-the-Challenge](#start-the-challenge)
 
 8) Repeat steps 6 through 8
 
