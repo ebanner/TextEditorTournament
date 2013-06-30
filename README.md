@@ -16,12 +16,19 @@ Overview
 The course of events that transpire in a typical tournament are as follows:
 
 1) Start Submission server
+
 2) Start Display server
+
 3) Start Display web client
+
 4) Start Manager
+
 5) Have clients connect
+
 6) Load up a challenge
+
 7) Start the challenge
+
 8) Repeat steps 6 through 8
 
 Start Submission Server
@@ -95,16 +102,16 @@ The manager is the interface by which challenges are loaded and initiated. Once
 the manager has been accepted by the submission server, the following commands
 are recognized:
 
-* <load | send | submit> <challenge_id> <challenge_name>
-    * Alert the boss the new challenge is now <challenge_name> with a challenge
-      name of <challenge_id>. Note: <challenge_name> must be a challenge in the
+* &lt;load | send | submit&gt; &lt;challenge_id&gt; &lt;challenge_name&gt;
+    * Alert the boss the new challenge is now &lt;challenge_name&gt; with a challenge
+      name of &lt;challenge_id&gt;. Note: &lt;challenge_name&gt; must be a challenge in the
       same directory as manager.py.
-* <init>
+* &lt;init&gt;
     * Send out the challenge to all registered participants. Note: there must
       already be a challenge that was loaded with the above command.
-* <ls>
+* &lt;ls&gt;
     * List all challenges in the current directory.
-* <exit | quit>
+* &lt;exit | quit&gt;
     * Exit the manager.
 
 Have clients connect
@@ -125,7 +132,7 @@ using. They must then wait for the manager to Load up a Challenge.
 Load up a Challenge
 ===================
 
-Issue the <load | send | submit> command from the manager's prompt with a legal
+Issue the &lt;load | send | submit&gt; command from the manager's prompt with a legal
 challenge.
 
 Start the challenge
