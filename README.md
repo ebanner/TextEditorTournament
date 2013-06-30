@@ -42,7 +42,7 @@ put, the Submission Server is the brain of the tournament.
 
 ### Display server `display/ws.py`
 
-Relays tournament statistics from the Submission server to the Display web
+Relays tournament statistics from the [Submission Server](#submission-server) to the Display web
 client.
 
 ### Display web client `display/index.html` 
@@ -56,24 +56,23 @@ Interface by which challenges are managed (loaded, initiated, cancelled). The
 Manager has the following command set:
 
 * **load challenge_id challenge_name**
-    * Alert the boss the new challenge is now **challenge_name** with a challenge
-      id of **challenge_id**. Note: **challenge_name** must be a challenge in the
-      same directory as Manager.py.
+    * Load up a new challenge named **challenge_name** with a challenge
+      id of **challenge_id**. **Note: challenge_name** must be a Challenge.
 * **init**
-    * Send out the challenge to all registered participants. Note: there must
-      already be a loaded challenge (see above command).
+    * Send out the Challenge to all registered participants. Note: there must
+      already be a loaded challenge (see above command)
 * **ls**
-    * List challenges in the current directory.
+    * List challenges in the current directory
 * **quit**
-    * Exit the Manager.
+    * Exit the Manager
 
 ### Participant `participant/participant.py`
 
-Recieves information about challenges and can accept or reject challenges that
+Recieves information about Challenges and can accept or reject Challenges that
 are presented. If a Participant accepts a challenge, then they must proceed to
-work toward completing the challenge. Once the Participant is confident they
-have completed the challenge correctly, the Participant can then submit the
-challenge to the Submission server. If the Participant completed the challenge
+work toward completing the Challenge. Once the Participant is confident they
+have completed the Challenge correctly, the Participant can then submit the
+Challenge to the Submission server. If the Participant completed the Challenge
 incorrectly, the Participant will recieve a diff of their work against what the
 correct solution.
 
@@ -104,7 +103,7 @@ Open a terminal, traverse into `server/`, and issuing the following command:
 
     $ python3 submission_server.py
 
-The submission server by default runs on port 6900.
+The Submission server by default runs on port 6900.
 
 Start Display Server
 ====================
@@ -133,7 +132,7 @@ Open a terminal, traverse into `manager/`, and issue the following command:
 
     $ python3 manager.py
 
-Have Clients Connect
+Have Participants Connect
 ====================
 
 For every Participant, supply them with `participant.py` and have them issue the
