@@ -125,7 +125,7 @@ Load up a Challenge
 
 Issue the **load** command from the Manager's prompt with a legal challenge.
 
-Start the challenge
+Start the Challenge
 ===================
 
 The Manager can then issue the **init** command and every participant will be
