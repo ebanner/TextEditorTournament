@@ -32,8 +32,8 @@ Table of Contents
     * Repeat steps 6 through 8
 
 * [Other](#other)
-    * [Video](#video)
-    * Screenshots
+    * [Videos](#video)
+    * [Screenshots](#screenshots)
 
 
 Terminology
