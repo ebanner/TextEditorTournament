@@ -23,11 +23,11 @@ The course of events that transpire in a typical tournament are as follows:
 
 4) Start Manager
 
-5) Have clients connect
+5) Have Clients Connect
 
-6) Load up a challenge
+6) Load up a Challenge
 
-7) Start the challenge
+7) Start the Challenge
 
 8) Repeat steps 6 through 8
 
@@ -36,14 +36,24 @@ Start Submission Server
 
 The most important piece of running a tournament is the Submission server.
 Clients of every type (e.g. Manager, participants, display) must register with
-the Submission server. Simply put, it is the brain of the tournament.
+the Submission server. Simply put, the Submission Server is the brain of the
+tournament.
 
 Start the submission server by opening a terminal, traversing into `server/`, and
 issuing the following command:
 
     $ python3 submission_server.py
 
-The Submission server will be running on port 6900.
+The submission server by default runs on port 6900. This port can be changed
+at invocation. For instance, to run the Submission server on port 3017, issue
+the following command instead:
+
+    $ python3 submission_server.py 3017
+
+Keep in mind that the Display server expects the Submission server to be running
+on port 6900, so you would need to change where the Display server expects the
+Submission server to be running (this feature is not yet supported).
+
 
 Start Display Server
 ====================
@@ -64,54 +74,35 @@ running on port 6900.
 Start Display web client
 ========================
 
-The Display server needs a client to relay the tournament statistics it
-recieves from the Submission server. Create such a client by opening
-`index.html` in `display` with your favorite web browser (e.g. Firefox, Chrome,
-etc.)
+The Display server needs a client to relay tournament statistics it recieves
+from the Submission server. Create such a client by opening `index.html` in
+`display/` with your favorite web browser (e.g. Firefox, Chrome, etc.)
 
-**Note:** the Display client assumes the Display server is running on the same
+**Note:** The Display client assumes the Display server is running on the same
 machine. In order to run the Display server on another machine, change the
 **SERVER_ADDR** value line in `main.js` to the IP address of the machine the
 Display server is running on.
 
-Start Submission server
-=======================
-
-Open a termial and traverse into `server/` and issue the following command:
-
-    $ python3 submission_server.py
-
-The submission server by default runs on port 6900. This port can be changed at
-at invocation. For instance, to run the submission server on port 3017, issue
-the following command instead:
-
-    $ python3 submission_server.py 3017
-
-Keep in mind that the Display server expects the Submission server to be running
-on port 6900, so you would need to change where the Display server expects the
-Submission server to be running (this feature is not yet supported).
-
 Start Manager
 =============
 
-Open a terminal, traverse into `Manager/`, and issue the following command:
+Open a terminal, traverse into `manager/`, and issue the following command:
 
-    $ python3 Manager.py
+    $ python3 manager.py
 
-The Manager is the interface by which challenges are loaded and initiated. Once
-the Manager has been accepted by the Submission server, the following commands
-are recognized:
+The Manager is the interface by which challenges are loaded and initiated. The
+Manager has the following command set:
 
-* &lt;load | send | submit&gt; &lt;challenge_id&gt; &lt;challenge_name&gt;
-    * Alert the boss the new challenge is now &lt;challenge_name&gt; with a challenge
-      id of &lt;challenge_id&gt;. Note: &lt;challenge_name&gt; must be a challenge in the
+* **load challenge_id challenge_name**
+    * Alert the boss the new challenge is now **challenge_name** with a challenge
+      id of **challenge_id**. Note: **challenge_name** must be a challenge in the
       same directory as Manager.py.
-* &lt;init&gt;
+* **init**
     * Send out the challenge to all registered participants. Note: there must
       already be a loaded challenge (see above command).
-* &lt;ls&gt;
+* **ls**
     * List challenges in the current directory.
-* &lt;exit | quit&gt;
+* **quit**
     * Exit the Manager.
 
 Have Clients Connect
@@ -124,7 +115,7 @@ following:
 
 where **submission_server_id** is the IP address of the machine that the
 Submission server is running on. If **submission_server_ip** is omitted,
-localhost is used.
+**localhost** is used.
 
 The participants are then prompted to enter their name and editor. They must
 then wait for the Manager to Load up a Challenge.
@@ -132,8 +123,7 @@ then wait for the Manager to Load up a Challenge.
 Load up a Challenge
 ===================
 
-Issue the &lt;load | send | submit&gt; command from the Manager's prompt with a legal
-challenge.
+Issue the **load** command from the Manager's prompt with a legal challenge.
 
 Start the challenge
 ===================
@@ -141,5 +131,5 @@ Start the challenge
 The Manager can then issue the **init** command and every participant will be
 sent the challenge description and will be prompted to accept it. Once all
 participants have responded, the Manager can then start the challenge or cancel
-it. If the Manager starts the challenge then the challenge will continue until
+it. If the Manager starts the challenge, the challenge will continue until
 every participant has either successfully completed it or forfeited.
