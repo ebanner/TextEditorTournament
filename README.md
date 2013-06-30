@@ -19,7 +19,7 @@ The course of events that transpire in a typical tournament are as follows:
 
 [2) Start Display server](#start-display-server)
 
-[3) Start Display web client](#start-display-web-client)
+[3) Start [Display web client](#display-web-client-displaywspy)](#start-display-web-client)
 
 [4) Start Manager](#start-manager)
 
@@ -42,10 +42,10 @@ put, the [Submission server](#submission-server-serversubmission_serverpy) is th
 
 ### Display server `display/ws.py`
 
-Relays tournament statistics from the [Submission Server](#submission-server) to the Display web
-client.
+Relays tournament statistics from the [Submission Server](#submission-server-serversubmission_serverpy) 
+to the [Display web client](#display-web-client-displaywspy).
 
-### Display web client `display/index.html` 
+### [Display web client](#display-web-client-displaywspy) `display/index.html` 
 
 Uses WebSockets to establish a connection with the Display server display
 tournament statistics it recieves using the HTML5 canvas element.
@@ -115,12 +115,12 @@ Open a terminal, traverse into `display/`, and issue the following command:
 This Display server listens on port 9999 and assumes the [Submission server](#submission-server-serversubmission_serverpy) is
 running on port 6900.
 
-Start Display web client
+Start [Display web client](#display-web-client-displaywspy)
 ========================
 
 Traverse into `display` and open `index.html` with your favorite web browser.
 
-**Note:** The Display web client assumes the Display server is running on the
+**Note:** The [Display web client](#display-web-client-displaywspy) assumes the Display server is running on the
 same machine. In order to run the Display server on another machine, change the
 **SERVER_ADDR** value line in `main.js` to the IP address of the machine the
 Display server is running on.
@@ -141,8 +141,8 @@ following:
     $ python3 participant.py [submission_server_ip]
 
 where **submission_server_id** is the IP address of the machine that the
-[Submission server](#submission-server-serversubmission_serverpy) is running on. If **submission_server_ip** is omitted,
-**localhost** is used.
+[Submission server](#submission-server-serversubmission_serverpy) is running on.
+If **submission_server_ip** is omitted, **localhost** is used.
 
 The Participants are then prompted to enter their name and editor. They must
 then wait for the Manager to Load up a Challenge.
