@@ -15,7 +15,7 @@ Overview
 
 The course of events that transpire in a typical tournament are as follows:
 
-1) Start Submission server
+[1) Start Submission server](#-Start-Display-Server)
 
 2) Start Display server
 
