@@ -34,7 +34,8 @@ The course of events that transpire in a typical tournament are as follows:
 Terminology
 ===========
 
-### Submission server `server/submission_server.py`
+### Submission server
+#### `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
 Manager, Participant, Display) must register with the Submission server. Simply
