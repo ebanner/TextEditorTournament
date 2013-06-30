@@ -34,7 +34,7 @@ The course of events that transpire in a typical tournament are as follows:
 Terminology
 ===========
 
-### Submission server
+### Submission server `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
 Manager, Participant, Display) must register with the Submission server. Simply
@@ -45,17 +45,16 @@ put, the Submission Server is the brain of the tournament.
 The Display server relays tournament statistics from the Submission server to
 the Display web client.
 
-### Display web client
+### Display web client `display/index.html` 
 
-The Display web client (`display/index.html`) uses WebSockets to establish a
-connection with the Display server display tournament statistics it recieves
-using the HTML5 canvas element.
+The Display web client uses WebSockets to establish a connection with the
+Display server display tournament statistics it recieves using the HTML5 canvas
+element.
 
-### Manager
+### Manager `manager/manager.py` 
 
-The Manager (`manager/manager.py`) is the interface by which challenges are
-managed (loaded, initiated, cancelled). The Manager has the following command
-set:
+The Manager is the interface by which challenges are managed (loaded, initiated,
+cancelled). The Manager has the following command set:
 
 * **load challenge_id challenge_name**
     * Alert the boss the new challenge is now **challenge_name** with a challenge
@@ -69,7 +68,7 @@ set:
 * **quit**
     * Exit the Manager.
 
-### Participant
+### Participant `participant/participant.py`
 
 A Participant recieves information about challenges and can accept or reject
 challenges that are presented. If a Participant accepts a challenge, then they
