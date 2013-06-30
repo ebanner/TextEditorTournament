@@ -52,7 +52,7 @@ to the [Display web client](#display-web-client-displayindexhtml).
 
 ### [Display web client](#display-web-client-displayindexhtml) `display/index.html` 
 
-Uses WebSockets to establish a connection with the Display server display
+Uses WebSockets to establish a connection with the [Display server](#display-server-displaywspy) display
 tournament statistics it recieves using the HTML5 canvas element.
 
 ### Manager `manager/manager.py` 
@@ -117,7 +117,7 @@ Open a terminal, traverse into `display/`, and issue the following command:
 
     $ python3 ws.py
 
-This Display server listens on port 9999 and assumes the [Submission server](#submission-server-serversubmission_serverpy) is
+This [Display server](#display-server-displaywspy) listens on port 9999 and assumes the [Submission server](#submission-server-serversubmission_serverpy) is
 running on port 6900.
 
 Start [Display web client](#display-web-client-displayindexhtml)
@@ -125,10 +125,10 @@ Start [Display web client](#display-web-client-displayindexhtml)
 
 Traverse into `display` and open `index.html` with your favorite web browser.
 
-**Note:** The [Display web client](#display-web-client-displayindexhtml) assumes the Display server is running on the
-same machine. In order to run the Display server on another machine, change the
+**Note:** The [Display web client](#display-web-client-displayindexhtml) assumes the [Display server](#display-server-displaywspy) is running on the
+same machine. In order to run the [Display server](#display-server-displaywspy) on another machine, change the
 **SERVER_ADDR** value line in `main.js` to the IP address of the machine the
-Display server is running on.
+[Display server](#display-server-displaywspy) is running on.
 
 Start [Manager](#manager-managermanagerpy)
 =============
