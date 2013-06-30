@@ -15,7 +15,7 @@ Overview
 
 The course of events that transpire in a typical tournament are as follows:
 
-[1) Start Submission server](#Start-Display-Server)
+[1) Start Submission server](#Start-Submission-Server)
 
 2) Start Display server
 
@@ -31,8 +31,7 @@ The course of events that transpire in a typical tournament are as follows:
 
 8) Repeat steps 6 through 8
 
-Start Submission Server
-=======================
+# Start Submission Server
 
 The most important piece of running a tournament is the Submission server.
 Clients of every type (e.g. Manager, participants, display) must register with
