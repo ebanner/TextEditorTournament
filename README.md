@@ -57,9 +57,9 @@ Interface by which challenges are managed (loaded, initiated, cancelled). The
 
 * **load challenge_id challenge_name**
     * Load up a new challenge named **challenge_name** with a challenge
-      id of **challenge_id**. **Note: challenge_name** must be a Challenge.
+      id of **challenge_id**. **Note: challenge_name** must be a [Challenge](#challenge).
 * **init**
-    * Send out the Challenge to all registered participants. Note: there must
+    * Send out the [Challenge](#challenge) to all registered participants. Note: there must
       already be a loaded challenge (see above command)
 * **ls**
     * List challenges in the current directory
@@ -68,11 +68,11 @@ Interface by which challenges are managed (loaded, initiated, cancelled). The
 
 ### Participant `participant/participant.py`
 
-Recieves information about Challenges and can accept or reject Challenges that
+Recieves information about [Challenge](#challenge)s and can accept or reject [Challenge](#challenge)s that
 are presented. If a [Participant](#participant-participantparticipantpy) accepts a challenge, then they must proceed to
-work toward completing the Challenge. Once the [Participant](#participant-participantparticipantpy) is confident they
-have completed the Challenge correctly, the [Participant](#participant-participantparticipantpy) can then submit the
-Challenge to the [Submission server](#submission-server-serversubmission_serverpy). If the [Participant](#participant-participantparticipantpy) completed the Challenge
+work toward completing the [Challenge](#challenge). Once the [Participant](#participant-participantparticipantpy) is confident they
+have completed the [Challenge](#challenge) correctly, the [Participant](#participant-participantparticipantpy) can then submit the
+[Challenge](#challenge) to the [Submission server](#submission-server-serversubmission_serverpy). If the [Participant](#participant-participantparticipantpy) completed the [Challenge](#challenge)
 incorrectly, the [Participant](#participant-participantparticipantpy) will recieve a diff of their work against what the
 correct solution.
 
@@ -87,7 +87,7 @@ directory must be several types of files:
         * The second line contains a newline
         * The rest of the file contains a description of the challenge and
           optionally an example
-* Challenge Files
+* [Challenge](#challenge) Files
     * These files are the text files that will be sent over to [Participant](#participant-participantparticipantpy)s at
       the beginning of a challenge
 * Solution Files
@@ -145,7 +145,7 @@ where **submission_server_id** is the IP address of the machine that the
 If **submission_server_ip** is omitted, **localhost** is used.
 
 The [Participant](#participant-participantparticipantpy)s are then prompted to enter their name and editor. They must
-then wait for the [Manager](#manager-managermanagerpy) to Load up a Challenge.
+then wait for the [Manager](#manager-managermanagerpy) to Load up a [Challenge](#challenge).
 
 Load up a Challenge
 ===================
