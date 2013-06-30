@@ -15,7 +15,7 @@ boss = boss.Boss()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        ignored_filename, PORT = sys.argv
+        script, PORT = sys.argv
 
     listener = socket.socket()
     listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
