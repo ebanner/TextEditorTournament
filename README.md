@@ -119,7 +119,7 @@ types of files:
 Normal Tournament sequence
 ==========================
 
-## Start Submission Server
+#### Start Submission Server
 
 Open a terminal, traverse into `server/`, and issuing the following command:
 
@@ -128,7 +128,7 @@ Open a terminal, traverse into `server/`, and issuing the following command:
 The [Submission server](#submission-server-serversubmission_serverpy) by default
 runs on port 6900.
 
-## Start Display Server
+#### Start Display Server
 
 Open a terminal, traverse into `display/`, and issue the following command:
 
@@ -138,7 +138,7 @@ This [Display server](#display-server-displaywspy) runs on port 9999 and
 assumes the [Submission server](#submission-server-serversubmission_serverpy) is
 running on port 6900.
 
-## Start Display web client
+#### Start Display web client
 
 Traverse into `display/` and open `index.html` with your favorite web browser.
 
@@ -149,13 +149,13 @@ another machine, change the **SERVER_ADDR** value line in `main.js` to the IP
 address of the machine the [Display server](#display-server-displaywspy) is
 running on.
 
-## Start Manager
+#### Start Manager
 
 Open a terminal, traverse into `manager/`, and issue the following command:
 
     $ python3 manager.py
 
-## Have Participants connect
+#### Have Participants connect
 
 For every [Participant](#participant-participantparticipantpy), supply them with
 `participant.py` and have them issue the following:
@@ -170,12 +170,12 @@ The [Participants](#participant-participantparticipantpy) are then prompted to
 enter their name and editor. They must then wait for the
 [Manager](#manager-managermanagerpy) to Load up a [Challenge](#challenge).
 
-## Load up a Challenge
+#### Load up a Challenge
 
 Issue the **load** command from the [Manager](#manager-managermanagerpy)'s
 prompt with a legal [Challenge](#challenge).
 
-## Start the Challenge
+#### Start the Challenge
 
 The [Manager](#manager-managermanagerpy) can then issue the **init** command and
 every [Participant](#participant-participantparticipantpy) will be sent the
@@ -186,8 +186,16 @@ If the [Manager](#manager-managermanagerpy) starts the challenge, the challenge
 will continue until every [Participant](#participant-participantparticipantpy)
 has either successfully completed it or forfeited.
 
-Videos
-======
+Other
+=====
+
+
+#### Videos
+
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=7cm5bPccSeg" target="_blank">
   <img src="http://img.youtube.com/vi/7cm5bPccSeg/0.jpg" alt="Text Editor Tournament" width="240" height="180" border="10" />
 </a>
+
+#### Screenshots
+
+![XSM in action](https://raw.github.com/ebanner/text-editing-tournament/master/img/TET.png "Screenshot")
