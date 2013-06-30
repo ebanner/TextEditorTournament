@@ -42,19 +42,18 @@ put, the Submission Server is the brain of the tournament.
 
 ### Display server `display/ws.py`
 
-The Display server relays tournament statistics from the Submission server to
-the Display web client.
+Relays tournament statistics from the Submission server to the Display web
+client.
 
 ### Display web client `display/index.html` 
 
-The Display web client uses WebSockets to establish a connection with the
-Display server display tournament statistics it recieves using the HTML5 canvas
-element.
+Uses WebSockets to establish a connection with the Display server display
+tournament statistics it recieves using the HTML5 canvas element.
 
 ### Manager `manager/manager.py` 
 
-The Manager is the interface by which challenges are managed (loaded, initiated,
-cancelled). The Manager has the following command set:
+Interface by which challenges are managed (loaded, initiated, cancelled). The
+Manager has the following command set:
 
 * **load challenge_id challenge_name**
     * Alert the boss the new challenge is now **challenge_name** with a challenge
@@ -70,18 +69,18 @@ cancelled). The Manager has the following command set:
 
 ### Participant `participant/participant.py`
 
-A Participant recieves information about challenges and can accept or reject
-challenges that are presented. If a Participant accepts a challenge, then they
-must proceed to work toward completing the challenge. Once the Participant is
-confident they have completed the challenge correctly, the Participant can then
-submit the challenge to the Submission server. If the Participant completed the
-challenge incorrectly, the Participant will recieve a diff of their work against
-what the correct solution.
+Recieves information about challenges and can accept or reject challenges that
+are presented. If a Participant accepts a challenge, then they must proceed to
+work toward completing the challenge. Once the Participant is confident they
+have completed the challenge correctly, the Participant can then submit the
+challenge to the Submission server. If the Participant completed the challenge
+incorrectly, the Participant will recieve a diff of their work against what the
+correct solution.
 
 ### Challenge
 
-A Challenge is a directory that resides in the same directory as the Manager.
-Within this directory must be several types of files:
+A directory that resides in the same directory as the Manager. Within this
+directory must be several types of files:
 
 * A Description File
     * A file named `description.info`. The format of this file is as follows:
