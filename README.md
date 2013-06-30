@@ -198,4 +198,4 @@ Other
 
 #### Screenshots
 
-![XSM in action](https://raw.github.com/ebanner/text-editing-tournament/master/img/TET.png "Screenshot")
+![Text Editor Tournament in Action](https://raw.github.com/ebanner/text-editing-tournament/master/screenshot/TET.png "Screenshot")
