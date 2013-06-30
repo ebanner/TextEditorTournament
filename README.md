@@ -13,7 +13,7 @@ tournament in real-time using the HTML5 canvas and WebSockets.
 Table of Contents
 =================
 
-* Terminology
+* [Terminology](#terminology)
     * [Submission server](#submission-server-serversubmission_serverpy)
     * [Display](#display-server-displaywspy)
     * [Display web client](#display-web-client-displayindexhtml)
@@ -21,7 +21,7 @@ Table of Contents
     * [Participant](#participant-participantparticipantpy)
     * [Challenge](#challenge)
 
-* Normal Tournament sequence
+* [Normal Tournament sequence](#normal-tournament-sequence)
     * [Start Submission server](#start-submission-server)
     * [Start Display server](#start-display-server)
     * [Start Display web client](#start-display-web-client)
@@ -31,10 +31,15 @@ Table of Contents
     * [Start the Challenge](#start-the-challenge)
     * Repeat steps 6 through 8
 
+* [Other](#other)
+    * [Video](#video)
+    * Screenshots
+
+
 Terminology
 ===========
 
-### Submission server `server/submission_server.py`
+## Submission server `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
 [Manager](#manager-managermanagerpy),
@@ -44,19 +49,19 @@ server](#submission-server-serversubmission_serverpy). Simply put, the
 [Submission server](#submission-server-serversubmission_serverpy) is the brain
 of the tournament.
 
-### Display server `display/ws.py`
+## Display server `display/ws.py`
 
 Relays tournament statistics from the [Submission
 Server](#submission-server-serversubmission_serverpy) to the [Display web
 client](#display-web-client-displayindexhtml).
 
-### Display web client `display/index.html` 
+## Display web client `display/index.html` 
 
 Uses WebSockets to establish a connection with the [Display
 server](#display-server-displaywspy) display tournament statistics it recieves
 using the HTML5 canvas element.
 
-### Manager `manager/manager.py` 
+## Manager `manager/manager.py` 
 
 Interface by which [Challenges](#challenge) are managed (loaded, initiated,
 cancelled). The [Manager](#manager-managermanagerpy) has the following command
@@ -75,7 +80,7 @@ set:
 * **quit**
     * Exit the [Manager](#manager-managermanagerpy)
 
-### Participant `participant/participant.py`
+## Participant `participant/participant.py`
 
 Recieves information about [Challenges](#challenge) and can accept or reject
 [Challenge](#challenge)s that are presented. If a
@@ -91,7 +96,7 @@ server](#submission-server-serversubmission_serverpy). If the
 [Participant](#participant-participantparticipantpy) will recieve a diff of
 their work against what the correct solution.
 
-### Challenge
+## Challenge
 
 A directory that resides in the same directory as the
 [Manager](#manager-managermanagerpy). Within this directory must be several
@@ -113,8 +118,11 @@ types of files:
       Challenge Files and Solution Files (e.g. If `foo` is a Challenge File,
       then there must exist a Solution File by the name of `foo.sol`)
 
-Start Submission Server
-=======================
+
+Normal Tournament sequence
+==========================
+
+## Start Submission Server
 
 Open a terminal, traverse into `server/`, and issuing the following command:
 
@@ -123,8 +131,7 @@ Open a terminal, traverse into `server/`, and issuing the following command:
 The [Submission server](#submission-server-serversubmission_serverpy) by default
 runs on port 6900.
 
-Start Display Server
-====================
+## Start Display Server
 
 Open a terminal, traverse into `display/`, and issue the following command:
 
@@ -134,8 +141,7 @@ This [Display server](#display-server-displaywspy) listens on port 9999 and
 assumes the [Submission server](#submission-server-serversubmission_serverpy) is
 running on port 6900.
 
-Start Display web client
-========================
+## Start Display web client
 
 Traverse into `display` and open `index.html` with your favorite web browser.
 
@@ -146,15 +152,13 @@ another machine, change the **SERVER_ADDR** value line in `main.js` to the IP
 address of the machine the [Display server](#display-server-displaywspy) is
 running on.
 
-Start Manager
-=============
+## Start Manager
 
 Open a terminal, traverse into `manager/`, and issue the following command:
 
     $ python3 manager.py
 
-Have Participants Connect
-=========================
+## Have Participants Connect
 
 For every [Participant](#participant-participantparticipantpy), supply them with
 `participant.py` and have them issue the following:
@@ -169,14 +173,12 @@ The [Participant](#participant-participantparticipantpy)s are then prompted to
 enter their name and editor. They must then wait for the
 [Manager](#manager-managermanagerpy) to Load up a [Challenge](#challenge).
 
-Load up a Challenge
-===================
+## Load up a Challenge
 
 Issue the **load** command from the [Manager](#manager-managermanagerpy)'s
 prompt with a legal challenge.
 
-Start the Challenge
-===================
+## Start the Challenge
 
 The [Manager](#manager-managermanagerpy) can then issue the **init** command and
 every [Participant](#participant-participantparticipantpy) will be sent the
