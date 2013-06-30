@@ -39,7 +39,7 @@ Table of Contents
 Terminology
 ===========
 
-### Submission server `server/submission_server.py`
+#### Submission server `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
 [Manager](#manager-managermanagerpy),
@@ -49,19 +49,19 @@ server](#submission-server-serversubmission_serverpy). Simply put, the
 [Submission server](#submission-server-serversubmission_serverpy) is the brain
 of the tournament.
 
-### Display server `display/ws.py`
+#### Display server `display/ws.py`
 
 Relays tournament statistics from the [Submission
 Server](#submission-server-serversubmission_serverpy) to the [Display web
 client](#display-web-client-displayindexhtml).
 
-### Display web client `display/index.html` 
+#### Display web client `display/index.html` 
 
 Uses WebSockets to establish a connection with the [Display
 server](#display-server-displaywspy) to display tournament statistics it
 recieves. The HTML5 canvas element is used for displaying graphics.
 
-### Manager `manager/manager.py` 
+#### Manager `manager/manager.py` 
 
 Interface by which [Challenges](#challenge) are managed (loaded, initiated,
 cancelled). The [Manager](#manager-managermanagerpy) has the following command
@@ -78,7 +78,7 @@ set:
 * **quit**
     * Exit the [Manager](#manager-managermanagerpy)
 
-### Participant `participant/participant.py`
+#### Participant `participant/participant.py`
 
 Recieves information about [Challenges](#challenge) and can accept or reject
 [Challenges](#challenge) that are presented. If a
@@ -94,7 +94,7 @@ server](#submission-server-serversubmission_serverpy). If the
 [Participant](#participant-participantparticipantpy) will recieve a diff of
 their work against what the correct solution.
 
-### Challenge
+#### Challenge
 
 A directory that resides in the same directory as the
 [Manager](#manager-managermanagerpy). Within this directory must be several
