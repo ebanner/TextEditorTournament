@@ -19,7 +19,7 @@ The course of events that transpire in a typical tournament are as follows:
 
 [2) Start Display server](#start-display-server)
 
-[3) Start [Display web client](#display-web-client-displayindexhtml)](#start-display-web-client)
+[3) Start Display web client](#start-display-web-client)
 
 [4) Start Manager](#start-manager)
 
@@ -37,8 +37,13 @@ Terminology
 ### Submission server `server/submission_server.py`
 
 The most important piece of running a tournament. Clients of every type (e.g.
-[Manager](#manager-managermanagerpy), [Participant](#participant-participantparticipantpy), Display) must register with the [Submission server](#submission-server-serversubmission_serverpy). Simply
-put, the [Submission server](#submission-server-serversubmission_serverpy) is the brain of the tournament.
+[Manager](#manager-managermanagerpy), 
+[Participant](#participant-participantparticipantpy), 
+[Display web client](#display-web-client-displayindexhtml)) 
+must register with the 
+[Submission server](#submission-server-serversubmission_serverpy). Simply
+put, the [Submission server](#submission-server-serversubmission_serverpy) 
+is the brain of the tournament.
 
 ### Display server `display/ws.py`
 
