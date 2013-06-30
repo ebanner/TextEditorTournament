@@ -14,22 +14,22 @@ Table of Contents
 =================
 
 * Terminology
-    ** [Submission server](#submission-server-serversubmission_serverpy)
-    ** [Display](#display-server-displaywspy)
-    ** [Display web client](#display-web-client-displayindexhtml)
-    ** [Manager](#manager-managermanagerpy)
-    ** [Participant](#participant-participantparticipantpy)
-    ** [Challenge](#challenge)
+    * [Submission server](#submission-server-serversubmission_serverpy)
+    * [Display](#display-server-displaywspy)
+    * [Display web client](#display-web-client-displayindexhtml)
+    * [Manager](#manager-managermanagerpy)
+    * [Participant](#participant-participantparticipantpy)
+    * [Challenge](#challenge)
 
 * Normal Tournament sequence
-    ** [Start Submission server](#start-submission-server)
-    ** [Start Display server](#start-display-server)
-    ** [Start Display web client](#start-display-web-client)
-    ** [Start Manager](#start-manager)
-    ** [Have Participants Connect](#have-participants-connect)
-    ** [Load up a Challenge](#load-up-a-challenge)
-    ** [Start the Challenge](#start-the-challenge)
-    ** Repeat steps 6 through 8
+    * [Start Submission server](#start-submission-server)
+    * [Start Display server](#start-display-server)
+    * [Start Display web client](#start-display-web-client)
+    * [Start Manager](#start-manager)
+    * [Have Participants Connect](#have-participants-connect)
+    * [Load up a Challenge](#load-up-a-challenge)
+    * [Start the Challenge](#start-the-challenge)
+    * Repeat steps 6 through 8
 
 Terminology
 ===========
