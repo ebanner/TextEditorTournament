@@ -10,26 +10,26 @@ submissions of answers by the participants. The server and client programs are
 written in Python 3. The web-based frontend displays information about the
 tournament in real-time using the HTML5 canvas and WebSockets.
 
-Overview
-========
+Table of Contents
+=================
 
-The course of events that transpire in a typical tournament are as follows:
+* Terminology
+    ** [Submission server](#submission-server-serversubmission_serverpy)
+    ** [Display](#display-server-displaywspy)
+    ** [Display web client](#display-web-client-displayindexhtml)
+    ** [Manager](#manager-managermanagerpy)
+    ** [Participant](#participant-participantparticipantpy)
+    ** [Challenge](#challenge)
 
-1) [Start Submission server](#start-submission-server)
-
-2) [Start Display server](#start-display-server)
-
-3) [Start Display web client](#start-display-web-client)
-
-4) [Start Manager](#start-manager)
-
-5) [Have Participants Connect](#have-participants-connect)
-
-6) [Load up a Challenge](#load-up-a-challenge)
-
-7) [Start the Challenge](#start-the-challenge)
-
-8) Repeat steps 6 through 8
+* Normal Tournament sequence
+    ** [Start Submission server](#start-submission-server)
+    ** [Start Display server](#start-display-server)
+    ** [Start Display web client](#start-display-web-client)
+    ** [Start Manager](#start-manager)
+    ** [Have Participants Connect](#have-participants-connect)
+    ** [Load up a Challenge](#load-up-a-challenge)
+    ** [Start the Challenge](#start-the-challenge)
+    ** Repeat steps 6 through 8
 
 Terminology
 ===========
