@@ -36,26 +36,26 @@ Terminology
 
 ### Submission server
 
-The most important piece of running a tournament is the Submission server.
-Clients of every type (e.g. Manager, participants, display) must register with
-the Submission server. Simply put, the Submission Server is the brain of the
-tournament.
+The most important piece of running a tournament. Clients of every type (e.g.
+Manager, Participant, Display) must register with the Submission server. Simply
+put, the Submission Server is the brain of the tournament.
 
-### Display server
+### Display server `display/ws.py`
 
-The Display server realays tournament statistics from the Submission server to
+The Display server relays tournament statistics from the Submission server to
 the Display web client.
 
 ### Display web client
 
-The Display web client uses WebSockets to establish a connection with and
-display tournament statistics it recieves from the Display server using the
-HTML5 canvas element.
+The Display web client (`display/index.html`) uses WebSockets to establish a
+connection with the Display server display tournament statistics it recieves
+using the HTML5 canvas element.
 
 ### Manager
 
-The Manager is the interface by which challenges are managed (loaded, initiated,
-cancelled). The Manager has the following command set:
+The Manager (`manager/manager.py`) is the interface by which challenges are
+managed (loaded, initiated, cancelled). The Manager has the following command
+set:
 
 * **load challenge_id challenge_name**
     * Alert the boss the new challenge is now **challenge_name** with a challenge
