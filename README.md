@@ -5,6 +5,12 @@ Client-server system connecting together multiple tournament participants, a
 Manager (administrator), and a web-based display frontend system through a
 central server.
 
+### Videos
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=7cm5bPccSeg" target="_blank">
+  <img src="http://img.youtube.com/vi/7cm5bPccSeg/0.jpg" alt="Text Editor Tournament" width="240" height="180" border="10" />
+</a>
+
 The server handles distributing challenges submitted by the Manager and
 submissions of answers by the participants. The server and client programs are
 written in Python 3. The web-based frontend displays information about the
@@ -188,13 +194,6 @@ has either successfully completed it or forfeited.
 
 Other
 =====
-
-
-### Videos
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=7cm5bPccSeg" target="_blank">
-  <img src="http://img.youtube.com/vi/7cm5bPccSeg/0.jpg" alt="Text Editor Tournament" width="240" height="180" border="10" />
-</a>
 
 ### Screenshots
 
