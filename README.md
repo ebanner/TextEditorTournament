@@ -5,6 +5,8 @@ Text Editor Tournament
   <img src="http://img.youtube.com/vi/7cm5bPccSeg/0.jpg" alt="Text Editor Tournament" width="240" height="180" border="10" />
 </a>
 
+![Text Editor Tournament in Action](https://raw.github.com/ebanner/text-editing-tournament/master/screenshot/TET.png "Screenshot")
+
 Client-server system connecting together multiple tournament participants, a
 Manager (administrator), and a web-based display frontend system through a
 central server.
@@ -189,10 +191,3 @@ challenge description and will be prompted to accept it. Once all
 If the [Manager](#manager-managermanagerpy) starts the challenge, the challenge
 will continue until every [Participant](#participant-participantparticipantpy)
 has either successfully completed it or forfeited.
-
-Other
-=====
-
-### Screenshots
-
-![Text Editor Tournament in Action](https://raw.github.com/ebanner/text-editing-tournament/master/screenshot/TET.png "Screenshot")
